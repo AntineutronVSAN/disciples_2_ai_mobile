@@ -1,7 +1,11 @@
 import 'dart:math';
-
+import 'package:json_annotation/json_annotation.dart';
 import 'package:d2_ai_v2/dart_nural/linear_network.dart';
 
+
+part 'genetic_individ.g.dart';
+
+@JsonSerializable()
 class GeneticIndivid {
   /// Веса нейронной сети
   List<double>? weights;
@@ -21,6 +25,7 @@ class GeneticIndivid {
   /// Инициализирована ли закреплённая за индивидом нейронка
   bool nnInited;
 
+  @JsonKey(ignore: true)
   SimpleLinearNeuralNetwork? nn;
 
   final int input;
@@ -56,6 +61,9 @@ class GeneticIndivid {
     biases = newNN.biases;
     nn = newNN;
   }
+
+  factory GeneticIndivid.fromJson(Map<String, dynamic> json) => _$GeneticIndividFromJson(json);
+  Map<String, dynamic> toJson() => _$GeneticIndividToJson(this);
 
   GeneticIndivid copyWith({
     weights,
@@ -188,6 +196,7 @@ class GeneticIndivid {
       biases: newBiasesList,
       activations: activations,
       needCalculate: true,
+      fitness: 0.0
     );
   }
 }

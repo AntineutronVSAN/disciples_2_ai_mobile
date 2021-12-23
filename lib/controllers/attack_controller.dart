@@ -34,7 +34,7 @@ class AttackController {
 
       switch(updateStateContext!.state.warScreenState) {
         case WarScreenState.eve:
-          duration = 25;
+          duration = 50;
           break;
         case WarScreenState.pvp:
           duration = 500;

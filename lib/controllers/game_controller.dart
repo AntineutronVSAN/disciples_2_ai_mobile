@@ -5,12 +5,23 @@ import 'package:d2_ai_v2/models/unit.dart';
 import 'attack_controller.dart';
 import 'initiative_shuffler.dart';
 
+
 class GameController {
   AttackController attackController;
   InitiativeShuffler initiativeShuffler;
 
   GameController(
       {required this.attackController, required this.initiativeShuffler});
+
+  GameController copyWith({
+    attackController,
+    initiativeShuffler
+  }) {
+    return GameController(
+    attackController: attackController ?? this.attackController,
+    initiativeShuffler: initiativeShuffler ?? this.initiativeShuffler,
+  );
+}
 
   /// Ссылки на юнитов на поле боя. Используются очередью
   List<Unit> unitsRef = [];

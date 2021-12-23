@@ -131,7 +131,8 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             Padding(
               padding: const EdgeInsets.all(5.0),
-              child: Text('Fitness - ${bloc.state.populationFitness}', style: const TextStyle(fontSize: 20.0),),
+              child: Text('Fitness - ${bloc.state.populationFitness.toStringAsFixed(4)}',
+                style: const TextStyle(fontSize: 20.0),),
             ),
             Padding(
               padding: const EdgeInsets.all(5.0),

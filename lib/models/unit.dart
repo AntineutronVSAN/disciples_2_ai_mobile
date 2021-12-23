@@ -178,7 +178,7 @@ class Unit {
       unitWarId: unitWarId ?? this.unitWarId,
       isDoubleAttack: isDoubleAttack ?? this.isDoubleAttack,
       currentAttack: 0,
-      unitAttack: unitAttack ?? this.unitAttack.copyWith(
+      unitAttack: this.unitAttack.copyWith(
         damage: this.unitAttack.firstDamage,
         initiative: this.unitAttack.firstInitiative,
       ),

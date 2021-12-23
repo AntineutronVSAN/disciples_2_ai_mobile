@@ -104,19 +104,20 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     // todo
 
     List<String> unitsNames = [
-      /*'Исса',
+      /*'Медуза',
       'Патриарх',
       'Верховный вампир',
       'Воин-призрак',
       'Воин-призрак',
-      'Ледяной кузнец',
+      'Воин-призрак',
 
       'Мастер клинка',
       'Мастер клинка',
       'Паладин',
-      'Ламия',
+      'Медуза',
       'Покровитель',
       'Маг',*/
+
       'Рейнджер',
       'Жрец',
       'Рейнджер',
@@ -366,8 +367,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
             emit: emit,
             state: state
         ),
-        generationCount: 100,
-        maxIndividsCount: 10,
+        generationCount: 10000,
+        maxIndividsCount: 20,
         input: gameInfoVectorLength * 12 + (unitVectorLength + attackVectorLength + attack2VectorLength)*12,
         output: actionsCount,
         hidden: 100,
@@ -377,8 +378,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     );
 
 
-
-    await gc.start(showUi: true);
+    print('Запуск алгоритма');
+    //await gc.start(showUi: true);
+    await gc.startParallel(10);
+    print('Стоп алгоритма');
 
   }
 

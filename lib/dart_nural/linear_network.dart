@@ -69,6 +69,7 @@ class SimpleLinearNeuralNetwork {
     _weights2matrix(startActivations);
   }
 
+
   /*factory SimpleLinearNeuralNetwork.from({
     required List<int> weights,
     required int input,
