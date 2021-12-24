@@ -335,7 +335,11 @@ class GameController {
     }
 
     assert(!currentUnit.isProtected);
-    assert(currentUnit.isMoving);
+    //assert(currentUnit.isMoving);
+    if (!currentUnit.isMoving) {
+      print('asd');
+      throw Exception();
+    }
     assert(!currentUnit.isEmpty());
     units[currentActiveCellIndex!] =
         units[currentActiveCellIndex!].copyWith(isWaiting: true);

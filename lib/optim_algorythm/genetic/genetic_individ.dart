@@ -200,3 +200,8 @@ class GeneticIndivid {
     );
   }
 }
+
+/// Склонность мутаций того или иного индвивида
+class IndividGenomeConfig {
+
+}

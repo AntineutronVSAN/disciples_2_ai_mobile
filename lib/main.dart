@@ -54,7 +54,8 @@ class MyApp extends StatelessWidget {
                   initiativeShuffler: InitiativeShuffler(
                       randomExponentialDistribution:
                           RandomExponentialDistribution()),
-                ), aiController: AiController()),
+                ),
+                aiController: AiController()),
             child: BlocBuilder<GameBloc, GameState>(
               builder: (context, state) {
                 return MyHomePage();
@@ -89,7 +90,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     final bloc = context.read<GameBloc>();
 
     return SafeArea(
@@ -104,7 +104,6 @@ class _MyHomePageState extends State<MyHomePage> {
               _getHeader(context),
               if (bloc.state.warScreenState == WarScreenState.eve)
                 _getGeneticInformation(bloc),
-
               const SizedBox(
                 height: 30,
               ),
@@ -122,26 +121,29 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _getGeneticInformation(GameBloc bloc) {
-
     return Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: Text('Fitness - ${bloc.state.populationFitness.toStringAsFixed(4)}',
-                style: const TextStyle(fontSize: 20.0),),
+      padding: const EdgeInsets.all(10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Text(
+              'Fitness - ${bloc.state.populationFitness.toStringAsFixed(4)}',
+              style: const TextStyle(fontSize: 20.0, color: Colors.white),
             ),
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: Text('Generation - ${bloc.state.currentGeneration}', style: const TextStyle(fontSize: 20.0),),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Text(
+              'Generation - ${bloc.state.currentGeneration}',
+              style: const TextStyle(fontSize: 20.0, color: Colors.white),
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
     );
-
   }
 
   Widget _getHeader(BuildContext context) {
@@ -155,10 +157,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 text: 'Start PVP',
                 onPressed: () => BlocProvider.of<GameBloc>(context)
                     .add(OnPVPStartedEvent())),
-            _getTextButton(text: 'Start PVE', onPressed: () => BlocProvider.of<GameBloc>(context)
-                .add(OnPVEStartedEvent())),
-            _getTextButton(text: 'Start EVE', onPressed: () => BlocProvider.of<GameBloc>(context)
-                .add(OnEVEStartedEvent())),
+            _getTextButton(
+                text: 'Start PVE',
+                onPressed: () => BlocProvider.of<GameBloc>(context)
+                    .add(OnPVEStartedEvent())),
+            _getTextButton(
+                text: 'Start EVE',
+                onPressed: () => BlocProvider.of<GameBloc>(context)
+                    .add(OnEVEStartedEvent())),
             _getTextButton(
                 text: 'Reset',
                 onPressed: () {
@@ -218,7 +224,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _getCell(
       BuildContext context, GameState state, int cellNumber, GameBloc bloc) {
-
     final unit = state.units[cellNumber];
 
     final maxHp = unit.maxHp;
@@ -232,7 +237,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final hasDebuff = unit.damageLower || unit.initLower;
     final busted = unit.damageBusted;
-
 
     final scaleFactor = (curHp / maxHp - 1.0) < 0
         ? -(curHp / maxHp - 1.0)
@@ -249,8 +253,10 @@ class _MyHomePageState extends State<MyHomePage> {
       unitHpColor = Color.alphaBlend(unitHpColor.withOpacity(0.5), Colors.grey);
     }
     if (petrified) {
-      damageColor = Color.alphaBlend(damageColor.withOpacity(0.5), Colors.brown);
-      unitHpColor = Color.alphaBlend(unitHpColor.withOpacity(0.5), Colors.brown);
+      damageColor =
+          Color.alphaBlend(damageColor.withOpacity(0.5), Colors.brown);
+      unitHpColor =
+          Color.alphaBlend(unitHpColor.withOpacity(0.5), Colors.brown);
     }
     if (poisoned) {
       damageColor =
@@ -285,9 +291,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: unit.isEmpty()
-                      ? Colors.white
-                      : unitHpColor,
+                  color: unit.isEmpty() ? Colors.white : unitHpColor,
                   border: state.units[cellNumber].isMoving
                       ? Border.all(color: Colors.teal, width: 5)
                       : null,
@@ -305,8 +309,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: AnimatedContainer(
                   margin: const EdgeInsets.all(8.0),
                   width: unit.isMoving ? 120.0 : 100.0,
-                  height: scaleFactor *
-                      (unit.isMoving ? 120.0 : 100.0),
+                  height: scaleFactor * (unit.isMoving ? 120.0 : 100.0),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     color: damageColor,
@@ -394,17 +397,17 @@ class _MyHomePageState extends State<MyHomePage> {
                       : const SizedBox.shrink(),
                   unit.petrified
                       ? SvgIcon(
-                    asset: "ic_unit_petrify.svg",
-                    color: Colors.brown[900],
-                    size: 17.0,
-                  )
+                          asset: "ic_unit_petrify.svg",
+                          color: Colors.brown[900],
+                          size: 17.0,
+                        )
                       : const SizedBox.shrink(),
                   busted
                       ? SvgIcon(
-                    asset: "ic_unit_butsed.svg",
-                    color: Colors.green[900],
-                    size: 17.0,
-                  )
+                          asset: "ic_unit_butsed.svg",
+                          color: Colors.green[900],
+                          size: 17.0,
+                        )
                       : const SizedBox.shrink(),
                 ],
               ),
@@ -428,36 +431,42 @@ class _MyHomePageState extends State<MyHomePage> {
                         fontWeight: FontWeight.bold),
                   ),
                   if (unit.unitAttack.damage > 0)
-                    RichText(text: TextSpan(
-                      children: [
-                        if (unit.unitAttack.damage > 0)
-                          TextSpan(
-                              text: 'DMG ${unit.unitAttack.firstDamage}',
-                              style: GameStyles.getUnitShortDescriptionStyle()),
-                        if (unit.unitAttack.firstDamage - unit.unitAttack.damage != 0)
-                          TextSpan(
-                              text: ' ${unit.unitAttack.firstDamage - unit.unitAttack.damage > 0 ? '- ' : '+ '} '
-                                  '${((unit.unitAttack.firstDamage - unit.unitAttack.damage).abs())}',
-                              style: GameStyles.getUnitShortDescriptionDebuffStyle()),
-                        if ((unit.unitAttack2?.damage ?? 0) > 0)
-                          TextSpan(
-                              text: ' / ${(unit.unitAttack2?.firstDamage ?? '')}',
-                              style: GameStyles.getUnitShortDescriptionStyle()),
-
-                  ])),
+                    RichText(
+                        text: TextSpan(children: [
+                      if (unit.unitAttack.damage > 0)
+                        TextSpan(
+                            text: 'DMG ${unit.unitAttack.firstDamage}',
+                            style: GameStyles.getUnitShortDescriptionStyle()),
+                      if (unit.unitAttack.firstDamage -
+                              unit.unitAttack.damage !=
+                          0)
+                        TextSpan(
+                            text:
+                                ' ${unit.unitAttack.firstDamage - unit.unitAttack.damage > 0 ? '- ' : '+ '} '
+                                '${((unit.unitAttack.firstDamage - unit.unitAttack.damage).abs())}',
+                            style: GameStyles
+                                .getUnitShortDescriptionDebuffStyle()),
+                      if ((unit.unitAttack2?.damage ?? 0) > 0)
+                        TextSpan(
+                            text: ' / ${(unit.unitAttack2?.firstDamage ?? '')}',
+                            style: GameStyles.getUnitShortDescriptionStyle()),
+                    ])),
                   if (unit.unitAttack.firstInitiative > 0)
-                    RichText(text: TextSpan(
-                        children: [
-                          if (unit.unitAttack.firstInitiative > 0)
-                            TextSpan(
-                                text: 'INI ${unit.unitAttack.firstInitiative}',
-                                style: GameStyles.getUnitShortDescriptionStyle()),
-                          if (unit.unitAttack.firstInitiative - unit.unitAttack.initiative != 0)
-                            TextSpan(
-                                text: ' - ${unit.unitAttack.firstInitiative - unit.unitAttack.initiative}',
-                                style: GameStyles.getUnitShortDescriptionDebuffStyle()),
-                        ])),
-
+                    RichText(
+                        text: TextSpan(children: [
+                      if (unit.unitAttack.firstInitiative > 0)
+                        TextSpan(
+                            text: 'INI ${unit.unitAttack.firstInitiative}',
+                            style: GameStyles.getUnitShortDescriptionStyle()),
+                      if (unit.unitAttack.firstInitiative -
+                              unit.unitAttack.initiative !=
+                          0)
+                        TextSpan(
+                            text:
+                                ' - ${unit.unitAttack.firstInitiative - unit.unitAttack.initiative}',
+                            style: GameStyles
+                                .getUnitShortDescriptionDebuffStyle()),
+                    ])),
                 ],
               ),
             ),

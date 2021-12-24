@@ -201,6 +201,76 @@ class GeneticController {
         index: request.subListIndex, fitness: newFitness);
   }
 
+  /// Провести бой индивида и показать процесс боя в UI
+  Future<void> startIndividBattle({
+    required List<Unit> unitsCopies,
+    required GeneticIndivid ind,
+    required AiController defaultController,
+    required GameController gameController,
+    required UpdateStateContext context,
+    required bool individIsTopTeam,
+  }) async {
+    print('Проводится бой индивида. Его приспособленность - ${ind.fitness}');
+    final units = List.generate(
+        unitsCopies.length, (index) => unitsCopies[index].copyWith());
+
+    final individPlayer = AiController();
+
+    defaultController.init(units);
+    individPlayer.init(units, nn: ind.nn);
+    gameController.init(units);
+    final response = gameController.startGame();
+    var currentActiveCellIndex = response.activeCell;
+    var endGame = false;
+
+    while (true) {
+      if (gameController.currentRound > 100) {
+        break;
+      }
+      final isTopTeam = checkIsTopTeam(currentActiveCellIndex!);
+      if (isTopTeam && individIsTopTeam) {
+        // Ходит индивид
+        final actions = individPlayer.getAction(currentActiveCellIndex);
+        bool success = false;
+        for (var a in actions) {
+          a = a.copyWith(context: context);
+          final r = await gameController.makeAction(a);
+          if (r.success) {
+            success = true;
+            currentActiveCellIndex = r.activeCell;
+            endGame = r.endGame;
+            break;
+          }
+        }
+        assert(success);
+        if (endGame) {
+          break;
+        }
+      } else {
+        // Ходит другой ИИ (в будущем может быть другой индивид)
+        final actions = defaultController.getAction(currentActiveCellIndex);
+        bool success = false;
+        for (var a in actions) {
+          a = a.copyWith(context: context);
+          final r = await gameController.makeAction(a);
+          if (r.success) {
+            success = true;
+            currentActiveCellIndex = r.activeCell;
+            endGame = r.endGame;
+            break;
+          }
+        }
+        assert(success);
+
+        if (endGame) {
+          break;
+        }
+      }
+    }
+    gameController.reset();
+
+  }
+
   Future<void> startParallel(int isolatesCount) async {
     const bool neuralIndividIsTopTeam = true;
     for (var generation = 0; generation < generationCount; generation++) {
@@ -280,40 +350,19 @@ class GeneticController {
         }
       }
 
-      // Мутации кросс и обновление
-      print('Селекция ...');
-      _makeSelection();
-      print('Мутации ...');
-      for (var i = 0; i < 5; i++) {
-        print(i);
-        _mutateRandom();
-      }
-      print('Кросс ...');
-      for (var i = 0; i < 5; i++) {
-        print(i);
-        _cross();
-      }
-    }
+      _sortIndivids();
+      // Показать в UI бой лучшего индивида
+      await startIndividBattle(
+          unitsCopies: List.generate(
+              unitsCopies.length, (index) => unitsCopies[index].copyWith()),
+          ind: individs[0],
+          defaultController: aiController,
+          gameController: gameController,
+          context: updateStateContext,
+          individIsTopTeam: true);
 
-    /*for(var i=0; i<isolatesCount; i++) {
-      final sum = compute(_set, i).then((value) {
-        insolateCoplete[value] = true;
-      });
+      _startGeneticProcess();
     }
-
-    print('Засыпаем');
-    while (true) {
-      if (insolateCoplete.any((element) => !element)) {
-        await Future.delayed(const Duration(seconds: 1));
-        continue;
-      }
-      break;
-    }
-    print('Просыпаемся');*/
-    // Освобождение ресурсов!
-    /*for (var isolate in isolates) {
-      isolate.kill(priority: Isolate.immediate);
-    }*/
   }
 
   Future<void> start({bool showUi = false}) async {
@@ -446,18 +495,27 @@ class GeneticController {
         gameController.reset();
       }
 
-      // Мутации кросс и обновление
-      //print('Селекция ...');
-      _makeSelection();
-      //print('Мутации ...');
-      for (var i = 0; i < 10; i++) {
-       // print(i);
-        _mutateRandom();
-      }
-      //print('Кросс ...');
-      for (var i = 0; i < 10; i++) {
-       // print(i);
-        _cross();
+      _startGeneticProcess();
+    }
+  }
+
+  void _startGeneticProcess() {
+    // Мутации кросс и обновление
+    print('Селекция ...');
+    _makeSelection();
+    print('Мутации ...');
+    for (var i = 0; i < 10; i++) {
+      _mutateRandom();
+    }
+    print('Кросс ...');
+    // Юниты отсортированы, делаем кросс лушчего
+    _crossUnitByIndex(bestIndex: 0, times: 2);
+    _crossUnitByIndex(bestIndex: 1, times: 2);
+    for (var i = 0; i < 10; i++) {
+      // print(i);
+      final newInd = _cross();
+      if (newInd != null) {
+        individs.add(newInd);
       }
     }
   }
@@ -481,9 +539,30 @@ class GeneticController {
     individs[randomIndex].mutate();
   }
 
-  GeneticIndivid _cross() {
+  _crossUnitByIndex({int? times, required int bestIndex}) {
+
+    int index=0;
+    while(index < (times ?? 1)) {
+      final randomIndex1 = random.nextInt(individs.length);
+      // Сам с собой не кроссится
+      if (randomIndex1 == bestIndex) {
+        continue;
+      }
+      individs.add(individs[bestIndex].cross(individs[randomIndex1]));
+      index++;
+    }
+
+  }
+
+  GeneticIndivid? _cross() {
     final randomIndex1 = random.nextInt(individs.length);
     final randomIndex2 = random.nextInt(individs.length);
+
+    if (randomIndex1 == randomIndex2) {
+      print("Кросс не удался");
+      return null;
+    }
+
     final newInd = individs[randomIndex1].cross(individs[randomIndex2]);
     newInd.mutate();
     return newInd;
