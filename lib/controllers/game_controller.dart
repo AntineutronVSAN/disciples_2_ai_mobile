@@ -391,7 +391,7 @@ class GameController {
     }
     _sortUnitsByInitiative();
     currentRound += 1;
-    print('Новый раунд - $currentRound');
+    //print('Новый раунд - $currentRound');
     return true;
   }
 

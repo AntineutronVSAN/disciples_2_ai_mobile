@@ -6,7 +6,7 @@ part of 'attack.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-UnitAttack _$UnitAttackFromJson(Map<String, dynamic> json) => UnitAttack(
+UnitAttack _$UnitAttackFromJson(Map json) => UnitAttack(
       power: json['power'] as int,
       heal: json['heal'] as int,
       damage: json['damage'] as int,

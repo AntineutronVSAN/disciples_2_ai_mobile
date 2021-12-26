@@ -83,14 +83,12 @@ import 'package:d2_ai_v2/controllers/game_controller.dart';
 import 'package:d2_ai_v2/dart_nural/linear_network.dart';
 import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
+import 'package:d2_ai_v2/optim_algorythm/genetic/genetic_checkpoint.dart';
+import 'package:d2_ai_v2/optim_algorythm/genetic/genetic_individ.dart';
+import 'package:d2_ai_v2/providers/file_provider.dart';
 import 'package:ml_linalg/linalg.dart';
 
-const int gameInfoVectorLength = 1;
-const int unitVectorLength = 15;
-const int attackVectorLength = 37;
-const int attack2VectorLength = 37;
-const int cellsCount = 12;
-const int actionsCount = 14;
+import '../const.dart';
 
 
 class AiController {
@@ -103,21 +101,34 @@ class AiController {
   /// Игровые механики изменяют этих юнитов
   late List<Unit> unitsRefs;
 
+  void initFromIndivid(List<Unit> units, GeneticIndivid ind) {
+    linearNN = ind.nn;
+    unitsRefs = units;
+    inited = true;
+  }
+
+  Future<void> initFromFile(List<Unit> units, String filePath) async {
+
+    final fileProvider = FileProvider();
+    await fileProvider.init();
+    final checkPoint = GeneticAlgorithmCheckpoint.fromJson(await fileProvider.getDataByFileName(filePath));
+
+    linearNN = checkPoint.individs[0].nn;
+    unitsRefs = units;
+    inited = true;
+  }
 
   void init(List<Unit> units, {SimpleLinearNeuralNetwork? nn}) {
-
     if (nn == null) {
       linearNN = SimpleLinearNeuralNetwork(
-          input: gameInfoVectorLength * 12 + (unitVectorLength + attackVectorLength + attack2VectorLength)*12,
+          input: neuralNetworkInputVectorLength,
           output: actionsCount,
-          hidden: 300,
-          layers: 5
+          hidden: neuralNetworkHiddenCount,
+          layers: neuralNetworkHiddenLayersCount
       );
     } else {
       linearNN = nn;
     }
-
-
     unitsRefs = units;
     inited = true;
   }

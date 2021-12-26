@@ -7,11 +7,13 @@ import 'package:d2_ai_v2/dart_nural/linear_network.dart';
 import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/optim_algorythm/genetic/genetic_controller.dart';
+import 'package:d2_ai_v2/providers/file_provider.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
 import 'package:d2_ai_v2/utils/cell_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
+import '../const.dart';
 import 'events.dart';
 
 import 'dart:math';
@@ -104,7 +106,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     // todo
 
     List<String> unitsNames = [
-      /*'Костяная госпожа',
+      /*'Тень',
       'Патриарх',
       'Верховный вампир',
       'Воин-призрак',
@@ -113,10 +115,24 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
       'Мастер клинка',
       'Мастер клинка',
-      'Паладин',
+      'Мастер клинка',
       'Ассасин',
       'Покровитель',
       'Белый маг',*/
+
+      /*'Охотник',
+      'Оракул',
+      'Охотник',
+      '',
+      'Вассал леса',
+      '',
+
+      'Огр',
+      '',
+      'Кентавр-латник',
+      'Гоблин-лучник',
+      'Гоблин-траппер',
+      '',*/
 
       'Рейнджер',
       'Жрец',
@@ -304,7 +320,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     final currentActiveCell = response.activeCell;
     assert(currentActiveCell != null);
 
-    aiController.init(_warUnitsCopies);
+    //aiController.init(_warUnitsCopies);
+    await aiController.initFromFile(_warUnitsCopies, 'default_ai_controller');
 
     emit(state.copyWith(
       warScreenState: WarScreenState.pve,
@@ -318,6 +335,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   Future<void> _handleAiMove(ResponseAction action, Emitter emit) async {
+    if (action.endGame) {
+      return;
+    }
     print('-------- Ходит AI');
     final requests = aiController.getAction(action.activeCell!);
     var success = false;
@@ -332,6 +352,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
             state: state,
       ));
       final response = await controller.makeAction(r);
+      if (response.endGame) {
+        success = response.success;
+        break;
+      }
       if (response.success) {
         success = true;
         emit(state.copyWith(
@@ -360,6 +384,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
     emit(state.copyWith(warScreenState: WarScreenState.eve));
 
+    // /data/data/com.example.d2_ai_v2/app_flutter/2021-12-24 16:42:16.893313.json
+
     final gc = GeneticController(
         gameController: controller,
         aiController: aiController,
@@ -368,19 +394,21 @@ class GameBloc extends Bloc<GameEvent, GameState> {
             state: state
         ),
         generationCount: 10000,
-        maxIndividsCount: 50,
-        input: gameInfoVectorLength * 12 + (unitVectorLength + attackVectorLength + attack2VectorLength)*12,
+        maxIndividsCount: 10,
+        input: neuralNetworkInputVectorLength,
         output: actionsCount,
         hidden: 100,
         layers: 10,
         units: _warUnitsCopies,
         individController: AiController(),
+        fileProvider: FileProvider(),
     );
 
-
+    // Инициализация с чекпоинта
+    // /data/data/com.example.d2_ai_v2/app_flutter/2021-12-26 10:25:37.634445__Gen-39.json
+    gc.initFromCheckpoint('2021-12-26 10:25:37.634445__Gen-39');
     print('Запуск алгоритма');
-    //await gc.start(showUi: true);
-    await gc.startParallel(4);
+    await gc.startParallel(5, showBestBattle: false);
     print('Стоп алгоритма');
 
   }

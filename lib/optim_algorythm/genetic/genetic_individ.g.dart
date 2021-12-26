@@ -6,8 +6,7 @@ part of 'genetic_individ.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-GeneticIndivid _$GeneticIndividFromJson(Map<String, dynamic> json) =>
-    GeneticIndivid(
+GeneticIndivid _$GeneticIndividFromJson(Map json) => GeneticIndivid(
       input: json['input'] as int,
       output: json['output'] as int,
       hidden: json['hidden'] as int,
@@ -24,6 +23,9 @@ GeneticIndivid _$GeneticIndividFromJson(Map<String, dynamic> json) =>
       activations: (json['activations'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+      fitnessHistory: (json['fitnessHistory'] as List<dynamic>)
+          .map((e) => (e as num).toDouble())
+          .toList(),
     );
 
 Map<String, dynamic> _$GeneticIndividToJson(GeneticIndivid instance) =>
@@ -32,6 +34,7 @@ Map<String, dynamic> _$GeneticIndividToJson(GeneticIndivid instance) =>
       'biases': instance.biases,
       'activations': instance.activations,
       'fitness': instance.fitness,
+      'fitnessHistory': instance.fitnessHistory,
       'needCalculate': instance.needCalculate,
       'nnInited': instance.nnInited,
       'input': instance.input,

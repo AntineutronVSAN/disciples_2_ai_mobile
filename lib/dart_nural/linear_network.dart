@@ -19,7 +19,7 @@ class SimpleLinearNeuralNetwork {
   final List<double> biases = [];
 
   /// Список активационных функций слоя
-  final List<String> _layerActivations = [];
+  final List<String> layerActivations = [];
 
   final int input;
   final int output;
@@ -108,9 +108,9 @@ class SimpleLinearNeuralNetwork {
         }
         _weightsMatrix.add(Matrix.fromList(currentMatrix));
         if (startActivations != null) {
-          _layerActivations.add(startActivations[i]);
+          layerActivations.add(startActivations[i]);
         } else {
-          _layerActivations.add('sigmoid');
+          layerActivations.add('sigmoid');
         }
 
 
@@ -127,7 +127,7 @@ class SimpleLinearNeuralNetwork {
           currentMatrix.add(currentMatrixRow);
         }
         _weightsMatrix.add(Matrix.fromList(currentMatrix));
-        _layerActivations.add('softmax');
+        layerActivations.add('softmax');
 
 
       } else {
@@ -145,9 +145,9 @@ class SimpleLinearNeuralNetwork {
         }
         _weightsMatrix.add(Matrix.fromList(currentMatrix));
         if (startActivations != null) {
-          _layerActivations.add(startActivations[i]);
+          layerActivations.add(startActivations[i]);
         } else {
-          _layerActivations.add('sigmoid');
+          layerActivations.add('sigmoid');
         }
       }
 
@@ -182,7 +182,7 @@ class SimpleLinearNeuralNetwork {
       final curVectorBiases = biases.sublist(biasesCaretPos, biasesCaretPos + _weightsMatrix[i].rows.length);
       biasesCaretPos += _weightsMatrix[i].rows.length;
       currentMatrix += Matrix.fromColumns([Vector.fromList(curVectorBiases)]);
-      currentMatrix = currentMatrix.mapColumns((column) => _activationFunctionFromString(_layerActivations[i])(column));
+      currentMatrix = currentMatrix.mapColumns((column) => _activationFunctionFromString(layerActivations[i])(column));
 
     }
     final outputVector = currentMatrix.transpose()[0];

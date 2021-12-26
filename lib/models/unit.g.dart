@@ -6,7 +6,7 @@ part of 'unit.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Unit _$UnitFromJson(Map<String, dynamic> json) => Unit(
+Unit _$UnitFromJson(Map json) => Unit(
       isDead: json['isDead'] as bool,
       isMoving: json['isMoving'] as bool,
       isProtected: json['isProtected'] as bool,
@@ -18,21 +18,22 @@ Unit _$UnitFromJson(Map<String, dynamic> json) => Unit(
       unitWarId: json['unitWarId'] as String,
       isDoubleAttack: json['isDoubleAttack'] as bool,
       currentAttack: json['currentAttack'] as int? ?? 0,
-      unitAttack:
-          UnitAttack.fromJson(json['unitAttack'] as Map<String, dynamic>),
+      unitAttack: UnitAttack.fromJson(
+          Map<String, dynamic>.from(json['unitAttack'] as Map)),
       unitAttack2: json['unitAttack2'] == null
           ? null
-          : UnitAttack.fromJson(json['unitAttack2'] as Map<String, dynamic>),
+          : UnitAttack.fromJson(
+              Map<String, dynamic>.from(json['unitAttack2'] as Map)),
       uiInfo: json['uiInfo'] as String? ?? '',
       retreat: json['retreat'] as bool? ?? false,
       armor: json['armor'] as int,
       paralyzed: json['paralyzed'] as bool? ?? false,
       attacks: (json['attacks'] as List<dynamic>)
-          .map((e) => UnitAttack.fromJson(e as Map<String, dynamic>))
+          .map((e) => UnitAttack.fromJson(Map<String, dynamic>.from(e as Map)))
           .toList(),
-      attacksMap: (json['attacksMap'] as Map<String, dynamic>).map(
+      attacksMap: (json['attacksMap'] as Map).map(
         (k, e) => MapEntry($enumDecode(_$AttackClassEnumMap, k),
-            UnitAttack.fromJson(e as Map<String, dynamic>)),
+            UnitAttack.fromJson(Map<String, dynamic>.from(e as Map))),
       ),
       poisoned: json['poisoned'] as bool? ?? false,
       blistered: json['blistered'] as bool? ?? false,
@@ -56,11 +57,11 @@ Map<String, dynamic> _$UnitToJson(Unit instance) => <String, dynamic>{
       'unitWarId': instance.unitWarId,
       'isDoubleAttack': instance.isDoubleAttack,
       'currentAttack': instance.currentAttack,
-      'unitAttack': instance.unitAttack,
-      'unitAttack2': instance.unitAttack2,
-      'attacks': instance.attacks,
+      'unitAttack': instance.unitAttack.toJson(),
+      'unitAttack2': instance.unitAttack2?.toJson(),
+      'attacks': instance.attacks.map((e) => e.toJson()).toList(),
       'attacksMap': instance.attacksMap
-          .map((k, e) => MapEntry(_$AttackClassEnumMap[k], e)),
+          .map((k, e) => MapEntry(_$AttackClassEnumMap[k], e.toJson())),
       'uiInfo': instance.uiInfo,
       'retreat': instance.retreat,
       'armor': instance.armor,

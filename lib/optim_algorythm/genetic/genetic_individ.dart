@@ -19,6 +19,9 @@ class GeneticIndivid {
   /// Приспособленность
   double fitness;
 
+  /// История приспособленностей
+  List<double> fitnessHistory;
+
   /// Нужно ли пересчитывать приспособленность
   bool needCalculate;
 
@@ -46,6 +49,7 @@ class GeneticIndivid {
     this.needCalculate = true,
     this.nnInited = false,
     this.activations,
+    required this.fitnessHistory,
   }) {
     // Создание нейронки
     final newNN = SimpleLinearNeuralNetwork(
@@ -59,6 +63,7 @@ class GeneticIndivid {
     );
     weights = newNN.weights;
     biases = newNN.biases;
+    activations = newNN.layerActivations;
     nn = newNN;
   }
 
@@ -76,6 +81,7 @@ class GeneticIndivid {
     layers,
     nnInited,
     needCalculate,
+    fitnessHistory,
   }) {
     return GeneticIndivid(
       input: input ?? this.input,
@@ -87,6 +93,7 @@ class GeneticIndivid {
       activations: activations ?? this.activations,
       nnInited: nnInited ?? this.nnInited,
       needCalculate: needCalculate ?? this.needCalculate,
+        fitnessHistory: fitnessHistory ?? this.fitnessHistory,
     );
   }
 
@@ -109,11 +116,25 @@ class GeneticIndivid {
       } else if (newRandomValue >= 25 && newRandomValue < 50) {
         weights![ind] = weights![ind] < 0.5 ? 1.0 : 1.0;
       } else if (newRandomValue >= 50 && newRandomValue < 75) {
-        weights![ind] = weights![ind] += random.nextDouble();
+        weights![ind] = weights![ind] += random.nextDouble()*20.0-10.0;
       } else {
-        weights![ind] = weights![ind] -= random.nextDouble();
+        weights![ind] = weights![ind] -= random.nextDouble()*20.0-10.0;
       }
     }
+
+    // Мутации активационной функции
+    if (random.nextInt(100) > 50) {
+      final randomLayerIndex = random.nextInt(layers-2);
+      final randomVal = random.nextInt(100);
+      if (randomVal >= 0 && randomVal < 33) {
+        activations![randomLayerIndex] = 'sigmoid';
+      } else if (randomVal >= 33 && randomVal < 66) {
+        activations![randomLayerIndex] = 'softmax';
+      } else if (randomVal >= 66) {
+        activations![randomLayerIndex] = 'relu';
+      }
+    }
+
     for (var ind in biasWeightIndexes) {
 
       if (ind >= biases!.length) {
@@ -173,9 +194,9 @@ class GeneticIndivid {
         List.generate(weights!.length, (index) => weights![index]);
     final newBiasesList =
         List.generate(biases!.length, (index) => biases![index]);
-
+    final newActivationsList =
+      List.generate(activations!.length, (index) => activations![index]);
     // Новый индивид наследует с вероятность 25% ген менее приспособленного
-
     for (var ind in weightIndexes) {
       if (random.nextInt(100) > targetGenProp) {
         newWeightsList[ind] = target.weights![ind];
@@ -186,6 +207,11 @@ class GeneticIndivid {
         newBiasesList[ind] = target.biases![ind];
       }
     }
+    for (var i=0; i<activations!.length; i++) {
+      if (random.nextInt(100) > targetGenProp) {
+        newActivationsList[i] = target.activations![i];
+      }
+    }
 
     return GeneticIndivid(
       input: input,
@@ -194,9 +220,10 @@ class GeneticIndivid {
       layers: layers,
       weights: newWeightsList,
       biases: newBiasesList,
-      activations: activations,
+      activations: newActivationsList,
       needCalculate: true,
-      fitness: 0.0
+      fitness: 0.0,
+      fitnessHistory: [],
     );
   }
 }
