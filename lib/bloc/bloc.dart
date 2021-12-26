@@ -9,6 +9,7 @@ import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/optim_algorythm/genetic/genetic_controller.dart';
 import 'package:d2_ai_v2/providers/file_provider.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
+import 'package:d2_ai_v2/update_state_context/update_state_context.dart';
 import 'package:d2_ai_v2/utils/cell_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -321,7 +322,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     assert(currentActiveCell != null);
 
     //aiController.init(_warUnitsCopies);
-    await aiController.initFromFile(_warUnitsCopies, 'default_ai_controller');
+    await aiController.initFromFile(
+        _warUnitsCopies,
+        'default_ai_controller', FileProvider());
 
     emit(state.copyWith(
       warScreenState: WarScreenState.pve,
@@ -408,7 +411,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     // /data/data/com.example.d2_ai_v2/app_flutter/2021-12-26 10:25:37.634445__Gen-39.json
     gc.initFromCheckpoint('2021-12-26 10:25:37.634445__Gen-39');
     print('Запуск алгоритма');
-    await gc.startParallel(5, showBestBattle: false);
+    await gc.startParallel(5, showBestBattle: true);
     print('Стоп алгоритма');
 
   }
@@ -483,10 +486,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
 }
 
-class UpdateStateContext {
+/*class UpdateStateContext {
   Emitter emit;
   GameState state;
 
   UpdateStateContext({required this.emit, required this.state});
-}
+}*/
 

@@ -1,5 +1,4 @@
 import 'package:d2_ai_v2/models/unit.dart';
-import 'package:d2_ai_v2/utils/printer.dart';
 
 /*
 

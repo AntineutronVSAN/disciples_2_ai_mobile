@@ -3,7 +3,6 @@
 import 'dart:math';
 
 import 'package:d2_ai_v2/models/attack.dart';
-import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/utils/math_utils.dart';
 
 /// Класс отвечает за точность, так как она в игре довольно своеобразная

@@ -1,8 +1,8 @@
-import 'package:d2_ai_v2/bloc/bloc.dart';
 import 'package:d2_ai_v2/bloc/states.dart';
 import 'package:d2_ai_v2/controllers/power_controller.dart';
 import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
+import 'package:d2_ai_v2/update_state_context/update_state_context_base.dart';
 import 'package:d2_ai_v2/utils/cell_utils.dart';
 
 import 'damage_scatter.dart';
@@ -21,7 +21,7 @@ class AttackController {
       required this.damageScatter,
       required this.attackDurationController});
 
-  UpdateStateContext? updateStateContext;
+  UpdateStateContextBase? updateStateContext;
   List<Unit>? units;
 
   /// Обновить сосстояние UI, если необходимо и если объект предоставлен
@@ -29,10 +29,12 @@ class AttackController {
   Future<void> _onUpdate({int duration = 100}) async {
 
     if (updateStateContext != null && units != null) {
-      updateStateContext!
-          .emit(updateStateContext!.state.copyWith(units: units));
+      /*updateStateContext!
+          .emit(updateStateContext!.state.copyWith(units: units));*/
+      updateStateContext!.update(units: units);
 
-      switch(updateStateContext!.state.warScreenState) {
+      //switch(updateStateContext!.state.warScreenState) {
+      switch(updateStateContext!.getWarScreenState()) {
         case WarScreenState.eve:
           duration = 200;
           break;
@@ -55,7 +57,7 @@ class AttackController {
 
   Future<ResponseAction> applyAttack(
       int current, int target, List<Unit> units, ResponseAction responseAction,
-      {UpdateStateContext? updateStateContext, required Function(Unit unit) onAddUnit2Queue}) async {
+      {UpdateStateContextBase? updateStateContext, required Function(Unit unit) onAddUnit2Queue}) async {
     this.updateStateContext = updateStateContext;
     this.units = units;
     _onUnitAdd2Queue = onAddUnit2Queue;
@@ -73,7 +75,7 @@ class AttackController {
   // --------------- UNIT PREPROCESSING BEGIN ---------------
   /// Обработать юнита перед его ходом
   Future<bool> unitMovePreprocessing(int index, List<Unit> units,
-      {UpdateStateContext? updateStateContext,
+      {UpdateStateContextBase? updateStateContext,
         required bool waiting,
         required bool protecting,
         required bool retriting,
@@ -301,7 +303,7 @@ class AttackController {
   // --------------- UNIT POSTPROCESSING BEGIN ---------------
   /// Обработать юнита после хода
   Future<void> unitMovePostProcessing(int index, List<Unit> units,
-      {UpdateStateContext? updateStateContext,
+      {UpdateStateContextBase? updateStateContext,
         required bool waiting,
         required bool protecting,
         required bool retriting,

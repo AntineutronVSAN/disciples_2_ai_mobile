@@ -1,6 +1,6 @@
 import 'dart:collection';
-import 'package:d2_ai_v2/bloc/bloc.dart';
 import 'package:d2_ai_v2/models/unit.dart';
+import 'package:d2_ai_v2/update_state_context/update_state_context_base.dart';
 
 import 'attack_controller.dart';
 import 'initiative_shuffler.dart';
@@ -417,7 +417,7 @@ class GameController {
 class RequestAction {
   final int? currentCellIndex;
   final int? targetCellIndex;
-  final UpdateStateContext? context;
+  final UpdateStateContextBase? context;
 
   final ActionType type;
 

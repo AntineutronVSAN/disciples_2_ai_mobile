@@ -1,6 +1,4 @@
 
-import 'package:flutter/material.dart';
-
 extension IterableExtension<T> on Iterable<T> {
   T? firstWhereOrNull(bool Function(T element) test) {
     for (var element in this) {
@@ -10,6 +8,4 @@ extension IterableExtension<T> on Iterable<T> {
   }
 }
 
-extension on Color {
-  Color operator +(Color other) => Color.alphaBlend(this, other);
-}
+

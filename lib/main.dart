@@ -6,8 +6,10 @@ import 'package:d2_ai_v2/controllers/duration_controller.dart';
 import 'package:d2_ai_v2/controllers/power_controller.dart';
 import 'package:d2_ai_v2/models/providers.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
+import 'package:d2_ai_v2/run_genetic_algorithm.dart';
 import 'package:d2_ai_v2/styles.dart';
 import 'package:d2_ai_v2/utils/math_utils.dart';
+import 'package:d2_ai_v2/utils/color_extentions.dart';
 import 'package:d2_ai_v2/utils/svg_picture.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,8 +20,9 @@ import 'bloc/states.dart';
 import 'controllers/game_controller.dart';
 import 'controllers/initiative_shuffler.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  //runApp(const MyApp());
+  await startOnlyGeneticAlgorithm();
 }
 
 class MyApp extends StatelessWidget {

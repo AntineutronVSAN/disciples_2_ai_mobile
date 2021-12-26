@@ -85,8 +85,8 @@ import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/optim_algorythm/genetic/genetic_checkpoint.dart';
 import 'package:d2_ai_v2/optim_algorythm/genetic/genetic_individ.dart';
-import 'package:d2_ai_v2/providers/file_provider.dart';
-import 'package:ml_linalg/linalg.dart';
+import 'package:d2_ai_v2/providers/file_provider_base.dart';
+
 
 import '../const.dart';
 
@@ -107,9 +107,9 @@ class AiController {
     inited = true;
   }
 
-  Future<void> initFromFile(List<Unit> units, String filePath) async {
+  Future<void> initFromFile(List<Unit> units, String filePath, FileProviderBase fileProvider) async {
 
-    final fileProvider = FileProvider();
+    //final fileProvider = FileProvider(); // todo
     await fileProvider.init();
     final checkPoint = GeneticAlgorithmCheckpoint.fromJson(await fileProvider.getDataByFileName(filePath));
 
