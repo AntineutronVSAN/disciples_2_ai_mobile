@@ -20,11 +20,15 @@ import 'optim_algorythm/genetic/genetic_controller.dart';
 */
 
 
-void main() async {
-  await startOnlyGeneticAlgorithm();
+void main(List<String> arguments) async {
+  await startOnlyGeneticAlgorithm(arguments);
 }
 
-Future<void> startOnlyGeneticAlgorithm() async {
+Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
+  String? fromCheckpoint;
+  if (args.length == 1) {
+    fromCheckpoint = args[0];
+  }
   final GameRepository repository = GameRepository(
     gattacksProvider: GattacksProvider(),
     gunitsProvider: GunitsProvider(),
@@ -76,11 +80,11 @@ Future<void> startOnlyGeneticAlgorithm() async {
     ),
     aiController: AiController(),
     updateStateContext: null,
-    generationCount: 10000,
+    generationCount: 100000,
     maxIndividsCount: 20,
     input: neuralNetworkInputVectorLength,
     output: actionsCount,
-    hidden: 2000,
+    hidden: 100,
     layers: 5,
     units: units.map((e) => e.copyWith()).toList(),
     individController: AiController(),
@@ -90,7 +94,10 @@ Future<void> startOnlyGeneticAlgorithm() async {
 
   // Инициализация с чекпоинта
   // /data/data/com.example.d2_ai_v2/app_flutter/2021-12-26 10:25:37.634445__Gen-39.json
-  //gc.initFromCheckpoint('Gen-9');
+  if (fromCheckpoint != null) {
+    gc.initFromCheckpoint(fromCheckpoint);
+  }
+
   print('Запуск алгоритма');
   await gc.startParallel(10, showBestBattle: false, safeEveryEpochs: 100);
   print('Стоп алгоритма');

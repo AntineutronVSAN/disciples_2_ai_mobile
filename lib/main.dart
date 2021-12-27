@@ -9,7 +9,6 @@ import 'package:d2_ai_v2/repositories/game_repository.dart';
 import 'package:d2_ai_v2/run_genetic_algorithm.dart';
 import 'package:d2_ai_v2/styles.dart';
 import 'package:d2_ai_v2/utils/math_utils.dart';
-import 'package:d2_ai_v2/utils/color_extentions.dart';
 import 'package:d2_ai_v2/utils/svg_picture.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,8 +20,7 @@ import 'controllers/game_controller.dart';
 import 'controllers/initiative_shuffler.dart';
 
 void main() async {
-  //runApp(const MyApp());
-  await startOnlyGeneticAlgorithm();
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -164,10 +162,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 text: 'Start PVE',
                 onPressed: () => BlocProvider.of<GameBloc>(context)
                     .add(OnPVEStartedEvent())),
-            _getTextButton(
+            /*_getTextButton(
                 text: 'Start EVE',
                 onPressed: () => BlocProvider.of<GameBloc>(context)
-                    .add(OnEVEStartedEvent())),
+                    .add(OnEVEStartedEvent())),*/
             _getTextButton(
                 text: 'Reset',
                 onPressed: () {

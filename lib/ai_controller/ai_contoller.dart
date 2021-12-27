@@ -286,11 +286,12 @@ List<double> _vectorFromAttack(UnitAttack? atck) {
       break;
   }
 
+  // todo
   List<double> attackClasses = List.generate(25, (index) => 0.0);
   final atckIndex = atck.attackClass.index;
   attackClasses[atckIndex] = 1.0;
   result.addAll(attackClasses);
-
+  //result.add(atckIndex / 25.0);
   return result;
 }
 

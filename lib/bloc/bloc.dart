@@ -321,10 +321,13 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     final currentActiveCell = response.activeCell;
     assert(currentActiveCell != null);
 
+    final fp = FileProvider();
+    await fp.init();
+
     //aiController.init(_warUnitsCopies);
     await aiController.initFromFile(
         _warUnitsCopies,
-        'default_ai_controller', FileProvider());
+        'default_ai_controller', fp);
 
     emit(state.copyWith(
       warScreenState: WarScreenState.pve,

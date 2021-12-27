@@ -5,13 +5,15 @@ import 'package:ml_linalg/matrix.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'dart:math';
 
+import 'neural_base.dart';
+
 
 // https://pub.dev/packages/ml_linalg#matrix-operations-examples
 
 typedef Activation = Function(Vector v);
 
 
-class SimpleLinearNeuralNetwork {
+class SimpleLinearNeuralNetwork extends GameNeuralNetworkBase {
 
   final List<double> weights = [];
   final List<Matrix> _weightsMatrix = [];
@@ -156,7 +158,7 @@ class SimpleLinearNeuralNetwork {
     assert(caretPos == weights.length);
   }
 
-
+  @override
   List<double> forward(List<double> inputData) {
 
     assert(inputData.length == input, '${inputData.length} != $input');
@@ -195,29 +197,13 @@ class SimpleLinearNeuralNetwork {
   Activation _activationFunctionFromString(String str) {
     switch(str) {
       case 'sigmoid':
-        return _sigmoid;
+        return sigmoid;
       case 'softmax':
-        return _softmax;
+        return softmax;
       case 'relu':
-        return _relu;
+        return relu;
     }
     throw Exception('Неизвестная активация');
 
-  }
-
-  Vector _sigmoid(Vector inp) {
-    return inp.mapToVector((el) => (1 / (1 - pow(e, el))));
-  }
-
-  Vector _relu(Vector inp) {
-    return inp.mapToVector((el) => (el < 0.0 ? 0.0 : el));
-  }
-
-  Vector _softmax(Vector inp) {
-
-    final expVec = inp.mapToVector((value) => pow(e, value)*1.0);
-    final sum = expVec.sum();
-    final res = expVec / sum;
-    return res;
   }
 }

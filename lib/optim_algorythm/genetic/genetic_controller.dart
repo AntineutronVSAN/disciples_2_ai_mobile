@@ -92,7 +92,7 @@ class GeneticController {
     GeneticAlgorithmCheckpoint checkpoint =
         GeneticAlgorithmCheckpoint.fromJson(jsonData);
     individs.clear();
-    generation = checkpoint.currentGeneration;
+    generation = checkpoint.currentGeneration + 1;
     int index = 0;
     print('Поколение - $generation');
     for (var ind in checkpoint.individs) {
@@ -658,8 +658,8 @@ class GeneticController {
     }
     print('Кросс ...');
     // Юниты отсортированы, делаем кросс лушчего
-    _crossUnitByIndex(bestIndex: 0, times: 2);
-    _crossUnitByIndex(bestIndex: 1, times: 2);
+    //_crossUnitByIndex(bestIndex: 0, times: 1);
+    //_crossUnitByIndex(bestIndex: 1, times: 2);
     for (var i = 0; i < individs.length ~/ 5; i++) {
       // print(i);
       final newInd = _cross();
