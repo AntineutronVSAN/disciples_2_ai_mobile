@@ -200,4 +200,22 @@ class SimpleLinearNeuralNetwork extends GameNeuralNetworkBase {
     throw Exception('Неизвестная активация');
 
   }
+
+  @override
+  List<String> getActivations() {
+    // TODO: implement getActivations
+    throw UnimplementedError();
+  }
+
+  @override
+  List<double> getBiases() {
+    // TODO: implement getBiases
+    throw UnimplementedError();
+  }
+
+  @override
+  List<double> getWeights() {
+    // TODO: implement getWeights
+    throw UnimplementedError();
+  }
 }

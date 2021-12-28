@@ -213,4 +213,19 @@ class MultilayerPerceptron extends GameNeuralNetworkBase {
     return outputVector.toList();
   }
 
+  @override
+  List<String> getActivations() {
+    return _layerActivations;
+  }
+
+  @override
+  List<double> getBiases() {
+    return _biases;
+  }
+
+  @override
+  List<double> getWeights() {
+    return _weights;
+  }
+
 }

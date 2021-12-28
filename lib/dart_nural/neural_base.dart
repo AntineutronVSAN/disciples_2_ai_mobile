@@ -12,6 +12,10 @@ abstract class GameNeuralNetworkBase {
 
   final random = Random();
 
+  List<double> getWeights();
+  List<double> getBiases();
+  List<String> getActivations();
+
   Vector sigmoid(Vector inp) {
     return inp.mapToVector((el) => (1 / (1 - pow(e, el))));
   }

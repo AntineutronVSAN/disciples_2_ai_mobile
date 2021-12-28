@@ -1,5 +1,6 @@
 import 'package:collection/src/iterable_extensions.dart';
 import 'package:d2_ai_v2/ai_controller/ai_contoller.dart';
+import 'package:d2_ai_v2/dart_nural/linear_network_v2.dart';
 import 'package:d2_ai_v2/models/providers.dart';
 import 'package:d2_ai_v2/providers/dart_file_provider.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
@@ -25,7 +26,7 @@ import 'optim_algorythm/genetic/genetic_controller.dart';
 void main(List<String> arguments) async {
   //await startOnlyGeneticAlgorithm(arguments);
 
-  final nn = MultilayerPerceptron(
+  /*final nn = MultilayerPerceptron(
       input: 37,
       output: 100,
       layers: [128, 256, 256],
@@ -34,7 +35,23 @@ void main(List<String> arguments) async {
       startBiases: null,
       startActivations: null);
 
-  final result = nn.forward(List.generate(37, (index) => nn.getRandomValue()));
+  final result = nn.forward(List.generate(37, (index) => nn.getRandomValue()));*/
+
+  /*final nn = LinearNeuralNetworkV2(
+      input: 37,
+      output: 100,
+      layers: [128, 256, 256],
+      unitLayers: [37, 128, 256, 128],
+      initFrom: false,
+      unitVectorLength: 37,
+      startWeights: null,
+      startBiases: null,
+      startActivations: null,
+      unitStartWeights: null,
+      unitStartBiases: null,
+      unitStartActivations: null);
+
+  final result = nn.forward(List.generate(37*12, (index) => nn.getRandomValue()));*/
 
 }
 
