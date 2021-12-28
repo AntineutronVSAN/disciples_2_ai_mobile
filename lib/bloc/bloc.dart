@@ -384,7 +384,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   Future<void> _onEVEStarted(OnEVEStartedEvent event, Emitter emit) async {
 
-    for (var element in _units) {
+    /*for (var element in _units) {
       _warUnitsCopies.add(element.copyWith());
     }
 
@@ -415,7 +415,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     gc.initFromCheckpoint('2021-12-26 10:25:37.634445__Gen-39');
     print('Запуск алгоритма');
     await gc.startParallel(5, showBestBattle: true);
-    print('Стоп алгоритма');
+    print('Стоп алгоритма');*/
 
   }
 

@@ -202,19 +202,31 @@ class SimpleLinearNeuralNetwork extends GameNeuralNetworkBase {
   }
 
   @override
-  List<String> getActivations() {
+  Vector forwardRetVector(List<double> inputData) {
+    // TODO: implement forwardRetVector
+    throw UnimplementedError();
+  }
+
+  @override
+  Vector forwardRetVectorFromVector(Vector inputData) {
+    // TODO: implement forwardRetVectorFromVector
+    throw UnimplementedError();
+  }
+
+  @override
+  List<List<String>> getActivations() {
     // TODO: implement getActivations
     throw UnimplementedError();
   }
 
   @override
-  List<double> getBiases() {
+  List<List<double>> getBiases() {
     // TODO: implement getBiases
     throw UnimplementedError();
   }
 
   @override
-  List<double> getWeights() {
+  List<List<double>> getWeights() {
     // TODO: implement getWeights
     throw UnimplementedError();
   }

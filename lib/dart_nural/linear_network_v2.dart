@@ -102,52 +102,74 @@ class LinearNeuralNetworkV2 extends GameNeuralNetworkBase {
         startActivations: startActivations
     );
 
-    _unitWeights = unitNn.getWeights();
-    _unitBiases = unitNn.getBiases();
-    _unitActivations = unitNn.getActivations();
+    _unitWeights = unitNn.getWeights()[0];
+    _unitBiases = unitNn.getBiases()[0];
+    _unitActivations = unitNn.getActivations()[0];
 
-    _weights = nn.getWeights();
-    _biases = nn.getBiases();
-    _activations = nn.getActivations();
+    _weights = nn.getWeights()[0];
+    _biases = nn.getBiases()[0];
+    _activations = nn.getActivations()[0];
 
   }
 
   @override
   List<double> forward(List<double> inputData) {
     final List<Vector> unitNetworksOutput = [];
+    assert(inputData.length == cellsCount*unitVectorLength, "${inputData.length} != ${cellsCount*unitVectorLength}");
 
-    assert(inputData.length == cellsCount*unitVectorLength);
+    final inputVector = Vector.fromList(inputData);
 
+    //Stopwatch stopwatch = Stopwatch()..start();
     // Выходы нейронной сети, преобразующей юнитов
     for(var i=0; i<cellsCount; i++) {
-      final currentUnitVector = inputData.sublist(i*unitVectorLength, (i+1)*unitVectorLength);
-      unitNetworksOutput.add(Vector.fromList(unitNn.forward(currentUnitVector)));
+      //stopwatch.reset();
+      //final currentUnitVector = inputData.sublist(i*unitVectorLength, (i+1)*unitVectorLength);
+      final currentUnitVector = inputVector.subvector(i*unitVectorLength, (i+1)*unitVectorLength);
+
+      //print('Саблист ${stopwatch.elapsed}');
+      //stopwatch.reset();
+      unitNetworksOutput.add(unitNn.forwardRetVectorFromVector(currentUnitVector));
+      //print('Проход ${stopwatch.elapsed}');
     }
     // Выходы суммируются // todo Возможно что-то другое помимо суммы
     Vector sum = Vector.zero(unitLayers.last);
-
+    //print('Создание выходов нейронки ${stopwatch.elapsed}');
+    //stopwatch.reset();
     for(var i=0; i<cellsCount; i++) {
       sum += unitNetworksOutput[i];
     }
+    //print('Суммирование ${stopwatch.elapsed}');
 
+    //stopwatch.reset();
     final netOutput = nn.forward(sum.toList());
+    //print('Проход по второй нейронке ${stopwatch.elapsed}');
 
     return netOutput;
   }
 
   @override
-  List<String> getActivations() {
-    return <String>[..._unitActivations, ..._activations];
+  List<List<String>> getActivations() {
+    return <List<String>>[[..._unitActivations], [..._activations]];
+  }
+  @override
+  List<List<double>> getBiases() {
+    return <List<double>>[[..._unitBiases], [..._biases]];
+  }
+  @override
+  List<List<double>> getWeights() {
+    return <List<double>>[[..._unitWeights], [..._weights]];
+  }
+
+
+  @override
+  Vector forwardRetVector(List<double> inputData) {
+    // TODO: implement forwardRetVector
+    throw UnimplementedError();
   }
 
   @override
-  List<double> getBiases() {
-    return <double>[..._unitBiases, ..._biases];
+  Vector forwardRetVectorFromVector(Vector inputData) {
+    // TODO: implement forwardRetVectorFromVector
+    throw UnimplementedError();
   }
-
-  @override
-  List<double> getWeights() {
-    return <double>[..._unitWeights, ..._weights];
-  }
-
 }

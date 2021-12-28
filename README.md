@@ -15,4 +15,11 @@ For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
+# Generate toJson/fromJson models
 flutter pub run build_runner build --delete-conflicting-outputs
+
+# Profiling
+dart run --pause-isolates-on-start --observe main.dart
+
+# Compile
+dart compile exe lib\run_genetic_algorithm.dart

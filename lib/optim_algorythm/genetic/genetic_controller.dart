@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:isolate';
 import 'dart:math';
+import 'package:d2_ai_v2/dart_nural/linear_network_v2.dart';
+import 'package:d2_ai_v2/dart_nural/neural_base.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:d2_ai_v2/ai_controller/ai_contoller.dart';
 import 'package:d2_ai_v2/controllers/attack_controller.dart';
@@ -19,7 +21,8 @@ import 'package:d2_ai_v2/utils/cell_utils.dart';
 import 'package:d2_ai_v2/utils/math_utils.dart';
 //import 'package:flutter/foundation.dart' show compute;
 
-import 'genetic_individ.dart';
+import 'individs/genetic_individ.dart';
+import 'individs/genetic_individ_base.dart';
 
 part 'genetic_controller.g.dart';
 
@@ -31,7 +34,7 @@ class GeneticController {
   final UpdateStateContextBase? updateStateContext;
   final FileProviderBase fileProvider;
 
-  List<GeneticIndivid> individs = [];
+  List<GeneticIndividBase> individs = [];
 
   /// Копии началных юнитов
   final List<Unit> unitsCopies = [];
@@ -45,8 +48,12 @@ class GeneticController {
   // Характеристики индивида
   int input;
   int output;
-  int hidden;
-  int layers;
+
+  List<int> layers;
+  List<int> unitLayers;
+
+  int cellsCount;
+  int unitVectorLength;
 
   final random = Random();
 
@@ -58,8 +65,10 @@ class GeneticController {
     required this.maxIndividsCount,
     required this.input,
     required this.output,
-    required this.hidden,
     required this.layers,
+    required this.unitLayers,
+    required this.cellsCount,
+    required this.unitVectorLength,
     required List<Unit> units,
     required this.individController,
     required this.fileProvider,
@@ -69,12 +78,14 @@ class GeneticController {
       for (var i = 0; i < maxIndividsCount; i++) {
         print('Создаётся индивид $i');
         final newIndivid = GeneticIndivid(
-          input: input,
-          output: output,
-          hidden: hidden,
-          layers: layers,
-          fitnessHistory: [],
-        );
+            input: input,
+            output: output,
+            layers: layers,
+            unitLayers: unitLayers,
+            cellsCount: cellsCount,
+            unitVectorLength: unitVectorLength,
+            initFrom: false,
+            fitnessHistory: []);
         individs.add(newIndivid);
       }
       inited = true;
@@ -104,7 +115,9 @@ class GeneticController {
     input = checkpoint.input;
     output = checkpoint.output;
     layers = checkpoint.layers;
-    hidden = checkpoint.hidden;
+    unitLayers = checkpoint.unitLayers;
+    cellsCount = checkpoint.cellsCount;
+    unitVectorLength = checkpoint.unitVectorLength;
 
     inited = true;
   }
@@ -132,13 +145,14 @@ class GeneticController {
     int indIndex = 0;
 
     final List<double> newFitness = [];
-    final defaultNn = GeneticIndivid.fromJson(request.defaultNn).nn;
+    final defaultNn = GeneticIndivid.fromJson(request.defaultNn).nn!;
     for (var ind
         in request.individs.map((e) => GeneticIndivid.fromJson(e)).toList()) {
       final units = List.generate(
           firstUnits.length, (index) => firstUnits[index].copyWith());
+
       aiController.init(units, nn: defaultNn);
-      individController.init(units, nn: ind.nn);
+      individController.init(units, nn: ind.nn!);
 
       gameController.init(units);
       final response = gameController.startGame();
@@ -233,20 +247,22 @@ class GeneticController {
   /// Провести бой индивида и показать процесс боя в UI
   Future<void> startIndividBattle({
     required List<Unit> unitsCopies,
-    required GeneticIndivid ind,
+    required GeneticIndividBase ind,
     required AiController defaultController,
     required GameController gameController,
     required UpdateStateContextBase context,
     required bool individIsTopTeam,
+    required GameNeuralNetworkBase defaultNn,
   }) async {
-    print('Проводится бой индивида. Его приспособленность - ${ind.fitness}');
+    print(
+        'Проводится бой индивида. Его приспособленность - ${ind.getFitness()}');
     final units = List.generate(
         unitsCopies.length, (index) => unitsCopies[index].copyWith());
 
     final individPlayer = AiController();
 
-    defaultController.init(units);
-    individPlayer.init(units, nn: ind.nn);
+    defaultController.init(units, nn: defaultNn);
+    individPlayer.init(units, nn: ind.getNn());
     gameController.init(units);
     final response = gameController.startGame();
     var currentActiveCellIndex = response.activeCell;
@@ -304,10 +320,10 @@ class GeneticController {
     const bool neuralIndividIsTopTeam = true;
 
     // Подгружается нейронка, которая будет управлять дефолтным контроллером
-    await fileProvider.init();
+    /*await fileProvider.init();
     final checkPoint = GeneticAlgorithmCheckpoint.fromJson(
         await fileProvider.getDataByFileName('default_ai_controller'));
-    final defaultIndivid = checkPoint.individs[0];
+    final defaultIndivid = checkPoint.individs[0];*/
 
     for (generation; generation < generationCount; generation++) {
       print('Поколение - $generation');
@@ -322,16 +338,15 @@ class GeneticController {
       ));*/
       updateStateContext?.update(
         currentGeneration: generation,
-        populationFitness:
-            List.generate(individs.length, (index) => individs[index].fitness)
-                    .sum /
-                individs.length,
+        populationFitness: List.generate(
+                individs.length, (index) => individs[index].getFitness()).sum /
+            individs.length,
       );
 
       // Индивиды делятся на несколько частей по числу потоков
       final individsStep = individs.length ~/ isolatesCount;
       final individsStepRemainder = individs.length % isolatesCount;
-      List<List<GeneticIndivid>> individsPiece = [];
+      List<List<GeneticIndividBase>> individsPiece = [];
       int currentCaterPos = 0;
       for (var i = 0; i < isolatesCount; i++) {
         individsPiece.add(
@@ -354,27 +369,45 @@ class GeneticController {
         final unitCopies = List.generate(
             unitsCopies.length, (index) => unitsCopies[index].copyWith());
 
-        await calculateIndivids(_ParallelCalculatingRequest(
+        /*await calculateIndivids(_ParallelCalculatingRequest(
           individs: individsPiece[currentPiece].map((e) => e.toJson()).toList(),
           //units: unitCopies.map((e) => e.toJson()).toList(),
           units: unitCopies,
           subListIndex: currentPiece,
           //gameController: gameController.copyWith(),
           neuralIsTopTeam: neuralIndividIsTopTeam,
-          defaultNn: defaultIndivid.toJson(),
+          // todo Индивид пока создаётся случайный
+          defaultNn: GeneticIndivid(
+              input: input,
+              output: output,
+              layers: layers,
+              unitLayers: unitLayers,
+              cellsCount: cellsCount,
+              unitVectorLength: unitVectorLength,
+              initFrom: false,
+              fitnessHistory: []).toJson(),
         )).then((value) {
           calcContext.add(value);
-        });
-        /*await _startCalculateInBackground(_ParallelCalculatingRequest(
+        });*/
+        _startCalculateInBackground(_ParallelCalculatingRequest(
             individs: individsPiece[currentPiece].map((e) => e.toJson()).toList(),
             //units: unitCopies.map((e) => e.toJson()).toList(),
             units: unitCopies,
             subListIndex: currentPiece,
             //gameController: gameController.copyWith(),
             neuralIsTopTeam: neuralIndividIsTopTeam,
-            defaultNn: defaultIndivid.toJson())).then((value) {
+            defaultNn: GeneticIndivid(
+                input: input,
+                output: output,
+                layers: layers,
+                unitLayers: unitLayers,
+                cellsCount: cellsCount,
+                unitVectorLength: unitVectorLength,
+                initFrom: false,
+                fitnessHistory: []).toJson())).then((value) {
           calcContext.add(value);
-        });*/
+          print('${(calcContext.length/individsPiece.length*100.0).toStringAsFixed(2)}%');
+        });
         /*compute(
             calculateIndivids,
             _ParallelCalculatingRequest(
@@ -412,11 +445,11 @@ class GeneticController {
       for (var cc in calcContext) {
         for (var fit in cc.fitness) {
           print('Индивид - ${currentCaretPos}. '
-              'History - ${individs[currentCaretPos].fitnessHistory.map((e) => e.toStringAsFixed(2)).toList()} '
+              'History - ${individs[currentCaretPos].getFitnessHistory().map((e) => e.toStringAsFixed(2)).toList()} '
               'New fit - ${fit.toStringAsFixed(2)} '
-              'Fitness - ${individs[currentCaretPos].fitness.toStringAsFixed(2)}');
+              'Fitness - ${individs[currentCaretPos].getFitness().toStringAsFixed(2)}');
           //individs[currentCaretPos].fitness = fit;
-          individs[currentCaretPos].fitnessHistory.add(fit);
+          individs[currentCaretPos].getFitnessHistory().add(fit);
           currentCaretPos++;
         }
       }
@@ -437,7 +470,21 @@ class GeneticController {
               defaultController: aiController,
               gameController: gameController,
               context: updateStateContext!,
-              individIsTopTeam: true);
+              individIsTopTeam: true,
+            defaultNn: LinearNeuralNetworkV2(
+                input: input,
+                output: output,
+                layers: layers,
+                unitLayers: unitLayers,
+                initFrom: false,
+                unitVectorLength: unitVectorLength,
+                startWeights: null,
+                startBiases: null,
+                startActivations: null,
+                unitStartWeights: null,
+                unitStartBiases: null,
+                unitStartActivations: null)
+          );
         }
         print('Запуск генетических процессов ...');
         // Запуск основных генетических процессов
@@ -452,7 +499,8 @@ class GeneticController {
     final p = ReceivePort();
     // Главный ответ изолятора - список функций приспособленности
     _ParallelCalculatingResponse? response;
-    final newIsolator = await Isolate.spawn(_startCalculatingIsolate, p.sendPort);
+    final newIsolator =
+        await Isolate.spawn(_startCalculatingIsolate, p.sendPort);
     p.listen((message) {
       // Первое сообщение от изолятора - это порт изолятора
       if (messageCounter == 0) {
@@ -465,12 +513,13 @@ class GeneticController {
         response = message as _ParallelCalculatingResponse;
       }
     });
-    while(response == null) {
+    while (response == null) {
       await Future.delayed(const Duration(microseconds: 1));
     }
     newIsolator.kill(priority: Isolate.immediate);
     return response!;
   }
+
   static Future<void> _startCalculatingIsolate(SendPort p) async {
     final curRport = ReceivePort();
     _ParallelCalculatingResponse? response;
@@ -675,16 +724,16 @@ class GeneticController {
     // за несколько интераций. Таким образом сглаживается влияние промахов
     // и случайныхъ побед слабых индивидов
     individs.forEach((element) {
-      final mean = element.fitnessHistory.isNotEmpty
-          ? element.fitnessHistory.average
+      final mean = element.getFitnessHistory().isNotEmpty
+          ? element.getFitnessHistory().average
           : 0.0;
       print(
-          'Individ old fit - ${element.fitness.toStringAsFixed(2)} new fit - ${mean.toStringAsFixed(2)}');
-      element.fitness = mean;
-      element.fitnessHistory.clear();
+          'Individ old fit - ${element.getFitness().toStringAsFixed(2)} new fit - ${mean.toStringAsFixed(2)}');
+      element.setFitness(mean);
+      element.getFitnessHistory().clear();
     });
 
-    individs.sort((a, b) => b.fitness.compareTo(a.fitness));
+    individs.sort((a, b) => b.getFitness().compareTo(a.getFitness()));
   }
 
   void _makeSelection() {
@@ -715,7 +764,7 @@ class GeneticController {
     }
   }
 
-  GeneticIndivid? _cross() {
+  GeneticIndividBase? _cross() {
     final randomIndex1 = random.nextInt(individs.length);
     final randomIndex2 = random.nextInt(individs.length);
 
@@ -731,13 +780,15 @@ class GeneticController {
 
   Future<void> _saveCheckpoint(int generation) async {
     final checkpoint = GeneticAlgorithmCheckpoint(
-            individs: individs,
-            currentGeneration: generation,
-            input: input,
-            output: output,
-            hidden: hidden,
-            layers: layers)
-        .toJson();
+      individs: individs.map((e) => e as GeneticIndivid).toList(), // todo
+      currentGeneration: generation,
+      input: input,
+      output: output,
+      layers: layers,
+      unitLayers: unitLayers,
+      cellsCount: cellsCount,
+      unitVectorLength: unitVectorLength,
+    ).toJson();
 
     //var fileName = DateTime.now().toString() + '_Gen-$generation';
     var fileName = 'Gen-$generation';

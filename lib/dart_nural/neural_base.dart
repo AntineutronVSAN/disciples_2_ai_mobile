@@ -9,12 +9,14 @@ typedef Activation = Function(Vector v);
 
 abstract class GameNeuralNetworkBase {
   List<double> forward(List<double> inputData);
+  Vector forwardRetVector(List<double> inputData);
+  Vector forwardRetVectorFromVector(Vector inputData);
 
   final random = Random();
 
-  List<double> getWeights();
-  List<double> getBiases();
-  List<String> getActivations();
+  List<List<double>> getWeights();
+  List<List<double>> getBiases();
+  List<List<String>> getActivations();
 
   Vector sigmoid(Vector inp) {
     return inp.mapToVector((el) => (1 / (1 - pow(e, el))));
@@ -22,6 +24,13 @@ abstract class GameNeuralNetworkBase {
 
   Vector relu(Vector inp) {
     return inp.mapToVector((el) => (el < 0.0 ? 0.0 : el));
+  }
+
+  double lightPow(double value, double power) {
+
+
+
+    return value;
   }
 
   Vector softmax(Vector inp) {

@@ -24,7 +24,7 @@ import 'optim_algorythm/genetic/genetic_controller.dart';
 
 
 void main(List<String> arguments) async {
-  //await startOnlyGeneticAlgorithm(arguments);
+  await startOnlyGeneticAlgorithm(arguments);
 
   /*final nn = MultilayerPerceptron(
       input: 37,
@@ -113,13 +113,15 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
     updateStateContext: null,
     generationCount: 100000,
     maxIndividsCount: 20,
-    input: neuralNetworkInputVectorLength,
+    input: cellVectorLength,
     output: actionsCount,
-    hidden: 100,
-    layers: 5,
     units: units.map((e) => e.copyWith()).toList(),
     individController: AiController(),
     fileProvider: DartFileProvider(),
+    layers: [32, 64],
+    unitVectorLength: cellVectorLength,
+    unitLayers: [cellVectorLength, 128, 32],
+    cellsCount: 12,
     //fileProvider: FileProvider(),
   );
 
@@ -130,6 +132,6 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
   }
 
   print('Запуск алгоритма');
-  await gc.startParallel(10, showBestBattle: false, safeEveryEpochs: 100);
+  await gc.startParallel(5, showBestBattle: false, safeEveryEpochs: 100);
   print('Стоп алгоритма');
 }

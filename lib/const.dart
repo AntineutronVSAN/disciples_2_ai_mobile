@@ -5,6 +5,26 @@ const int maxUnitDamage = 999;
 
 
 /// ---------------- Простая нейронная сеть ------------------
+
+/// Размер вектора о общей информации о игре
+const int gameInfoVectorLength = 1;
+/// Размер вектора, описывающего юнита
+const int unitVectorLength = 15;
+/// Размер вектора, описывающего атаку
+const int attackVectorLength = 37;
+/// Число атак у юнита
+const int attacksCount = 2;
+/// Размер вектора, описывающего число клеток на поле боя
+const int cellsCount = 12;
+/// Размер вектора, описывающего число возможных действий
+const int actionsCount = 14;
+
+/// Общий размер вектора ячейки (юнит + общая информация)
+const int cellVectorLength = gameInfoVectorLength + unitVectorLength + attackVectorLength*attacksCount;
+/// Общий размер входного вектора
+const int inputVectorLength = cellVectorLength*cellsCount;
+
+/*
 /// Размер вектора о общей информации о игре
 const int gameInfoVectorLength = 1;
 /// Размер вектора, описывающего юнита
@@ -21,10 +41,15 @@ const int actionsCount = 14;
 const int neuralNetworkHiddenCount = 300;
 /// Число скрытых слоёв в нейронной сети
 const int neuralNetworkHiddenLayersCount = 5;
+
+const int oneUnitVectorLength =
+
 /// Размер входного вектора в нейросеть
 const int neuralNetworkInputVectorLength =
     gameInfoVectorLength * cellsCount +
         (unitVectorLength + attackVectorLength + attack2VectorLength)*cellsCount;
+*/
+
 
 /// ----------------------------------------------------------
 

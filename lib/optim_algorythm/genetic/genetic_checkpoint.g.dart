@@ -15,8 +15,11 @@ GeneticAlgorithmCheckpoint _$GeneticAlgorithmCheckpointFromJson(Map json) =>
       currentGeneration: json['currentGeneration'] as int,
       input: json['input'] as int,
       output: json['output'] as int,
-      hidden: json['hidden'] as int,
-      layers: json['layers'] as int,
+      layers: (json['layers'] as List<dynamic>).map((e) => e as int).toList(),
+      unitLayers:
+          (json['unitLayers'] as List<dynamic>).map((e) => e as int).toList(),
+      cellsCount: json['cellsCount'] as int,
+      unitVectorLength: json['unitVectorLength'] as int,
     );
 
 Map<String, dynamic> _$GeneticAlgorithmCheckpointToJson(
@@ -26,6 +29,8 @@ Map<String, dynamic> _$GeneticAlgorithmCheckpointToJson(
       'currentGeneration': instance.currentGeneration,
       'input': instance.input,
       'output': instance.output,
-      'hidden': instance.hidden,
       'layers': instance.layers,
+      'unitLayers': instance.unitLayers,
+      'cellsCount': instance.cellsCount,
+      'unitVectorLength': instance.unitVectorLength,
     };

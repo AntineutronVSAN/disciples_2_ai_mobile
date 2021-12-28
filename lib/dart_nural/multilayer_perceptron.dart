@@ -156,7 +156,7 @@ class MultilayerPerceptron extends GameNeuralNetworkBase {
         }
         _weightsMatrix.add(Matrix.fromList(currentMatrix));
         if (!initFrom) {
-          _layerActivations.add('sigmoid');
+          _layerActivations.add('relu');
         }
         /*for(var hl=0; hl<layers.length-1; hl++) {
 
@@ -184,48 +184,83 @@ class MultilayerPerceptron extends GameNeuralNetworkBase {
 
   @override
   List<double> forward(List<double> inputData) {
-
     assert(inputData.length == input, '${inputData.length} != $input');
-
     if (_biases.length != List.generate(_weightsMatrix.length, (index) =>
     _weightsMatrix[index].rows.length).sum) {
       print('${_biases.length} != ${List.generate(_weightsMatrix.length, (index)
       => _weightsMatrix[index].rows.length).sum}');
       assert(false);
     }
-
     Vector inputVector = Vector.fromList(inputData);
     Matrix currentMatrix = Matrix.fromColumns([inputVector]);
-
     int biasesCaretPos = 0;
     for(var i=0; i<_weightsMatrix.length; i++) {
-
       currentMatrix = _weightsMatrix[i] * currentMatrix;
       // К выходу прибавляются веса смещения
       final curVectorBiases = _biases.sublist(biasesCaretPos, biasesCaretPos + _weightsMatrix[i].rows.length);
       biasesCaretPos += _weightsMatrix[i].rows.length;
       currentMatrix += Matrix.fromColumns([Vector.fromList(curVectorBiases)]);
       currentMatrix = currentMatrix.mapColumns((column) => activationFunctionFromString(_layerActivations[i])(column));
-
     }
     final outputVector = currentMatrix.transpose()[0];
-
     return outputVector.toList();
   }
 
   @override
-  List<String> getActivations() {
-    return _layerActivations;
+  List<List<String>> getActivations() {
+    return [
+      _layerActivations,
+    ];
   }
 
   @override
-  List<double> getBiases() {
-    return _biases;
+  List<List<double>> getBiases() {
+    return [_biases];
   }
 
   @override
-  List<double> getWeights() {
-    return _weights;
+  List<List<double>> getWeights() {
+    return [_weights];
+  }
+
+  @override
+  Vector forwardRetVector(List<double> inputData) {
+    /*assert(inputData.length == input, '${inputData.length} != $input');
+    if (_biases.length != List.generate(_weightsMatrix.length, (index) =>
+    _weightsMatrix[index].rows.length).sum) {
+      print('${_biases.length} != ${List.generate(_weightsMatrix.length, (index)
+      => _weightsMatrix[index].rows.length).sum}');
+      assert(false);
+    }*/
+    Vector inputVector = Vector.fromList(inputData);
+    Matrix currentMatrix = Matrix.fromColumns([inputVector]);
+    int biasesCaretPos = 0;
+    for(var i=0; i<_weightsMatrix.length; i++) {
+      currentMatrix = _weightsMatrix[i] * currentMatrix;
+      // К выходу прибавляются веса смещения
+      final curVectorBiases = _biases.sublist(biasesCaretPos, biasesCaretPos + _weightsMatrix[i].rows.length);
+      biasesCaretPos += _weightsMatrix[i].rows.length;
+      currentMatrix += Matrix.fromColumns([Vector.fromList(curVectorBiases)]);
+      currentMatrix = currentMatrix.mapColumns((column) => activationFunctionFromString(_layerActivations[i])(column));
+    }
+    final outputVector = currentMatrix.transpose()[0];
+    return outputVector;
+  }
+
+  @override
+  Vector forwardRetVectorFromVector(Vector inputData) {
+    Matrix currentMatrix = Matrix.fromColumns([inputData]);
+    int biasesCaretPos = 0;
+    for(var i=0; i<_weightsMatrix.length; i++) {
+      currentMatrix = _weightsMatrix[i] * currentMatrix;
+      // К выходу прибавляются веса смещения
+      final curVectorBiases = _biases.sublist(biasesCaretPos, biasesCaretPos + _weightsMatrix[i].rows.length);
+      biasesCaretPos += _weightsMatrix[i].rows.length;
+      currentMatrix += Matrix.fromColumns([Vector.fromList(curVectorBiases)]);
+      currentMatrix = currentMatrix.mapColumns((column) => activationFunctionFromString(_layerActivations[i])(column));
+    }
+    final outputVector = currentMatrix.transpose()[0];
+    return outputVector;
   }
 
 }
