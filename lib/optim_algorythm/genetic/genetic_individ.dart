@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:d2_ai_v2/dart_nural/neural_base.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:d2_ai_v2/dart_nural/linear_network.dart';
 
@@ -29,7 +30,7 @@ class GeneticIndivid {
   bool nnInited;
 
   @JsonKey(ignore: true)
-  SimpleLinearNeuralNetwork? nn;
+  GameNeuralNetworkBase? nn;
 
   final int input;
   final int output;

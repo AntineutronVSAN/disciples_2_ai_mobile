@@ -1,3 +1,4 @@
+import 'package:collection/src/iterable_extensions.dart';
 import 'package:d2_ai_v2/ai_controller/ai_contoller.dart';
 import 'package:d2_ai_v2/models/providers.dart';
 import 'package:d2_ai_v2/providers/dart_file_provider.dart';
@@ -10,6 +11,7 @@ import 'controllers/duration_controller.dart';
 import 'controllers/game_controller.dart';
 import 'controllers/initiative_shuffler.dart';
 import 'controllers/power_controller.dart';
+import 'dart_nural/multilayer_perceptron.dart';
 import 'models/unit.dart';
 import 'optim_algorythm/genetic/genetic_controller.dart';
 
@@ -21,7 +23,19 @@ import 'optim_algorythm/genetic/genetic_controller.dart';
 
 
 void main(List<String> arguments) async {
-  await startOnlyGeneticAlgorithm(arguments);
+  //await startOnlyGeneticAlgorithm(arguments);
+
+  final nn = MultilayerPerceptron(
+      input: 37,
+      output: 100,
+      layers: [128, 256, 256],
+      initFrom: false,
+      startWeights: null,
+      startBiases: null,
+      startActivations: null);
+
+  final result = nn.forward(List.generate(37, (index) => nn.getRandomValue()));
+
 }
 
 Future<void> startOnlyGeneticAlgorithm(List<String> args) async {

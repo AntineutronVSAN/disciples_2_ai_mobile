@@ -81,6 +81,7 @@
 
 import 'package:d2_ai_v2/controllers/game_controller.dart';
 import 'package:d2_ai_v2/dart_nural/linear_network.dart';
+import 'package:d2_ai_v2/dart_nural/neural_base.dart';
 import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/optim_algorythm/genetic/genetic_checkpoint.dart';
@@ -93,7 +94,7 @@ import '../const.dart';
 
 class AiController {
 
-  late SimpleLinearNeuralNetwork? linearNN;
+  late GameNeuralNetworkBase? linearNN;
 
   bool inited = false;
 
@@ -118,7 +119,7 @@ class AiController {
     inited = true;
   }
 
-  void init(List<Unit> units, {SimpleLinearNeuralNetwork? nn}) {
+  void init(List<Unit> units, {GameNeuralNetworkBase? nn}) {
     if (nn == null) {
       linearNN = SimpleLinearNeuralNetwork(
           input: neuralNetworkInputVectorLength,

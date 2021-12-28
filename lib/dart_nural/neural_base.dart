@@ -4,8 +4,13 @@ import 'dart:math';
 
 import 'package:ml_linalg/vector.dart';
 
+
+typedef Activation = Function(Vector v);
+
 abstract class GameNeuralNetworkBase {
   List<double> forward(List<double> inputData);
+
+  final random = Random();
 
   Vector sigmoid(Vector inp) {
     return inp.mapToVector((el) => (1 / (1 - pow(e, el))));
@@ -21,5 +26,22 @@ abstract class GameNeuralNetworkBase {
     final sum = expVec.sum();
     final res = expVec / sum;
     return res;
+  }
+
+  double getRandomValue() {
+    return (random.nextInt(2000) - 1000.0)/1000.0;
+  }
+
+  Activation activationFunctionFromString(String str) {
+    switch(str) {
+      case 'sigmoid':
+        return sigmoid;
+      case 'softmax':
+        return softmax;
+      case 'relu':
+        return relu;
+    }
+    throw Exception('Неизвестная активация');
+
   }
 }

@@ -89,9 +89,7 @@ class SimpleLinearNeuralNetwork extends GameNeuralNetworkBase {
   void _weights2matrix(List<String>? startActivations) {
 
     final matrixCount = layers + 2; // 2 - входной и выходной слой
-
     // todo docs Строка матрицы весов - input
-
     // Текущее положение каретки на весах
     int caretPos = 0;
 
@@ -114,8 +112,6 @@ class SimpleLinearNeuralNetwork extends GameNeuralNetworkBase {
         } else {
           layerActivations.add('sigmoid');
         }
-
-
       } else if (i == matrixCount - 1) {
         List<List<double>> currentMatrix = [];
         // Скрытый - выходной
@@ -130,8 +126,6 @@ class SimpleLinearNeuralNetwork extends GameNeuralNetworkBase {
         }
         _weightsMatrix.add(Matrix.fromList(currentMatrix));
         layerActivations.add('softmax');
-
-
       } else {
         // Скрытый - скрытый
         List<List<double>> currentMatrix = [];
