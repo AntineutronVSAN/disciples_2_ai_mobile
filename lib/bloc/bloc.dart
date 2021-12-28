@@ -148,6 +148,23 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       'Русалка',
       '',
       '',
+
+      /*'Русалка',
+      '',
+      '',
+      'Орк',
+      'Людоед',
+      'Орк',
+
+      'Сквайр',
+      'Рыцарь',
+      'Сквайр',
+      'Рейнджер',
+      'Жрец',
+      'Рейнджер',*/
+
+
+
     ];
     assert(unitsNames.length == 12);
     var index = 0;

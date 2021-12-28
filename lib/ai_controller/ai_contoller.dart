@@ -77,6 +77,9 @@
 ]
 
 
+TODO:
+* Заменить точность и урон на математическое ожидание
+
 */
 
 import 'package:d2_ai_v2/controllers/game_controller.dart';

@@ -359,7 +359,7 @@ class GeneticIndivid implements GeneticIndividBase {
   GeneticIndividBase cross(GeneticIndividBase target) {
     final maxUnitNnParamsCount = input * unitLayers.first +
         unitLayers.sum +
-        unitLayers.last * unitLayers.last;
+        unitLayers.last * unitLayers.last; // todo
     final unitWeightIndexes = List.generate(maxUnitNnParamsCount ~/ 50,
         (index) => random.nextInt(maxUnitNnParamsCount - 1));
     final maxUnitNnBiasesParamsCount = unitLayers.sum + unitLayers.last;
@@ -367,12 +367,12 @@ class GeneticIndivid implements GeneticIndividBase {
         maxUnitNnBiasesParamsCount ~/ 5,
         (index) => random.nextInt(maxUnitNnBiasesParamsCount - 1));
 
-    final maxNnParamsCount = input * unitLayers.first +
-        unitLayers.sum +
-        unitLayers.last * unitLayers.last;
+    final maxNnParamsCount = unitLayers.last * layers.first +
+        layers.sum +
+        layers.last * output;
     final weightIndexes = List.generate(maxNnParamsCount ~/ 50,
         (index) => random.nextInt(maxNnParamsCount - 1));
-    final maxNnBiasesParamsCount = unitLayers.sum + unitLayers.last;
+    final maxNnBiasesParamsCount = layers.sum + output;
     final biasesWeightIndexes = List.generate(maxNnBiasesParamsCount ~/ 5,
         (index) => random.nextInt(maxNnBiasesParamsCount - 1));
 

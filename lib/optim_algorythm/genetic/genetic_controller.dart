@@ -161,6 +161,10 @@ class GeneticController {
 
       var endGame = false;
 
+      // Сколько невозможных действий сделал ИИ
+      // они влияют на приспособленность
+      int failedActions = 0;
+
       while (true) {
         if (gameController.currentRound > 100) {
           //ind.fitness = 0.0;
@@ -179,6 +183,8 @@ class GeneticController {
               currentActiveCellIndex = r.activeCell;
               endGame = r.endGame;
               break;
+            } else {
+              failedActions++;
             }
           }
           assert(success);
@@ -226,15 +232,18 @@ class GeneticController {
         index++;
       }
 
+      // Штраф за число невозможных действий
+      final impossibleActionsFine = 0.0 + failedActions*0.01;
+
       final hpFit = aisUnitsHp.sum / aisUnitsMaxHp.sum;
       final hpFitEnemy = 1 - enemyUnitsHp.sum / enemyUnitsMaxHp.sum;
       final rdFit = 100.0 / gameController.currentRound / 100;
       if (gameController.currentRound >= 100) {
         //ind.fitness = 0.0;
-        newFitness.add(0.0);
+        newFitness.add(-1000.0 - impossibleActionsFine);
       } else {
-        //ind.fitness = hpFit + hpFitEnemy / 3.0; // + rdFit / 100.0;
-        newFitness.add(hpFit + hpFitEnemy / 3.0);
+        var newFitnessVal = (hpFit + hpFitEnemy / 3.0) - impossibleActionsFine;
+        newFitness.add(newFitnessVal);
       }
       gameController.reset();
     }
@@ -320,10 +329,12 @@ class GeneticController {
     const bool neuralIndividIsTopTeam = true;
 
     // Подгружается нейронка, которая будет управлять дефолтным контроллером
-    /*await fileProvider.init();
+    print('Загрузка дефолтного ИИ из файла...');
+    await fileProvider.init();
     final checkPoint = GeneticAlgorithmCheckpoint.fromJson(
         await fileProvider.getDataByFileName('default_ai_controller'));
-    final defaultIndivid = checkPoint.individs[0];*/
+    final defaultIndivid = checkPoint.individs[0];
+    print('Загрузка дефолтного ИИ из файла успешно');
 
     for (generation; generation < generationCount; generation++) {
       print('Поколение - $generation');
@@ -336,12 +347,12 @@ class GeneticController {
                     .sum /
                 individs.length,
       ));*/
-      updateStateContext?.update(
+      /*updateStateContext?.update(
         currentGeneration: generation,
         populationFitness: List.generate(
                 individs.length, (index) => individs[index].getFitness()).sum /
             individs.length,
-      );
+      );*/
 
       // Индивиды делятся на несколько частей по числу потоков
       final individsStep = individs.length ~/ isolatesCount;
@@ -389,7 +400,7 @@ class GeneticController {
         )).then((value) {
           calcContext.add(value);
         });*/
-        _startCalculateInBackground(_ParallelCalculatingRequest(
+        /*_startCalculateInBackground(_ParallelCalculatingRequest(
             individs: individsPiece[currentPiece].map((e) => e.toJson()).toList(),
             //units: unitCopies.map((e) => e.toJson()).toList(),
             units: unitCopies,
@@ -407,21 +418,18 @@ class GeneticController {
                 fitnessHistory: []).toJson())).then((value) {
           calcContext.add(value);
           print('${(calcContext.length/individsPiece.length*100.0).toStringAsFixed(2)}%');
-        });
-        /*compute(
-            calculateIndivids,
-            _ParallelCalculatingRequest(
-              individs:
-                  individsPiece[currentPiece].map((e) => e.toJson()).toList(),
-              //units: unitCopies.map((e) => e.toJson()).toList(),
-              units: unitCopies,
-              subListIndex: currentPiece,
-              //gameController: gameController.copyWith(),
-              neuralIsTopTeam: neuralIndividIsTopTeam,
-              defaultNn: defaultIndivid.toJson(),
-            )).then((value) {
-          calcContext.add(value);
         });*/
+        _startCalculateInBackground(_ParallelCalculatingRequest(
+            individs: individsPiece[currentPiece].map((e) => e.toJson()).toList(),
+            //units: unitCopies.map((e) => e.toJson()).toList(),
+            units: unitCopies,
+            subListIndex: currentPiece,
+            //gameController: gameController.copyWith(),
+            neuralIsTopTeam: neuralIndividIsTopTeam,
+            defaultNn: defaultIndivid.toJson())).then((value) {
+          calcContext.add(value);
+          print('${(calcContext.length/individsPiece.length*100.0).toStringAsFixed(2)}%');
+        });
       }
 
       // Ждём, когда все изоляторы отработают
