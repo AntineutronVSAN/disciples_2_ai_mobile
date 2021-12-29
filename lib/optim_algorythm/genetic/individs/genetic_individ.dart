@@ -1,12 +1,15 @@
 import 'dart:math';
 import 'package:collection/src/iterable_extensions.dart';
-import 'package:d2_ai_v2/dart_nural/linear_network_v2.dart';
+import 'package:d2_ai_v2/dart_nural/networks/linear_network_v2.dart';
+import 'package:d2_ai_v2/dart_nural/networks/linear_network_v3.dart';
 import 'package:d2_ai_v2/dart_nural/neural_base.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'genetic_individ_base.dart';
 
 part 'genetic_individ.g.dart';
+
+const double mutateValue = 20.0;
 
 @JsonSerializable()
 class GeneticIndivid implements GeneticIndividBase {
@@ -54,6 +57,8 @@ class GeneticIndivid implements GeneticIndividBase {
 
   final random = Random();
 
+  final int networkVersion;
+
   GeneticIndivid({
     required this.input,
     required this.output,
@@ -71,8 +76,9 @@ class GeneticIndivid implements GeneticIndividBase {
     this.unitActivations,
     this.needCalculate = true,
     required this.fitnessHistory,
+    this.networkVersion = 2, //todo
   }) {
-    LinearNeuralNetworkV2 newNn;
+    GameNeuralNetworkBase newNn;
 
     if (initFrom) {
       assert(weights != null);
@@ -81,34 +87,71 @@ class GeneticIndivid implements GeneticIndividBase {
       assert(unitWeights != null);
       assert(unitBiases != null);
       assert(unitActivations != null);
+      if (networkVersion == 3) {
+        newNn = LinearNeuralNetworkV3(
+            input: input,
+            output: output,
+            layers: layers,
+            unitLayers: unitLayers,
+            initFrom: true,
+            unitVectorLength: unitVectorLength,
+            startWeights: weights,
+            startBiases: biases,
+            startActivations: activations,
+            unitStartWeights: unitWeights,
+            unitStartBiases: unitBiases,
+            unitStartActivations: unitActivations);
+      } else if (networkVersion == 2) {
+        newNn = LinearNeuralNetworkV2(
+            input: input,
+            output: output,
+            layers: layers,
+            unitLayers: unitLayers,
+            initFrom: true,
+            unitVectorLength: unitVectorLength,
+            startWeights: weights,
+            startBiases: biases,
+            startActivations: activations,
+            unitStartWeights: unitWeights,
+            unitStartBiases: unitBiases,
+            unitStartActivations: unitActivations);
+      } else {
+        throw Exception();
+      }
 
-      newNn = LinearNeuralNetworkV2(
-          input: input,
-          output: output,
-          layers: layers,
-          unitLayers: unitLayers,
-          initFrom: true,
-          unitVectorLength: unitVectorLength,
-          startWeights: weights,
-          startBiases: biases,
-          startActivations: activations,
-          unitStartWeights: unitWeights,
-          unitStartBiases: unitBiases,
-          unitStartActivations: unitActivations);
     } else {
-      newNn = LinearNeuralNetworkV2(
-          input: input,
-          output: output,
-          layers: layers,
-          unitLayers: unitLayers,
-          initFrom: false,
-          unitVectorLength: unitVectorLength,
-          startWeights: null,
-          startBiases: null,
-          startActivations: null,
-          unitStartWeights: null,
-          unitStartBiases: null,
-          unitStartActivations: null);
+      if (networkVersion == 3) {
+        newNn = LinearNeuralNetworkV3(
+            input: input,
+            output: output,
+            layers: layers,
+            unitLayers: unitLayers,
+            initFrom: false,
+            unitVectorLength: unitVectorLength,
+            startWeights: null,
+            startBiases: null,
+            startActivations: null,
+            unitStartWeights: null,
+            unitStartBiases: null,
+            unitStartActivations: null);
+      } else if (networkVersion == 2) {
+        newNn = LinearNeuralNetworkV2(
+            input: input,
+            output: output,
+            layers: layers,
+            unitLayers: unitLayers,
+            initFrom: false,
+            unitVectorLength: unitVectorLength,
+            startWeights: null,
+            startBiases: null,
+            startActivations: null,
+            unitStartWeights: null,
+            unitStartBiases: null,
+            unitStartActivations: null);
+      } else {
+        throw Exception();
+      }
+
     }
 
     unitWeights = newNn.getWeights()[0];
@@ -182,10 +225,10 @@ class GeneticIndivid implements GeneticIndividBase {
         unitWeights![ind] = unitWeights![ind] < 0.5 ? 1.0 : 1.0;
       } else if (newRandomValue >= 50 && newRandomValue < 75) {
         unitWeights![ind] =
-            unitWeights![ind] += random.nextDouble() * 2.0 - 1.0;
+            unitWeights![ind] += random.nextDouble() * mutateValue - mutateValue/2;
       } else {
         unitWeights![ind] =
-            unitWeights![ind] -= random.nextDouble() * 2.0 - 1.0;
+            unitWeights![ind] -= random.nextDouble() * mutateValue - mutateValue/2;
       }
     }
     for (var ind in unitBiasesWeightIndexes) {
@@ -195,9 +238,9 @@ class GeneticIndivid implements GeneticIndividBase {
       } else if (newRandomValue >= 25 && newRandomValue < 50) {
         unitBiases![ind] = unitBiases![ind] < 0.5 ? 1.0 : 1.0;
       } else if (newRandomValue >= 50 && newRandomValue < 75) {
-        unitBiases![ind] = unitBiases![ind] += random.nextDouble() * 2.0 - 1.0;
+        unitBiases![ind] = unitBiases![ind] += random.nextDouble() * mutateValue - mutateValue/2;
       } else {
-        unitBiases![ind] = unitBiases![ind] -= random.nextDouble() * 2.0 - 1.0;
+        unitBiases![ind] = unitBiases![ind] -= random.nextDouble() * mutateValue - mutateValue/2;
       }
     }
     if (random.nextInt(100) > 50) {
@@ -255,8 +298,9 @@ class GeneticIndivid implements GeneticIndividBase {
         activations![randomLayerIndex] = 'relu';
       }
     }
-
-    final newNN = LinearNeuralNetworkV2(
+    GameNeuralNetworkBase newNN;
+    if (networkVersion == 2) {
+      newNN = LinearNeuralNetworkV2(
         input: input,
         output: output,
         layers: layers,
@@ -269,7 +313,28 @@ class GeneticIndivid implements GeneticIndividBase {
         startActivations: activations,
         unitStartWeights: unitWeights,
         unitStartBiases: unitBiases,
-        unitStartActivations: unitActivations);
+        unitStartActivations: unitActivations,
+      );
+    } else if (networkVersion == 3) {
+      newNN = LinearNeuralNetworkV3(
+        input: input,
+        output: output,
+        layers: layers,
+        unitLayers: unitLayers,
+        initFrom: true,
+        cellsCount: cellsCount,
+        unitVectorLength: unitVectorLength,
+        startWeights: weights,
+        startBiases: biases,
+        startActivations: activations,
+        unitStartWeights: unitWeights,
+        unitStartBiases: unitBiases,
+        unitStartActivations: unitActivations,
+      );
+    } else {
+      throw Exception();
+    }
+
 
     unitWeights = newNN.getWeights()[0];
     unitBiases = newNN.getBiases()[0];
@@ -381,10 +446,10 @@ class GeneticIndivid implements GeneticIndividBase {
 
     // Вероятность выбрать ген таргета
     final targetGenProp = targetHasHighestFitness
-        ? 75
+        ? 55
         : fitnessesEquals
             ? 50
-            : 25;
+            : 45;
 
     int unitNeuralIndex = 0;
     int neuralIndex = 1;
@@ -435,7 +500,10 @@ class GeneticIndivid implements GeneticIndividBase {
       }
     }
 
+    assert(networkVersion == target.getNetworkVersion());
+
     return GeneticIndivid(
+      networkVersion: networkVersion,
       input: input,
       output: output,
       layers: layers,
@@ -445,15 +513,12 @@ class GeneticIndivid implements GeneticIndividBase {
       initFrom: true,
       fitnessHistory: [],
       fitness: 0.0,
-
       unitWeights: newUnitWeightsList,
       unitBiases: newUnitBiasesList,
       unitActivations: newUnitActivationsList,
-
       weights: newWeightsList,
       biases: newBiasesList,
       activations: newActivationsList,
-
       needCalculate: true,
     );
 
@@ -579,6 +644,11 @@ class GeneticIndivid implements GeneticIndividBase {
       unitWeights!,
       weights!,
     ];
+  }
+
+  @override
+  int getNetworkVersion() {
+    return networkVersion;
   }
 }
 

@@ -1,6 +1,6 @@
 import 'package:collection/src/iterable_extensions.dart';
 import 'package:d2_ai_v2/ai_controller/ai_contoller.dart';
-import 'package:d2_ai_v2/dart_nural/linear_network_v2.dart';
+import 'package:d2_ai_v2/dart_nural/networks/linear_network_v2.dart';
 import 'package:d2_ai_v2/models/providers.dart';
 import 'package:d2_ai_v2/providers/dart_file_provider.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
@@ -112,16 +112,22 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
     aiController: AiController(),
     updateStateContext: null,
     generationCount: 100000,
-    maxIndividsCount: 40,
+    maxIndividsCount: 30,
     input: cellVectorLength,
     output: actionsCount,
     units: units.map((e) => e.copyWith()).toList(),
     individController: AiController(),
     fileProvider: DartFileProvider(),
-    layers: [32, 64, 128, 64],
+    /*layers: [256, 64],
     unitVectorLength: cellVectorLength,
-    unitLayers: [cellVectorLength, 128, 32],
+    unitLayers: [cellVectorLength, 128, 64, 32],
     cellsCount: 12,
+    networkVersion: 2,*/
+    layers: [32*12, 128, 64],
+    unitVectorLength: cellVectorLength,
+    unitLayers: [cellVectorLength, 128, 64, 32],
+    cellsCount: 12,
+    networkVersion: 3,
     //fileProvider: FileProvider(),
   );
 

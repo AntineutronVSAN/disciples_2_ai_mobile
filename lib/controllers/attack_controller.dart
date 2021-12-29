@@ -1369,13 +1369,28 @@ class AttackController {
       return ResponseAction.error('Хил не может лечить врагов');
     }
     // Хилы могут воскрешать
-    if (targetUnit.isDead
-        && !(currentUnit.unitAttack2?.attackClass == AttackClass.L_REVIVE)
-        && !targetUnit.revived) {
-      return ResponseAction.error('Хил не может лечить мёртвого либо юнит уже воскрешался');
+    // todo Нв второй атаке, когда все фуловые, невозможнол ничего сделать
+    if (currentUnit.unitAttack2?.attackClass == AttackClass.L_REVIVE) {
+      if (targetUnit.revived) {
+        if (targetUnit.currentHp <= 0) {
+          return ResponseAction.error('Нельзя воскрешать уже воскрешённого');
+        }
+      }
+    } else {
+      if (targetUnit.isDead) {
+        return ResponseAction.error('Хил не может лечить мёртвого');
+      }
     }
+    /*if (targetUnit.isDead
+        && !(currentUnit.unitAttack2?.attackClass == AttackClass.L_REVIVE)
+        && targetUnit.revived) {
+      return ResponseAction.error('Хил не может лечить мёртвого либо юнит уже воскрешался');
+    }*/
     if (targetUnit.isEmpty()) {
       return ResponseAction.error('Хил не может лечить пустого');
+    }
+    if (targetUnit.currentHp >= targetUnit.maxHp) {
+      return ResponseAction.error('Хил не может лечить здорового');
     }
     // todo Тут надо подумать, как сделать. Защититься после первой атаки
     // todo невозможно, и ход завершить не удаётся
@@ -1527,6 +1542,11 @@ class AttackController {
     if (targetUnit.isDead || targetUnit.isEmpty()) {
       return ResponseAction.error(
           'Невозможное действие над мёртвым/пустым юнитом');
+    }
+    final targetUnitAttacks = targetUnit.attacksMap;
+    if (targetUnitAttacks[AttackClass.L_PARALYZE] != null ||
+        targetUnitAttacks[AttackClass.L_PETRIFY] != null ) {
+      return ResponseAction.error('Цель уже окаменена/парализована');
     }
     switch (currentUnitAttack.targetsCount) {
       case TargetsCount.one:
@@ -2259,6 +2279,11 @@ class AttackController {
       return ResponseAction.error(
           'Невозможное действие над мёртвым/пустым юнитом');
     }
+    final targetUnitAttacks = targetUnit.attacksMap;
+    if (targetUnitAttacks[AttackClass.L_PARALYZE] != null ||
+        targetUnitAttacks[AttackClass.L_PETRIFY] != null ) {
+      return ResponseAction.error('Цель уже окаменена/парализована');
+    }
     switch (currentUnitAttack.targetsCount) {
       case TargetsCount.one:
         return await _handleOneTargetPetrify(context);
@@ -2344,6 +2369,10 @@ class AttackController {
     if (targetUnit.isDead || targetUnit.isEmpty()) {
       return ResponseAction.error(
           'Невозможное действие над мёртвым/пустым юнитом');
+    }
+    final targetUnitAttacks = targetUnit.attacksMap;
+    if (targetUnitAttacks[AttackClass.L_LOWER_INITIATIVE] != null) {
+      return ResponseAction.error('У цели уже снижена инициатива');
     }
     switch (currentUnitAttack.targetsCount) {
       case TargetsCount.one:
@@ -2431,6 +2460,10 @@ class AttackController {
       return ResponseAction.error(
           'Невозможное действие над мёртвым/пустым юнитом');
     }
+    final targetUnitAttacks = targetUnit.attacksMap;
+    if (targetUnitAttacks[AttackClass.L_GIVE_ATTACK] != null) {
+      return ResponseAction.error('У цели уже повышен урон');
+    }
     switch (currentUnitAttack.targetsCount) {
       case TargetsCount.one:
         return await _handleOneTargetGiveAttack(context);
@@ -2516,6 +2549,10 @@ class AttackController {
     if (targetUnit.isDead || targetUnit.isEmpty()) {
       return ResponseAction.error(
           'Невозможное действие над мёртвым/пустым юнитом');
+    }
+    final targetUnitAttacks = targetUnit.attacksMap;
+    if (targetUnitAttacks[AttackClass.L_BOOST_DAMAGE] != null) {
+      return ResponseAction.error('У цели уже повышен урон');
     }
     switch (currentUnitAttack.targetsCount) {
       case TargetsCount.one:

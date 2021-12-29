@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:isolate';
 import 'dart:math';
-import 'package:d2_ai_v2/dart_nural/linear_network_v2.dart';
+import 'package:d2_ai_v2/dart_nural/networks/linear_network_v2.dart';
 import 'package:d2_ai_v2/dart_nural/neural_base.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:d2_ai_v2/ai_controller/ai_contoller.dart';
@@ -57,6 +57,8 @@ class GeneticController {
 
   final random = Random();
 
+  final int networkVersion;
+
   GeneticController({
     required this.gameController,
     required this.aiController,
@@ -73,11 +75,14 @@ class GeneticController {
     required this.individController,
     required this.fileProvider,
     bool initPopulation = true,
+    required this.networkVersion,
+
   }) {
     if (initPopulation) {
       for (var i = 0; i < maxIndividsCount; i++) {
         print('Создаётся индивид $i');
         final newIndivid = GeneticIndivid(
+          networkVersion: networkVersion,
             input: input,
             output: output,
             layers: layers,
@@ -243,6 +248,10 @@ class GeneticController {
         newFitness.add(-1000.0 - impossibleActionsFine);
       } else {
         var newFitnessVal = (hpFit + hpFitEnemy / 3.0) - impossibleActionsFine;
+        // Если индивид только защищался и ничего не делал
+        if (hpFit == 0.0 && hpFitEnemy == 0.0) {
+          newFitnessVal = -1000.0;
+        }
         newFitness.add(newFitnessVal);
       }
       gameController.reset();
@@ -710,14 +719,15 @@ class GeneticController {
     print('Селекция ...');
     _makeSelection();
     print('Мутации ...');
-    for (var i = 0; i < individs.length ~/ 5; i++) {
+    //for (var i = 0; i < individs.length ~/ 5; i++) {
+    for (var i = 0; i < individs.length ~/ 3; i++) {
       _mutateRandom();
     }
     print('Кросс ...');
     // Юниты отсортированы, делаем кросс лушчего
     //_crossUnitByIndex(bestIndex: 0, times: 1);
     //_crossUnitByIndex(bestIndex: 1, times: 2);
-    for (var i = 0; i < individs.length ~/ 5; i++) {
+    for (var i = 0; i < individs.length ~/ 3; i++) {
       // print(i);
       final newInd = _cross();
       if (newInd != null) {
@@ -747,6 +757,8 @@ class GeneticController {
   void _makeSelection() {
     _sortIndivids();
     individs = individs.sublist(0, maxIndividsCount);
+    // Сразу убираем некоторых юнитов
+    individs = individs.where((element) => element.getFitness()>-500.0).toList();
   }
 
   void _mutate(GeneticIndivid ind) {

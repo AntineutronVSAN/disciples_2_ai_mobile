@@ -18,6 +18,8 @@ abstract class GameNeuralNetworkBase {
   List<List<double>> getBiases();
   List<List<String>> getActivations();
 
+  int getNetworkVersion();
+
   Vector sigmoid(Vector inp) {
     return inp.mapToVector((el) => (1 / (1 - pow(e, el))));
   }

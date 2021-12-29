@@ -38,6 +38,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   bool canAcceptNewEvent = true;
 
+  /// Счётчик совершённых невозможных действий от ИИ
+  int impossibleAiActions = 0;
+
   GameBloc(GameState initialState, {
     required this.repository,
     required this.controller,
@@ -119,7 +122,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       'Мастер клинка',
       'Ассасин',
       'Покровитель',
-      'Белый маг',*/
+      'Инкуб',*/
 
       /*'Охотник',
       'Оракул',
@@ -135,6 +138,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       'Гоблин-траппер',
       '',*/
 
+
+      // Для тренеровки ИИ!! ИИ играет за топоовую команду
       'Рейнджер',
       'Жрец',
       'Рейнджер',
@@ -149,7 +154,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       '',
       '',
 
-      /*'Русалка',
+     /*'Русалка',
       '',
       '',
       'Орк',
@@ -359,6 +364,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   Future<void> _handleAiMove(ResponseAction action, Emitter emit) async {
     if (action.endGame) {
+      impossibleAiActions=0;
       return;
     }
     print('-------- Ходит AI');
@@ -377,6 +383,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       final response = await controller.makeAction(r);
       if (response.endGame) {
         success = response.success;
+        impossibleAiActions=0;
         break;
       }
       if (response.success) {
@@ -392,7 +399,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
         break;
       } else {
-
+        impossibleAiActions++;
+        print('Невозможное действие от ИИ. Всего невозможных действий - '
+            '$impossibleAiActions');
       }
     }
     assert(success);

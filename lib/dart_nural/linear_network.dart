@@ -230,4 +230,9 @@ class SimpleLinearNeuralNetwork extends GameNeuralNetworkBase {
     // TODO: implement getWeights
     throw UnimplementedError();
   }
+
+  @override
+  int getNetworkVersion() {
+    return 1;
+  }
 }

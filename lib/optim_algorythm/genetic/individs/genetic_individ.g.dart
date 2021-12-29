@@ -38,6 +38,7 @@ GeneticIndivid _$GeneticIndividFromJson(Map json) => GeneticIndivid(
       fitnessHistory: (json['fitnessHistory'] as List<dynamic>)
           .map((e) => (e as num).toDouble())
           .toList(),
+      networkVersion: json['networkVersion'] as int? ?? 2,
     );
 
 Map<String, dynamic> _$GeneticIndividToJson(GeneticIndivid instance) =>
@@ -58,4 +59,5 @@ Map<String, dynamic> _$GeneticIndividToJson(GeneticIndivid instance) =>
       'cellsCount': instance.cellsCount,
       'unitVectorLength': instance.unitVectorLength,
       'initFrom': instance.initFrom,
+      'networkVersion': instance.networkVersion,
     };

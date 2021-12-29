@@ -263,4 +263,9 @@ class MultilayerPerceptron extends GameNeuralNetworkBase {
     return outputVector;
   }
 
+  @override
+  int getNetworkVersion() {
+    throw UnimplementedError();
+  }
+
 }

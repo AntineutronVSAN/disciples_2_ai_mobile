@@ -21,4 +21,6 @@ abstract class GeneticIndividBase {
   List<List<double>> getWeights();
   List<List<double>> getBiases();
   List<List<String>> getActivations();
+
+  int getNetworkVersion();
 }

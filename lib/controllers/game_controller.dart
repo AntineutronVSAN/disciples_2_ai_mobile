@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/update_state_context/update_state_context_base.dart';
 
@@ -365,10 +366,12 @@ class GameController {
   Future<ResponseAction> _handleProtect(RequestAction action) async {
     final currentUnit = units[currentActiveCellIndex!];
 
-    if (currentUnit.currentAttack == 1) {
+    // todo Нв второй атаке, когда все фуловые, невозможнол ничего сделать
+    // todo пока костыль, вторая атака не учитывается. Нужно учитывать!
+    /*if (currentUnit.currentAttack == 1 && currentUnit.unitAttack.attackClass == AttackClass.L_DAMAGE) {
       return ResponseAction.error('Юнит не может защищаться на второй атаке',
           roundNumber: currentRound, activeCell: currentActiveCellIndex!);
-    }
+    }*/
 
     // Если юнит уже защищён, то что-то не то
     assert(!units[currentActiveCellIndex!].isProtected);
