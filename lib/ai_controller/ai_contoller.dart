@@ -90,6 +90,7 @@ import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/optim_algorythm/genetic/genetic_checkpoint.dart';
 import 'package:d2_ai_v2/optim_algorythm/genetic/individs/genetic_individ.dart';
 import 'package:d2_ai_v2/optim_algorythm/genetic/individs/genetic_individ_base.dart';
+import 'package:d2_ai_v2/optim_algorythm/neat/game_tree_base.dart';
 import 'package:d2_ai_v2/providers/file_provider_base.dart';
 
 
@@ -99,6 +100,7 @@ import '../const.dart';
 class AiController {
 
   late GameNeuralNetworkBase? linearNN;
+  late GameTreeBase? tree;
 
   bool inited = false;
 

@@ -29,9 +29,6 @@ abstract class GameNeuralNetworkBase {
   }
 
   double lightPow(double value, double power) {
-
-
-
     return value;
   }
 

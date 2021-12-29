@@ -167,7 +167,6 @@ class GeneticIndivid implements GeneticIndividBase {
 
   factory GeneticIndivid.fromJson(Map<String, dynamic> json) =>
       _$GeneticIndividFromJson(json);
-
   Map<String, dynamic> toJson() => _$GeneticIndividToJson(this);
 
   @override
