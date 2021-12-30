@@ -30,8 +30,9 @@ _ParallelCalculatingRequest _$ParallelCalculatingRequestFromJson(Map json) =>
           .map((e) => Map<String, dynamic>.from(e as Map))
           .toList(),
       subListIndex: json['subListIndex'] as int,
-      neuralIsTopTeam: json['neuralIsTopTeam'] as bool,
-      defaultNn: Map<String, dynamic>.from(json['defaultNn'] as Map),
+      individualIsTopTeam: json['individualIsTopTeam'] as bool,
+      defaultAlgorithm:
+          Map<String, dynamic>.from(json['defaultAlgorithm'] as Map),
     );
 
 Map<String, dynamic> _$ParallelCalculatingRequestToJson(
@@ -39,7 +40,7 @@ Map<String, dynamic> _$ParallelCalculatingRequestToJson(
     <String, dynamic>{
       'units': instance.units.map((e) => e.toJson()).toList(),
       'individs': instance.individs,
-      'defaultNn': instance.defaultNn,
+      'defaultAlgorithm': instance.defaultAlgorithm,
       'subListIndex': instance.subListIndex,
-      'neuralIsTopTeam': instance.neuralIsTopTeam,
+      'individualIsTopTeam': instance.individualIsTopTeam,
     };

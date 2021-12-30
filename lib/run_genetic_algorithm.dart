@@ -2,6 +2,7 @@ import 'package:collection/src/iterable_extensions.dart';
 import 'package:d2_ai_v2/ai_controller/ai_contoller.dart';
 import 'package:d2_ai_v2/dart_nural/networks/linear_network_v2.dart';
 import 'package:d2_ai_v2/models/providers.dart';
+import 'package:d2_ai_v2/optim_algorythm/factories/networks_factory.dart';
 import 'package:d2_ai_v2/providers/dart_file_provider.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
 import 'package:d2_ai_v2/utils/math_utils.dart';
@@ -92,6 +93,26 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
     index++;
   }
 
+
+  final defaultAiFactory = NetworksFactory(
+      unitLayers: [cellVectorLength, 128, 64, 32],
+      layers: [32*12, 128, 64],
+      cellsCount: cellsCount,
+      cellVectorLength: cellVectorLength,
+      input: cellVectorLength,
+      output: actionsCount,
+      networkVersion: 3
+  );
+  final individualAiFactory = NetworksFactory(
+      unitLayers: [cellVectorLength, 128, 64, 32],
+      layers: [32*12, 128, 64],
+      cellsCount: cellsCount,
+      cellVectorLength: cellVectorLength,
+      input: cellVectorLength,
+      output: actionsCount,
+      networkVersion: 3
+  );
+
   final gc = GeneticController(
     gameController: GameController(
       attackController: AttackController(
@@ -113,8 +134,8 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
     updateStateContext: null,
     generationCount: 100000,
     maxIndividsCount: 30,
-    input: cellVectorLength,
-    output: actionsCount,
+    //input: cellVectorLength,
+    //output: actionsCount,
     units: units.map((e) => e.copyWith()).toList(),
     individController: AiController(),
     fileProvider: DartFileProvider(),
@@ -123,12 +144,14 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
     unitLayers: [cellVectorLength, 128, 64, 32],
     cellsCount: 12,
     networkVersion: 2,*/
-    layers: [32*12, 128, 64],
-    unitVectorLength: cellVectorLength,
-    unitLayers: [cellVectorLength, 128, 64, 32],
-    cellsCount: 12,
+    //layers: [32*12, 128, 64],
+    //unitVectorLength: cellVectorLength,
+    //unitLayers: [cellVectorLength, 128, 64, 32],
+    //cellsCount: 12,
     networkVersion: 3,
     //fileProvider: FileProvider(),
+    defaultAiFactory: defaultAiFactory,
+    individualAiFactory: individualAiFactory,
   );
 
   // Инициализация с чекпоинта
@@ -138,6 +161,6 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
   }
 
   print('Запуск алгоритма');
-  await gc.startParallel(5, showBestBattle: false, safeEveryEpochs: 100);
+  await gc.startParallel(5, showBestBattle: false, safeEveryEpochs: 10);
   print('Стоп алгоритма');
 }

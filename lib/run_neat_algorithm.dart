@@ -21,49 +21,42 @@ Future<void> startNeatAlgorithm() async {
       edgesMap: {},
       adjacencyDict: {},
       adjacencyList: {},
-      initFrom: false);
-
-  tree.addNewNextNode(
-    0,
-    NodeV1.random(IdCalculator.getNextId()),
-    EdgeV1.random(IdCalculator.getNextId()),
-  );
-  tree.addNewNextNode(
-    1,
-    NodeV1.random(IdCalculator.getNextId()),
-    EdgeV1.random(IdCalculator.getNextId()),
-  );
-  tree.addNewNextNode(
-    2,
-    NodeV1.random(IdCalculator.getNextId()),
-    EdgeV1.random(IdCalculator.getNextId()),
-  );
-  tree.addNewNextNode(
-    3,
-    NodeV1.random(IdCalculator.getNextId()),
-    EdgeV1.random(IdCalculator.getNextId()),
+      initFrom: false,
+    nodesStartState: {},
+    inputCompleter: {},
   );
 
-  tree.addNodeBetween(
-      0,
-      20,
-      NodeV1.random(IdCalculator.getNextId()),
-      EdgeV1.random(IdCalculator.getNextId()),
-      EdgeV1.random(IdCalculator.getNextId()));
+  //NodeV1.random(IdCalculator.getNextId()),
+  //EdgeV1.random(IdCalculator.getNextId()),
 
-  tree.addNewPrevNode(
-      22,
-      NodeV1.random(IdCalculator.getNextId()),
-      EdgeV1.random(IdCalculator.getNextId())
-  );
+  //final tn = NodeV1.random(IdCalculator.getNextId());
+  //final te = EdgeV1.random(IdCalculator.getNextId());
 
+  NodeV1 tn() {
+    return NodeV1.random(IdCalculator.getNextId());
+  }
+  EdgeV1 te() {
+    return EdgeV1.random(IdCalculator.getNextId());
+  }
+
+  //tree.addEdge(0, 10, EdgeV1.random(IdCalculator.getNextId()));
+  /*tree.addNewNextNode(0, tn(), te()); // ID = 20
+  tree.addNewNextNode(20, tn(), te()); // ID = 22
+  tree.addNewNextNode(22, tn(), te()); // ID = 24
+  tree.addNewNextNode(24, tn(), te()); // ID = 26
+  tree.addNewPrevNode(20, tn(), te()); // ID = 28
+  tree.addNewPrevNode(20, tn(), te()); // ID = 30
+  tree.addNewNextNode(20, tn(), te()); // ID = 32
+  tree.addEdge(28, 30, te());*/
 
   print(tree);
 
-  //final inputVector = List.generate(10, (index) => Random().nextDouble());
+  final inputVector = List.generate(10, (index) => Random().nextDouble());
 
-  //final result = tree.forward(inputVector);
-
+  var result = tree.forward(inputVector);
+  print(result);
+  result = tree.forward(inputVector);
+  print(result);
   /*final adjDict = <AdjacencyDictKey, bool>{};
   final k1 = AdjacencyDictKey(child: 1, parent: 0);
   final k2 = AdjacencyDictKey(child: 0, parent: 1);

@@ -2,9 +2,10 @@
 
 import 'package:d2_ai_v2/optim_algorythm/neat/edge_base.dart';
 
+import '../base.dart';
 import 'node_base.dart';
 
-abstract class GameTreeBase {
+abstract class GameTreeBase implements AiAlgorithm {
 
   /// Добавить новый узел [node] с новой связью [edge] от узла [current]
   bool addNewNextNode(int current, TreeNodeBase node, TreeEdgeBase edge);
@@ -23,5 +24,6 @@ abstract class GameTreeBase {
       TreeEdgeBase e1,
       TreeEdgeBase e2);
 
+  @override
   List<double> forward(List<double> inp);
 }

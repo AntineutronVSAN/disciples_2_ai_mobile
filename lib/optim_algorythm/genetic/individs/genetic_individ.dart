@@ -5,14 +5,15 @@ import 'package:d2_ai_v2/dart_nural/networks/linear_network_v3.dart';
 import 'package:d2_ai_v2/dart_nural/neural_base.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-import 'genetic_individ_base.dart';
+import '../../base.dart';
+import '../../individual_base.dart';
 
 part 'genetic_individ.g.dart';
 
 const double mutateValue = 20.0;
 
 @JsonSerializable()
-class GeneticIndivid implements GeneticIndividBase {
+class GeneticIndivid implements IndividualBase {
   /// Веса нейронной сети
   List<double>? weights;
 
@@ -346,81 +347,14 @@ class GeneticIndivid implements GeneticIndividBase {
     nn = newNN;
 
     needCalculate = true;
-
-    /*// todo Пока тупо выбираем случайные веса
-    final maxParamsCount =
-        input * hidden + hidden * hidden * layers + hidden * output;
-    final weightIndexes = List.generate(
-        maxParamsCount ~/ 50, (index) => random.nextInt(maxParamsCount - 1));
-
-    final maxBiasParamsCount =
-        hidden * layers + output;
-    final biasWeightIndexes = List.generate(
-        maxBiasParamsCount ~/ 5, (index) => random.nextInt(maxBiasParamsCount - 1));
-
-    for (var ind in weightIndexes) {
-      final newRandomValue = random.nextInt(100);
-      if (newRandomValue >= 0 && newRandomValue < 25) {
-        weights![ind] = weights![ind] > 0.5 ? 0.0 : 1.0;
-      } else if (newRandomValue >= 25 && newRandomValue < 50) {
-        weights![ind] = weights![ind] < 0.5 ? 1.0 : 1.0;
-      } else if (newRandomValue >= 50 && newRandomValue < 75) {
-        weights![ind] = weights![ind] += random.nextDouble()*20.0-10.0;
-      } else {
-        weights![ind] = weights![ind] -= random.nextDouble()*20.0-10.0;
-      }
-    }
-
-    // Мутации активационной функции
-    if (random.nextInt(100) > 50) {
-      final randomLayerIndex = random.nextInt(layers-2);
-      final randomVal = random.nextInt(100);
-      if (randomVal >= 0 && randomVal < 33) {
-        activations![randomLayerIndex] = 'sigmoid';
-      } else if (randomVal >= 33 && randomVal < 66) {
-        activations![randomLayerIndex] = 'softmax';
-      } else if (randomVal >= 66) {
-        activations![randomLayerIndex] = 'relu';
-      }
-    }
-
-    for (var ind in biasWeightIndexes) {
-
-      if (ind >= biases!.length) {
-        print('$ind >= ${biases!.length}');
-        throw Exception();
-      }
-
-      final newRandomValue = random.nextInt(100);
-      if (newRandomValue >= 0 && newRandomValue < 25) {
-        biases![ind] = biases![ind] > 0.5 ? 0.0 : 1.0;
-      } else if (newRandomValue >= 25 && newRandomValue < 50) {
-        biases![ind] = biases![ind] < 0.5 ? 1.0 : 1.0;
-      } else if (newRandomValue >= 50 && newRandomValue < 75) {
-        biases![ind] = biases![ind] += random.nextDouble();
-      } else {
-        biases![ind] = biases![ind] -= random.nextDouble();
-      }
-    }
-
-    final newNN = SimpleLinearNeuralNetwork(
-      input: input,
-      output: output,
-      hidden: hidden,
-      layers: layers,
-      startWeights: weights,
-      startActivations: activations,
-      startBiases: biases,
-    );
-    weights = newNN.weights;
-    biases = newNN.biases;
-    nn = newNN;
-
-    needCalculate = true;*/
   }
 
   @override
-  GeneticIndividBase cross(GeneticIndividBase target) {
+  IndividualBase cross(IndividualBase target) {
+    // todo Старался не нарушать принцип разделения интерфейсов,
+    // в итоге получилась такая фигня с приведением типов
+    target = target as GeneticIndivid;
+
     final maxUnitNnParamsCount = input * unitLayers.first +
         unitLayers.sum +
         unitLayers.last * unitLayers.last; // todo
@@ -499,7 +433,7 @@ class GeneticIndivid implements GeneticIndividBase {
       }
     }
 
-    assert(networkVersion == target.getNetworkVersion());
+    assert(networkVersion == target.getAlgorithmVersion());
 
     return GeneticIndivid(
       networkVersion: networkVersion,
@@ -617,7 +551,7 @@ class GeneticIndivid implements GeneticIndividBase {
   }
 
   @override
-  GameNeuralNetworkBase getNn() {
+  AiAlgorithm getAlgorithm() {
     return nn!;
   }
 
@@ -646,7 +580,7 @@ class GeneticIndivid implements GeneticIndividBase {
   }
 
   @override
-  int getNetworkVersion() {
+  int getAlgorithmVersion() {
     return networkVersion;
   }
 }

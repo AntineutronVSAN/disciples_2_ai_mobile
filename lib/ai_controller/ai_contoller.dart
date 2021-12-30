@@ -87,9 +87,10 @@ import 'package:d2_ai_v2/dart_nural/linear_network.dart';
 import 'package:d2_ai_v2/dart_nural/neural_base.dart';
 import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
+import 'package:d2_ai_v2/optim_algorythm/base.dart';
 import 'package:d2_ai_v2/optim_algorythm/genetic/genetic_checkpoint.dart';
 import 'package:d2_ai_v2/optim_algorythm/genetic/individs/genetic_individ.dart';
-import 'package:d2_ai_v2/optim_algorythm/genetic/individs/genetic_individ_base.dart';
+import 'package:d2_ai_v2/optim_algorythm/individual_base.dart';
 import 'package:d2_ai_v2/optim_algorythm/neat/game_tree_base.dart';
 import 'package:d2_ai_v2/providers/file_provider_base.dart';
 
@@ -99,8 +100,10 @@ import '../const.dart';
 
 class AiController {
 
-  late GameNeuralNetworkBase? linearNN;
-  late GameTreeBase? tree;
+  /// В основе контроллера ИИ лежит алгоритм. Сущность алгоритма - интерфейс
+  /// Алгоритм может быть различным. В частность, нейронной сетью или алгоритмом
+  /// neat
+  late AiAlgorithm? algorithm;
 
   bool inited = false;
 
@@ -108,31 +111,29 @@ class AiController {
   /// Игровые механики изменяют этих юнитов
   late List<Unit> unitsRefs;
 
-  void initFromIndivid(List<Unit> units, GeneticIndividBase ind) {
-    linearNN = ind.getNn();
+
+  void initFromIndivid(List<Unit> units, IndividualBase ind) {
+    algorithm = ind.getAlgorithm();
     unitsRefs = units;
     inited = true;
   }
 
   Future<void> initFromFile(List<Unit> units, String filePath, FileProviderBase fileProvider) async {
-
     //final fileProvider = FileProvider(); // todo
     await fileProvider.init();
     final checkPoint = GeneticAlgorithmCheckpoint.fromJson(await fileProvider.getDataByFileName(filePath));
-
-    linearNN = checkPoint.individs[0].getNn();
+    algorithm = checkPoint.individs[0].getAlgorithm();
     unitsRefs = units;
     inited = true;
   }
 
   void init(List<Unit> units, {
-    required GameNeuralNetworkBase nn,
+    required AiAlgorithm nn,
   }) {
-    linearNN = nn;
+    algorithm = nn;
     unitsRefs = units;
     inited = true;
   }
-
 
   /// Запросить действия у контроллера AI
   /// Вернёт список действий, отсортированный в порядке
@@ -148,7 +149,7 @@ class AiController {
     final gameVector = _units2Vector(currentActiveUnitCellIndex);
 
     // Отправляется вектор в нейронку
-    final outputVector = linearNN!.forward(gameVector);
+    final outputVector = algorithm!.forward(gameVector);
 
     List<_NeuralRequestAction> nnActions = [];
 

@@ -1,7 +1,7 @@
 import 'package:d2_ai_v2/optim_algorythm/genetic/individs/genetic_individ.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-import 'individs/genetic_individ_base.dart';
+import '../individual_base.dart';
 
 
 part 'genetic_checkpoint.g.dart';

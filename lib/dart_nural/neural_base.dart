@@ -2,12 +2,14 @@
 
 import 'dart:math';
 
+import 'package:d2_ai_v2/optim_algorythm/base.dart';
 import 'package:ml_linalg/vector.dart';
 
 
 typedef Activation = Function(Vector v);
 
-abstract class GameNeuralNetworkBase {
+abstract class GameNeuralNetworkBase implements AiAlgorithm {
+  @override
   List<double> forward(List<double> inputData);
   Vector forwardRetVector(List<double> inputData);
   Vector forwardRetVectorFromVector(Vector inputData);
