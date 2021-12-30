@@ -71,5 +71,11 @@ class NetworksFactory implements IndividualFactoryBase {
     await provider.writeFile(file, checkPoint);
   }
 
+  @override
+  IndividualFactoryBase copyWith() {
+    // TODO: implement copyWith
+    throw UnimplementedError();
+  }
+
 
 }

@@ -33,10 +33,10 @@ Future<void> startNeatAlgorithm() async {
   //final te = EdgeV1.random(IdCalculator.getNextId());
 
   NodeV1 tn() {
-    return NodeV1.random(IdCalculator.getNextId());
+    return NodeV1.random(tree.idCalculator.getNextId());
   }
   EdgeV1 te() {
-    return EdgeV1.random(IdCalculator.getNextId());
+    return EdgeV1.random(tree.idCalculator.getNextId());
   }
 
   //tree.addEdge(0, 10, EdgeV1.random(IdCalculator.getNextId()));

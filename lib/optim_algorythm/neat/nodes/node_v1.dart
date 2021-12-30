@@ -4,7 +4,11 @@ import 'package:collection/src/iterable_extensions.dart';
 import 'package:d2_ai_v2/utils/activations_mixin.dart';
 
 import '../node_base.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'node_v1.g.dart';
+
+@JsonSerializable()
 class NodeV1 with MathMixin implements TreeNodeBase {
 
   int id;
@@ -21,6 +25,11 @@ class NodeV1 with MathMixin implements TreeNodeBase {
   }) {
     _activationFunc = activationFunctionFromString(activation);
   }
+
+  factory NodeV1.fromJson(Map<String, dynamic> json) =>
+      _$NodeV1FromJson(json);
+  @override
+  Map<String, dynamic> toJson() => _$NodeV1ToJson(this);
 
   factory NodeV1.random(int id) {
     return NodeV1(activation: getRandomActivation(), id: id, defaultValue: getRandomValue());
@@ -57,9 +66,8 @@ class NodeV1 with MathMixin implements TreeNodeBase {
   }
 
   @override
-  Map<String, dynamic> toJson() {
-    // TODO: implement toJson
-    throw UnimplementedError();
+  NodeV1 deepCopy() {
+    return NodeV1(id: id, activation: activation, defaultValue: defaultValue);
   }
 
 }

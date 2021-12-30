@@ -128,9 +128,9 @@ class AiController {
   }
 
   void init(List<Unit> units, {
-    required AiAlgorithm nn,
+    required AiAlgorithm algorithm,
   }) {
-    algorithm = nn;
+    this.algorithm = algorithm;
     unitsRefs = units;
     inited = true;
   }

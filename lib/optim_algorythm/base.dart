@@ -18,6 +18,8 @@ abstract class IndividualFactoryBase {
 
   Future<void> saveCheckpoint(String file, FileProviderBase provider, List<IndividualBase> individuals, int generation);
 
+  IndividualFactoryBase copyWith();
+
 }
 
 abstract class CheckPoint {

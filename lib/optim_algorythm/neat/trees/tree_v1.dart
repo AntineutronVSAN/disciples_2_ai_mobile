@@ -9,6 +9,12 @@ import 'package:d2_ai_v2/optim_algorythm/neat/nodes/node_v1.dart';
 import '../game_tree_base.dart';
 import '../id_calculator.dart';
 
+
+import 'package:json_annotation/json_annotation.dart';
+
+part 'tree_v1.g.dart';
+
+
 class TreeV1 implements GameTreeBase {
   final List<TreeNodeBase> nodes;
   final Map<int, TreeNodeBase> nodesMap;
@@ -44,6 +50,9 @@ class TreeV1 implements GameTreeBase {
   /// для поиска зацикливаний
   final Map<int, bool> nodesStartState;
 
+  /// У каждого дерева свой присваиватель ID
+  final IdCalculator idCalculator = IdCalculator();
+
   TreeV1({
     required this.input,
     required this.output,
@@ -57,20 +66,32 @@ class TreeV1 implements GameTreeBase {
     required this.nodesStartState,
     required this.inputCompleter,
   }) {
+
     if (initFrom) {
-      assert(nodes.isNotEmpty &&
+      /*assert(
+      nodes.isNotEmpty &&
           nodesMap.isNotEmpty &&
           edges.isNotEmpty &&
           edgesMap.isNotEmpty &&
-          adjacencyDict.isNotEmpty &&
-          adjacencyList.isNotEmpty);
+          //adjacencyDict.isNotEmpty &&
+          //adjacencyList.isNotEmpty
+          );*/
+
+      // У id калькулятора нужно сделать оффсет
+      idCalculator.setStartID(edges.length + nodes.length);
+
+      if (edges.isNotEmpty && adjacencyDict.isEmpty) {
+        print('asdfasfd');
+        throw Exception();
+      }
+
     } else {
-      assert(nodes.isEmpty &&
+      /*assert(nodes.isEmpty &&
           nodesMap.isEmpty &&
           edges.isEmpty &&
           edgesMap.isEmpty &&
           adjacencyDict.isEmpty &&
-          adjacencyList.isEmpty);
+          adjacencyList.isEmpty);*/
       _initRandom();
     }
   }
@@ -79,7 +100,7 @@ class TreeV1 implements GameTreeBase {
     // Входные узлы. id узла равен индексу элемента входного вектора
     var i = 0;
     for (; i < input; i++) {
-      final newNode = NodeV1.randomWithoutActivation(IdCalculator.fromID(i));
+      final newNode = NodeV1.randomWithoutActivation(idCalculator.fromID(i));
       // id узла newNode равен индексу i вектора input
       final currentNodeID = newNode.getId();
       nodes.add(newNode);
@@ -90,7 +111,7 @@ class TreeV1 implements GameTreeBase {
     }
     // Выходные узлы
     for (; i < input + output; i++) {
-      final newNode = NodeV1.randomWithoutActivation(IdCalculator.fromID(i));
+      final newNode = NodeV1.randomWithoutActivation(idCalculator.fromID(i));
       // id узла newNode равен индексу i вектора input
       final currentNodeID = newNode.getId();
       nodes.add(newNode);
@@ -100,6 +121,7 @@ class TreeV1 implements GameTreeBase {
       nodesStartState[currentNodeID] = false;
     }
     assert(nodes.length == input + output);
+    assert(edges.length == adjacencyDict.length);
   }
 
   @override
@@ -109,7 +131,7 @@ class TreeV1 implements GameTreeBase {
       алгоритма. Возможно, в будущем для сравнения будет добавлен и рекурсивный
       алгоритм
     */
-
+    assert(edges.length == adjacencyDict.length);
     // Очередь обработки узлов
     Queue<int> inputQueue = Queue<int>();
     Queue<int> outputQueue = Queue<int>();
@@ -143,7 +165,7 @@ class TreeV1 implements GameTreeBase {
       if (inputQueue.isEmpty) {
         break;
       }
-      if (stopCounter > 1000) {
+      if (stopCounter > input + 1) {
         throw Exception();
       }
       int currentNodeID = inputQueue.removeFirst();
@@ -162,6 +184,11 @@ class TreeV1 implements GameTreeBase {
         // и отправляется в список inputs следующего узла.
         final currentAdjKey =
             AdjacencyDictKey(child: nextNodeID, parent: currentNodeID);
+
+        if (adjacencyDict[currentAdjKey] == null) {
+          print('asdfasdf');
+          throw Exception();
+        }
         final currentEdgeObject = adjacencyDict[currentAdjKey]!;
 
         final data = currentEdgeObject.calculate(value);
@@ -172,7 +199,7 @@ class TreeV1 implements GameTreeBase {
     stopCounter = 0;
     while (true) {
       stopCounter++;
-      if (stopCounter > 1000) {
+      if (stopCounter > 10000000) {
         throw Exception();
       }
       if (otherQueue.isEmpty) {
@@ -216,7 +243,7 @@ class TreeV1 implements GameTreeBase {
     List<double> resultVector = [];
     while (true) {
       stopCounter++;
-      if (stopCounter > 1000) {
+      if (stopCounter > output + 1) {
         throw Exception();
       }
       if (outputQueue.isEmpty) {
@@ -247,7 +274,7 @@ class TreeV1 implements GameTreeBase {
     }
 
     assert(resultVector.length == output, "${resultVector.length} != $output");
-
+    assert(edges.length == adjacencyDict.length);
     return resultVector;
   }
 
@@ -268,6 +295,7 @@ class TreeV1 implements GameTreeBase {
         return false;
       }
     }
+    assert(edges.length == adjacencyDict.length);
     return true;
   }
 
@@ -294,11 +322,13 @@ class TreeV1 implements GameTreeBase {
     /* n1 -> edge -> n2 */
     // Запрещено добавлять связи между входными узлами
     if (n1 < input && n2 < input) {
-      throw Exception("Запрещено добавлять связи между входными узлами");
+      //print('Запрещено добавлять связи между входными узлами');
+      return false;
     }
     // Запрещено добавлять связь от выходного узла
     if (n1 >= input && n1 < output+input) {
-      throw Exception("Запрещено добавлять связь от выходного узла");
+      //throw Exception("Запрещено добавлять связь от выходного узла");
+      return false;
     }
 
     if (n1 == n2) {
@@ -350,7 +380,7 @@ class TreeV1 implements GameTreeBase {
 
       return false;
     }
-
+    assert(edges.length == adjacencyDict.length);
     return true;
   }
 
@@ -396,6 +426,7 @@ class TreeV1 implements GameTreeBase {
     inputCompleter[newNodeID]!.addMaxCount(1);
 
     nodesStartState[newNodeID] = false;
+    assert(edges.length == adjacencyDict.length);
     return true;
   }
 
@@ -443,6 +474,7 @@ class TreeV1 implements GameTreeBase {
     nodesStartState[target] = false;
 
     inputCompleter[target]!.addMaxCount(1);
+    assert(edges.length == adjacencyDict.length);
     return true;
   }
 
@@ -454,7 +486,12 @@ class TreeV1 implements GameTreeBase {
       //throw Exception("Запрещено добавлять связи между входными узлами");
       return false;
     }
+    if (n2 < input) {
+      //throw Exception("Запрещено добавлять связи к входному узлу");
+      return false;
+    }
     if (nodesStartState[n2]!) {
+      print('asdfasdf');
       throw Exception();
     }
 
@@ -513,7 +550,7 @@ class TreeV1 implements GameTreeBase {
     inputCompleter[newNodeID]!.addMaxCount(1);
 
     nodesStartState[newNodeID] = false;
-
+    assert(edges.length == adjacencyDict.length);
     // Необходимо удалить существующие связи, если они есть
     if (adjacencyDict[currentKey] != null) {
       final deletedEdgeID = adjacencyDict[currentKey]!.getId();
@@ -521,8 +558,7 @@ class TreeV1 implements GameTreeBase {
       edgesMap.remove(deletedEdgeID);
       edges.removeWhere((element) => element.getId() == deletedEdgeID);
     }
-
-
+    assert(edges.length == adjacencyDict.length);
     return true;
   }
 
@@ -554,15 +590,39 @@ class TreeV1 implements GameTreeBase {
     }
     return super.toString();
   }
+
+  @override
+  IdCalculator getIdCalculator() {
+    return idCalculator;
+  }
+
+  @override
+  List<int> getNodesId() {
+    return nodes.map((e) => e.getId()).toList();
+  }
+
+  @override
+  GameTreeBase deepCopy() {
+
+    throw Exception();
+
+  }
 }
 
 /// Вспомогательный класс, который хранит сколько всего есть входов в узел
 /// и сколько на данный момент входов завершено
+
+// todo Тесты на коллизии ключей
+@JsonSerializable()
 class NodesInputCounter {
   int maxInputsCount = 0;
   final List<double> currentInputs;
 
   NodesInputCounter({required this.currentInputs, required this.maxInputsCount});
+
+  factory NodesInputCounter.fromJson(Map<String, dynamic> json) =>
+      _$NodesInputCounterFromJson(json);
+  Map<String, dynamic> toJson() => _$NodesInputCounterToJson(this);
 
   factory NodesInputCounter.empty() {
     return NodesInputCounter(
@@ -597,6 +657,10 @@ class NodesInputCounter {
   @override
   String toString() {
     return 'Max inputs $maxInputsCount. Current inputs - $currentInputs';
+  }
+
+  NodesInputCounter deepCopy() {
+    return NodesInputCounter(currentInputs: currentInputs, maxInputsCount: maxInputsCount);
   }
 }
 

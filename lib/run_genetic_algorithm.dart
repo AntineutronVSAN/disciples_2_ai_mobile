@@ -2,6 +2,7 @@ import 'package:collection/src/iterable_extensions.dart';
 import 'package:d2_ai_v2/ai_controller/ai_contoller.dart';
 import 'package:d2_ai_v2/dart_nural/networks/linear_network_v2.dart';
 import 'package:d2_ai_v2/models/providers.dart';
+import 'package:d2_ai_v2/optim_algorythm/factories/neat_factory.dart';
 import 'package:d2_ai_v2/optim_algorythm/factories/networks_factory.dart';
 import 'package:d2_ai_v2/providers/dart_file_provider.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
@@ -15,7 +16,7 @@ import 'controllers/initiative_shuffler.dart';
 import 'controllers/power_controller.dart';
 import 'dart_nural/multilayer_perceptron.dart';
 import 'models/unit.dart';
-import 'optim_algorythm/genetic/genetic_controller.dart';
+import 'optim_algorythm/genetic_controller.dart';
 
 /*
 
@@ -24,7 +25,13 @@ import 'optim_algorythm/genetic/genetic_controller.dart';
 */
 
 
+
 void main(List<String> arguments) async {
+
+  ////PropertyChangeNotifier
+
+
+
   await startOnlyGeneticAlgorithm(arguments);
 
   /*final nn = MultilayerPerceptron(
@@ -53,10 +60,13 @@ void main(List<String> arguments) async {
       unitStartActivations: null);
 
   final result = nn.forward(List.generate(37*12, (index) => nn.getRandomValue()));*/
-
 }
 
 Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
+
+
+
+
   String? fromCheckpoint;
   if (args.length == 1) {
     fromCheckpoint = args[0];
@@ -78,7 +88,6 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
     'Сквайр',
     'Рыцарь',
     'Сквайр',
-
     'Орк',
     'Людоед',
     'Орк',
@@ -88,68 +97,56 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
   ];
   assert(unitNames.length == 12);
   var index = 0;
-  for(var name in unitNames) {
+  for (var name in unitNames) {
     units[index] = repository.getCopyUnitByName(name);
     index++;
   }
 
-
   final defaultAiFactory = NetworksFactory(
       unitLayers: [cellVectorLength, 128, 64, 32],
-      layers: [32*12, 128, 64],
+      layers: [32 * 12, 128, 64],
       cellsCount: cellsCount,
       cellVectorLength: cellVectorLength,
       input: cellVectorLength,
       output: actionsCount,
-      networkVersion: 3
-  );
-  final individualAiFactory = NetworksFactory(
+      networkVersion: 3);
+  /*final individualAiFactory = NetworksFactory(
       unitLayers: [cellVectorLength, 128, 64, 32],
-      layers: [32*12, 128, 64],
+      layers: [32 * 12, 128, 64],
       cellsCount: cellsCount,
       cellVectorLength: cellVectorLength,
       input: cellVectorLength,
       output: actionsCount,
-      networkVersion: 3
-  );
+      networkVersion: 3);*/
+
+  final individualAiFactory = NeatFactory(
+      cellsCount: cellsCount,
+      cellVectorLength: cellVectorLength,
+      input: inputVectorLength,
+      output: actionsCount,
+      version: 1);
 
   final gc = GeneticController(
     gameController: GameController(
       attackController: AttackController(
         powerController: PowerController(
-          randomExponentialDistribution:
-          RandomExponentialDistribution(),
+          randomExponentialDistribution: RandomExponentialDistribution(),
         ),
         damageScatter: DamageScatter(
-          randomExponentialDistribution:
-          RandomExponentialDistribution(),
+          randomExponentialDistribution: RandomExponentialDistribution(),
         ),
         attackDurationController: AttackDurationController(),
       ),
       initiativeShuffler: InitiativeShuffler(
-          randomExponentialDistribution:
-          RandomExponentialDistribution()),
+          randomExponentialDistribution: RandomExponentialDistribution()),
     ),
     aiController: AiController(),
     updateStateContext: null,
     generationCount: 100000,
-    maxIndividsCount: 30,
-    //input: cellVectorLength,
-    //output: actionsCount,
+    maxIndividsCount: 20,
     units: units.map((e) => e.copyWith()).toList(),
     individController: AiController(),
     fileProvider: DartFileProvider(),
-    /*layers: [256, 64],
-    unitVectorLength: cellVectorLength,
-    unitLayers: [cellVectorLength, 128, 64, 32],
-    cellsCount: 12,
-    networkVersion: 2,*/
-    //layers: [32*12, 128, 64],
-    //unitVectorLength: cellVectorLength,
-    //unitLayers: [cellVectorLength, 128, 64, 32],
-    //cellsCount: 12,
-    networkVersion: 3,
-    //fileProvider: FileProvider(),
     defaultAiFactory: defaultAiFactory,
     individualAiFactory: individualAiFactory,
   );
@@ -161,6 +158,6 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
   }
 
   print('Запуск алгоритма');
-  await gc.startParallel(5, showBestBattle: false, safeEveryEpochs: 10);
+  await gc.startParallel(10, showBestBattle: false, safeEveryEpochs: 100);
   print('Стоп алгоритма');
 }

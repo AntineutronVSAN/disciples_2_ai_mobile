@@ -10,4 +10,6 @@ abstract class TreeNodeBase {
   Map<String, dynamic> toJson();
   TreeNodeBase.fromJson(Map<String, dynamic> json);
 
+
+  TreeNodeBase deepCopy();
 }

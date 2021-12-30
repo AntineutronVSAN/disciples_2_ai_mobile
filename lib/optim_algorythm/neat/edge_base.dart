@@ -10,4 +10,6 @@ abstract class TreeEdgeBase {
   void setWeight(double val);
 
   double calculate(double input);
+
+  TreeEdgeBase deepCopy();
 }

@@ -583,6 +583,12 @@ class GeneticIndivid implements IndividualBase {
   int getAlgorithmVersion() {
     return networkVersion;
   }
+
+  @override
+  IndividualBase deepCopy() {
+    // TODO: implement deepCopy
+    throw UnimplementedError();
+  }
 }
 
 /// Склонность мутаций того или иного индвивида

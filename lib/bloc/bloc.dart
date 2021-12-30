@@ -6,7 +6,7 @@ import 'package:d2_ai_v2/controllers/game_controller.dart';
 import 'package:d2_ai_v2/dart_nural/linear_network.dart';
 import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
-import 'package:d2_ai_v2/optim_algorythm/genetic/genetic_controller.dart';
+import 'package:d2_ai_v2/optim_algorythm/genetic_controller.dart';
 import 'package:d2_ai_v2/providers/file_provider.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
 import 'package:d2_ai_v2/update_state_context/update_state_context.dart';

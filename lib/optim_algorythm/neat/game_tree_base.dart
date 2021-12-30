@@ -3,6 +3,7 @@
 import 'package:d2_ai_v2/optim_algorythm/neat/edge_base.dart';
 
 import '../base.dart';
+import 'id_calculator.dart';
 import 'node_base.dart';
 
 abstract class GameTreeBase implements AiAlgorithm {
@@ -26,4 +27,9 @@ abstract class GameTreeBase implements AiAlgorithm {
 
   @override
   List<double> forward(List<double> inp);
+
+  List<int> getNodesId();
+  IdCalculator getIdCalculator();
+
+  GameTreeBase deepCopy();
 }
