@@ -1,8 +1,10 @@
 import 'dart:math';
 
 import 'package:d2_ai_v2/optim_algorythm/neat/edges/edge_v1.dart';
+import 'package:d2_ai_v2/optim_algorythm/neat/id_calculator.dart';
 import 'package:d2_ai_v2/optim_algorythm/neat/nodes/node_v1.dart';
 import 'package:d2_ai_v2/optim_algorythm/neat/trees/tree_v1.dart';
+import 'package:d2_ai_v2/utils/random_utils.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:d2_ai_v2/optim_algorythm/base.dart';
 import 'package:d2_ai_v2/optim_algorythm/individual_base.dart';
@@ -29,6 +31,8 @@ class NeatIndivid implements IndividualBase {
   bool initFrom;
   Map<int, NodesInputCounter>? inputCompleter;
   Map<int, bool>? nodesStartState;
+
+  IdCalculator? idCalculator;
 
   double fitness;
   List<double> fitnessHistory;
@@ -66,6 +70,7 @@ class NeatIndivid implements IndividualBase {
     required this.cellsCount,
     required this.cellVectorLength,
     required this.version,
+    this.idCalculator,
   }) {
 
     if (initFrom) {
@@ -78,7 +83,8 @@ class NeatIndivid implements IndividualBase {
         adjacencyDictValues != null &&
         adjacencyList != null &&
         inputCompleter != null &&
-        nodesStartState != null
+        nodesStartState != null &&
+      idCalculator != null
       );
       //adjacencyDict = Map.fromIterables(adjacencyDictKeys!, adjacencyDictValues!);
       if (adjacencyDict != null) {
@@ -102,7 +108,9 @@ class NeatIndivid implements IndividualBase {
           initFrom: initFrom,
           adjacencyList: adjacencyList!,
           nodesStartState: nodesStartState!,
-          inputCompleter: inputCompleter!);
+          inputCompleter: inputCompleter!,
+        idCalculator: idCalculator!,
+      );
     } else {
       adjacencyDictKeys = [];
       adjacencyDictValues = [];
@@ -114,6 +122,7 @@ class NeatIndivid implements IndividualBase {
       nodesStartState = {};
       inputCompleter = {};
       adjacencyDict = {};
+      idCalculator = IdCalculator();
       tree = TreeV1(
           input: input,
           output: output,
@@ -125,7 +134,9 @@ class NeatIndivid implements IndividualBase {
           initFrom: initFrom,
           adjacencyList: adjacencyList!,
           nodesStartState: nodesStartState!,
-          inputCompleter: inputCompleter!);
+          inputCompleter: inputCompleter!,
+        idCalculator: idCalculator,
+      );
     }
 
     assertsTest();
@@ -136,54 +147,6 @@ class NeatIndivid implements IndividualBase {
     assert(edges!.length == adjacencyDictKeys!.length);
     assert(edges!.length == adjacencyDictValues!.length);
   }
-  /*@override
-  IndividualBase copyWith({
-    nodes,
-    nodesMap,
-    edges,
-    edgesMap,
-    adjacencyDict,
-    adjacencyList,
-    initFrom,
-    inputCompleter,
-    nodesStartState,
-    fitness,
-    fitnessHistory,
-    needCalculate,
-    input,
-    output,
-    cellsCount,
-    cellVectorLength,
-    version,
-    adjacencyDictKeys,
-    adjacencyDictValues
-  }) {
-
-    return NeatIndivid(
-      adjacencyDict: adjacencyDict ?? this.adjacencyDict,
-        nodes: nodes ?? this.nodes,
-        nodesMap: nodesMap ?? this.nodesMap,
-        edges: edges ?? this.edges,
-        edgesMap: edgesMap ?? this.edgesMap,
-
-        adjacencyDictKeys: adjacencyDictKeys ?? this.adjacencyDictKeys,
-        adjacencyDictValues: adjacencyDictValues ?? this.adjacencyDictValues,
-
-        adjacencyList: adjacencyList ?? this.adjacencyList,
-        initFrom: initFrom ?? this.initFrom,
-        inputCompleter: inputCompleter ?? this.inputCompleter,
-        nodesStartState: nodesStartState ?? this.nodesStartState,
-        fitness: fitness ?? this.fitness,
-        fitnessHistory: fitnessHistory ?? this.fitnessHistory,
-        needCalculate: needCalculate ?? this.needCalculate,
-        input: input ?? this.input,
-        output: output ?? this.output,
-        cellsCount: cellsCount ?? this.cellsCount,
-        cellVectorLength: cellVectorLength ?? this.cellVectorLength,
-        version: version ?? this.version
-    );
-
-  }*/
 
   @override
   IndividualBase? cross(IndividualBase target) {
@@ -219,6 +182,96 @@ class NeatIndivid implements IndividualBase {
     return fitnessHistory;
   }
 
+  bool _addEdge(List<int> allNodesId, IdCalculator calculator) {
+    final allNodesCount = allNodesId.length;
+
+    //final firstNodeIndex = random.nextInt(allNodesCount);
+    final firstNodeIndex = randomRanges([
+      PairValues<int>(
+        first: 0, end: input
+      ),
+      PairValues<int>(
+          first: input+output, end: allNodesCount
+      )
+    ], random);
+    final secondNodeIndex = randomRanges([
+      PairValues<int>(
+          first: input, end: allNodesCount
+      )
+    ], random);
+
+    if (firstNodeIndex == secondNodeIndex) {
+      return false;
+    }
+    final res = tree!.addEdge(
+        allNodesId[firstNodeIndex],
+        allNodesId[secondNodeIndex],
+        EdgeV1.random(calculator.getNextId()));
+    return res;
+  }
+
+  bool _addNextNode(List<int> allNodesId, IdCalculator calculator) {
+    final allNodesCount = allNodesId.length;
+    final firstNodeIndex = randomRanges([
+      PairValues<int>(
+          first: 0, end: input
+      ),
+      PairValues<int>(
+          first: input+output, end: allNodesCount
+      ),
+    ], random);
+
+    final res = tree!.addNewNextNode(
+        allNodesId[firstNodeIndex],
+        NodeV1.random(calculator.getNextId()),
+        EdgeV1.random(calculator.getNextId()));
+    return res;
+  }
+
+  bool _addPrevNode(List<int> allNodesId, IdCalculator calculator) {
+    final allNodesCount = allNodesId.length;
+
+    final secondNodeIndex = randomRanges([
+      PairValues<int>(
+          first: input, end: allNodesCount
+      )
+    ], random);
+
+    final res = tree!.addNewPrevNode(
+        allNodesId[secondNodeIndex],
+        NodeV1.random(calculator.getNextId()),
+        EdgeV1.random(calculator.getNextId()));
+    return res;
+  }
+
+  bool _addNodeBetween(List<int> allNodesId, IdCalculator calculator) {
+    final allNodesCount = allNodesId.length;
+
+    final firstNodeIndex = randomRanges([
+      PairValues<int>(
+          first: 0, end: input
+      ),
+      PairValues<int>(
+          first: input+output, end: allNodesCount
+      ),
+    ], random);
+
+    final secondNodeIndex = randomRanges([
+      PairValues<int>(
+          first: input, end: allNodesCount
+      )
+    ], random);
+
+    final res = tree!.addNodeBetween(
+        allNodesId[firstNodeIndex],
+        allNodesId[secondNodeIndex],
+        NodeV1.random(calculator.getNextId()),
+        EdgeV1.random(calculator.getNextId()),
+        EdgeV1.random(calculator.getNextId())
+    );
+    return res;
+  }
+
   @override
   void mutate() {
 
@@ -234,82 +287,35 @@ class NeatIndivid implements IndividualBase {
     6) Изменить активацию узла
 
     */
-
-    final allNodesId = tree!.getNodesId();
-    final allNodesCount = allNodesId.length;
-
-    final idCalculator = tree!.getIdCalculator();
-
     int randomValue = random.nextInt(1000);
+    final allNodesId = tree!.getNodesId();
+    final idCalculator = tree!.getIdCalculator();
+    //return;
+    bool res = false;
 
-    if (randomValue <= 250) {
+    //res = _addEdge(allNodesId, idCalculator); //todo Убарть
+    //res = _addNextNode(allNodesId, idCalculator);
+    //res = _addPrevNode(allNodesId, idCalculator);
+    //res = _addNodeBetween(allNodesId, idCalculator);
+
+    if (randomValue <= 250) { // todo раскоментировать
       // Новая связь
-      final firstNodeIndex = random.nextInt(allNodesCount);
-      final secondNodeIndex = random.nextInt(allNodesCount);
-      if (firstNodeIndex == secondNodeIndex) {
-        return;
-      }
-      final res = tree!.addEdge(
-          allNodesId[firstNodeIndex],
-          allNodesId[secondNodeIndex],
-          EdgeV1.random(idCalculator.getNextId()));
-      if (res) {
-        print('Успешная мутация!');
-      }
-      adjacencyDictKeys = adjacencyDict!.keys.toList();
-      adjacencyDictValues = adjacencyDict!.values.toList();
-      assertsTest();
-      return;
-
-
+      res = _addEdge(allNodesId, idCalculator);
     } else if (randomValue > 250 && randomValue <= 500) {
-      // Новый узел к существующему
-      final secondNodeIndex = random.nextInt(allNodesCount);
-      final res = tree!.addNewPrevNode(
-          allNodesId[secondNodeIndex],
-          NodeV1.random(idCalculator.getNextId()),
-          EdgeV1.random(idCalculator.getNextId()));
-      if (res) {
-        print('Успешная мутация!');
-      }
-      adjacencyDictKeys = adjacencyDict!.keys.toList();
-      adjacencyDictValues = adjacencyDict!.values.toList();
-      assertsTest();
-      return;
-
-    } else if (randomValue > 500 && randomValue <= 750) {
       // Существующий к новому
-      final firstNodeIndex = random.nextInt(allNodesCount);
-      final res = tree!.addNewNextNode(
-          allNodesId[firstNodeIndex],
-          NodeV1.random(idCalculator.getNextId()),
-          EdgeV1.random(idCalculator.getNextId()));
-      if (res) {
-        print('Успешная мутация!');
-      }
-      adjacencyDictKeys = adjacencyDict!.keys.toList();
-      adjacencyDictValues = adjacencyDict!.values.toList();
-      assertsTest();
-      return;
-
+      res = _addNextNode(allNodesId, idCalculator);
+    } else if (randomValue > 500 && randomValue <= 750) {
+      // Новый узел к существующему
+      res = _addPrevNode(allNodesId, idCalculator);
     } else {
       // Новый узел между
-      final firstNodeIndex = random.nextInt(allNodesCount);
-      final secondNodeIndex = random.nextInt(allNodesCount);
-      final res = tree!.addNodeBetween(
-          allNodesId[firstNodeIndex],
-          allNodesId[secondNodeIndex],
-          NodeV1.random(idCalculator.getNextId()),
-          EdgeV1.random(idCalculator.getNextId()),
-          EdgeV1.random(idCalculator.getNextId())
-      );
-      if (res) {
-        print('Успешная мутация!');
-      }
-      adjacencyDictKeys = adjacencyDict!.keys.toList();
-      adjacencyDictValues = adjacencyDict!.values.toList();
-      assertsTest();
+      res = _addNodeBetween(allNodesId, idCalculator);
     }
+    /*if (res) {
+      print('Успешная мутация');
+    } else {
+      print('Неуспешная мутация');
+    }*/
 
     adjacencyDictKeys = adjacencyDict!.keys.toList();
     adjacencyDictValues = adjacencyDict!.values.toList();
@@ -325,8 +331,13 @@ class NeatIndivid implements IndividualBase {
       _$NeatIndividFromJson(json);
   @override
   Map<String, dynamic> toJson() {
+    // Обновляются ключи и значения adjacencyDict, так как
+    // они не отправляются в дерево, но связаны с adjacencyDict
     adjacencyDictValues = adjacencyDict!.values.toList();
     adjacencyDictKeys = adjacencyDict!.keys.toList();
+    // Когда индивид сериализуется, он должен быть инициализирован с данных при
+    // десериализации
+    initFrom = true;
     assertsTest();
     return _$NeatIndividToJson(this);
   }
@@ -371,6 +382,8 @@ class NeatIndivid implements IndividualBase {
       newNodesStartState[i.key] = i.value;
     }
 
+    final newIdCalculator = idCalculator!.deepCopy();
+
     return NeatIndivid(
 
         nodes: newNodes,
@@ -385,8 +398,12 @@ class NeatIndivid implements IndividualBase {
         nodesStartState: newNodesStartState,
         inputCompleter: newInputCompleter,
 
+        idCalculator: newIdCalculator,
+
         // Словарь смежностей передаётся пустой, т.к. в конструкторе он заполнится
         // значениями из adjacencyDictKeys и adjacencyDictValues
+        // Это всё сделано по той причине, что json сериализация не даёт
+        // сериализовать ключи-классы
         adjacencyDict: {},
 
         initFrom: true,
@@ -400,5 +417,4 @@ class NeatIndivid implements IndividualBase {
         version: version);
 
   }
-
 }

@@ -50,6 +50,10 @@ NeatIndivid _$NeatIndividFromJson(Map json) => NeatIndivid(
       cellsCount: json['cellsCount'] as int,
       cellVectorLength: json['cellVectorLength'] as int,
       version: json['version'] as int,
+      idCalculator: json['idCalculator'] == null
+          ? null
+          : IdCalculator.fromJson(
+              Map<String, dynamic>.from(json['idCalculator'] as Map)),
     );
 
 Map<String, dynamic> _$NeatIndividToJson(NeatIndivid instance) =>
@@ -71,6 +75,7 @@ Map<String, dynamic> _$NeatIndividToJson(NeatIndivid instance) =>
           ?.map((k, e) => MapEntry(k.toString(), e.toJson())),
       'nodesStartState':
           instance.nodesStartState?.map((k, e) => MapEntry(k.toString(), e)),
+      'idCalculator': instance.idCalculator?.toJson(),
       'fitness': instance.fitness,
       'fitnessHistory': instance.fitnessHistory,
       'needCalculate': instance.needCalculate,

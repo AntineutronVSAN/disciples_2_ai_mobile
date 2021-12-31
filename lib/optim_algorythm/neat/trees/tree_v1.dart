@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:d2_ai_v2/optim_algorythm/neat/adjacency_dict.dart';
 import 'package:d2_ai_v2/optim_algorythm/neat/edge_base.dart';
+import 'package:d2_ai_v2/optim_algorythm/neat/edges/edge_v1.dart';
 
 import 'package:d2_ai_v2/optim_algorythm/neat/node_base.dart';
 import 'package:d2_ai_v2/optim_algorythm/neat/nodes/node_v1.dart';
@@ -51,7 +52,7 @@ class TreeV1 implements GameTreeBase {
   final Map<int, bool> nodesStartState;
 
   /// У каждого дерева свой присваиватель ID
-  final IdCalculator idCalculator = IdCalculator();
+  final IdCalculator? idCalculator;
 
   TreeV1({
     required this.input,
@@ -65,9 +66,11 @@ class TreeV1 implements GameTreeBase {
     required this.adjacencyList,
     required this.nodesStartState,
     required this.inputCompleter,
+    required this.idCalculator,
   }) {
 
     if (initFrom) {
+      assert(idCalculator != null);
       /*assert(
       nodes.isNotEmpty &&
           nodesMap.isNotEmpty &&
@@ -78,7 +81,8 @@ class TreeV1 implements GameTreeBase {
           );*/
 
       // У id калькулятора нужно сделать оффсет
-      idCalculator.setStartID(edges.length + nodes.length);
+      // UPD Теперь калькулятор сериализуется вместе со всеми параметрами
+      //idCalculator.setStartID(edges.length + nodes.length);
 
       if (edges.isNotEmpty && adjacencyDict.isEmpty) {
         print('asdfasfd');
@@ -100,7 +104,7 @@ class TreeV1 implements GameTreeBase {
     // Входные узлы. id узла равен индексу элемента входного вектора
     var i = 0;
     for (; i < input; i++) {
-      final newNode = NodeV1.randomWithoutActivation(idCalculator.fromID(i));
+      final newNode = NodeV1.randomWithoutActivation(idCalculator!.fromID(i));
       // id узла newNode равен индексу i вектора input
       final currentNodeID = newNode.getId();
       nodes.add(newNode);
@@ -111,7 +115,7 @@ class TreeV1 implements GameTreeBase {
     }
     // Выходные узлы
     for (; i < input + output; i++) {
-      final newNode = NodeV1.randomWithoutActivation(idCalculator.fromID(i));
+      final newNode = NodeV1.randomWithoutActivation(idCalculator!.fromID(i));
       // id узла newNode равен индексу i вектора input
       final currentNodeID = newNode.getId();
       nodes.add(newNode);
@@ -121,7 +125,28 @@ class TreeV1 implements GameTreeBase {
       nodesStartState[currentNodeID] = false;
     }
     assert(nodes.length == input + output);
+    _test();
+  }
+
+  /// Своеобразный юнит тест топологии
+  void _test() {
+
+    // todo Убрать после отладки
+
+
+    for( var i in inputCompleter.entries) {
+      if (i.key < input) {
+        if (i.value.getMaxInputCount() != 0) {
+          print('asdfasdf');
+          throw Exception();
+        }
+      } else {
+        break;
+      }
+    }
+
     assert(edges.length == adjacencyDict.length);
+
   }
 
   @override
@@ -131,7 +156,7 @@ class TreeV1 implements GameTreeBase {
       алгоритма. Возможно, в будущем для сравнения будет добавлен и рекурсивный
       алгоритм
     */
-    assert(edges.length == adjacencyDict.length);
+    _test();
     // Очередь обработки узлов
     Queue<int> inputQueue = Queue<int>();
     Queue<int> outputQueue = Queue<int>();
@@ -173,6 +198,7 @@ class TreeV1 implements GameTreeBase {
       // Проверка, все ли имеются данные, которые приходят в узел
       // Т.к. это первые узлы, то данные должны быть
       if (!inputCompleter[currentNodeID]!.isComplete()) {
+        print('asdfasdfasdf');
         throw Exception();
       }
       // Выходное значение после узла
@@ -200,6 +226,7 @@ class TreeV1 implements GameTreeBase {
     while (true) {
       stopCounter++;
       if (stopCounter > 10000000) {
+        print('adfadf');
         throw Exception();
       }
       if (otherQueue.isEmpty) {
@@ -274,15 +301,20 @@ class TreeV1 implements GameTreeBase {
     }
 
     assert(resultVector.length == output, "${resultVector.length} != $output");
-    assert(edges.length == adjacencyDict.length);
+    _test();
     return resultVector;
   }
 
   /// Проверить дерево на предмет зацикливаний
-  bool _checkTreeCycles() {
+  bool _checkTreeCycles({TreeV1? snapshot}) {
     _CycleFindBypassContext context = _CycleFindBypassContext();
     List<int> allStartNodes = [];
-    for(var i in nodesStartState.entries) {
+
+    final entries = snapshot == null
+        ? nodesStartState.entries
+        : snapshot.nodesStartState.entries;
+
+    for(var i in entries) {
       if (i.value) {
         allStartNodes.add(i.key);
       }
@@ -290,25 +322,28 @@ class TreeV1 implements GameTreeBase {
     for(var id in allStartNodes) {
       context.refresh();
       //print('--------------------- ID = $id');
-      final res = _checkTreeCyclesBypass(id, context);
+      final res = _checkTreeCyclesBypass(id, context, snapshot: snapshot);
       if (!res) {
+        print('Дерево зациклено!');
         return false;
       }
     }
-    assert(edges.length == adjacencyDict.length);
+    _test();
     return true;
   }
 
-  bool _checkTreeCyclesBypass(int nodeId, _CycleFindBypassContext context) {
+  bool _checkTreeCyclesBypass(int nodeId, _CycleFindBypassContext context, {TreeV1? snapshot}) {
     context.visitedNodes[nodeId] = true;
     context.addRec();
-    //print('Visited - ${context.visitedNodes.entries}');
-    for(var nextId in adjacencyList[nodeId]!) {
+
+    final adjList = snapshot == null ? adjacencyList : snapshot.adjacencyList;
+
+    for(var nextId in adjList[nodeId]!) {
       //print('next - $nextId');
       if (context.visitedNodes[nextId] != null) {
         return false;
       }
-      final res = _checkTreeCyclesBypass(nextId, context);
+      final res = _checkTreeCyclesBypass(nextId, context, snapshot: snapshot);
       if (!res) {
         return false;
       }
@@ -320,6 +355,7 @@ class TreeV1 implements GameTreeBase {
   @override
   bool addEdge(int n1, int n2, TreeEdgeBase edge) {
     /* n1 -> edge -> n2 */
+    //return false;
     // Запрещено добавлять связи между входными узлами
     if (n1 < input && n2 < input) {
       //print('Запрещено добавлять связи между входными узлами');
@@ -328,6 +364,10 @@ class TreeV1 implements GameTreeBase {
     // Запрещено добавлять связь от выходного узла
     if (n1 >= input && n1 < output+input) {
       //throw Exception("Запрещено добавлять связь от выходного узла");
+      return false;
+    }
+    if (n2 < input) {
+      //throw Exception("Запрещено добавлять связь к входному узлу");
       return false;
     }
 
@@ -369,7 +409,6 @@ class TreeV1 implements GameTreeBase {
     // зациклиться. Необходимо проверить
     final treeCorrect = _checkTreeCycles();
     if (!treeCorrect) {
-      print("Дерево зациклено!");
       // Сброс
       adjacencyDict.remove(newKey);
       edgesMap.remove(edge.getId());
@@ -377,10 +416,10 @@ class TreeV1 implements GameTreeBase {
       adjacencyList[n1]!.removeWhere((element) => element == n2);
       inputCompleter[n2]!.addMaxCount(-1);
       nodesStartState[n2] = lastState;
-
+      _test();
       return false;
     }
-    assert(edges.length == adjacencyDict.length);
+    _test();
     return true;
   }
 
@@ -422,11 +461,12 @@ class TreeV1 implements GameTreeBase {
     adjacencyList[current]!.add(newNodeID);
     adjacencyList[newNodeID] = [];
 
+    assert(inputCompleter[newNodeID] == null);
     inputCompleter[newNodeID] = NodesInputCounter.empty();
     inputCompleter[newNodeID]!.addMaxCount(1);
 
     nodesStartState[newNodeID] = false;
-    assert(edges.length == adjacencyDict.length);
+    _test();
     return true;
   }
 
@@ -461,20 +501,23 @@ class TreeV1 implements GameTreeBase {
 
     nodes.add(node);
     nodesMap[newNodeID] = node;
+    assert(inputCompleter[newNodeID] == null);
     inputCompleter[newNodeID] = NodesInputCounter.empty();
 
     edges.add(edge);
     edgesMap[newEdgeID] = edge;
 
     adjacencyDict[newKey] = edge;
+    assert(adjacencyList[newNodeID] == null);
     adjacencyList[newNodeID] = [];
     adjacencyList[newNodeID]!.add(target);
 
+    assert(nodesStartState[newNodeID] == null);
     nodesStartState[newNodeID] = true;
     nodesStartState[target] = false;
 
     inputCompleter[target]!.addMaxCount(1);
-    assert(edges.length == adjacencyDict.length);
+    _test();
     return true;
   }
 
@@ -490,11 +533,18 @@ class TreeV1 implements GameTreeBase {
       //throw Exception("Запрещено добавлять связи к входному узлу");
       return false;
     }
-    if (nodesStartState[n2]!) {
-      print('asdfasdf');
-      throw Exception();
+    if (n1 >= input && n2 <= output) {
+      //throw Exception("Запрещено добавлять связь от выходного узла");
+      return false;
     }
-
+    if (nodesStartState[n2]!) {
+      // Узел может быть и не стартовым
+      //throw Exception();
+    }
+    if (n1 == n2) {
+      //throw Exception("Запрещено добавлять узел между одним и тем же узлом");
+      return false;
+    }
     final newNodeID = n.getId();
     final firstEdgeID = e1.getId();
     final secondEdgeID = e2.getId();
@@ -519,7 +569,7 @@ class TreeV1 implements GameTreeBase {
     final firstKey = AdjacencyDictKey(child: newNodeID, parent: n1);
     final secondKey = AdjacencyDictKey(child: n2, parent: newNodeID);
 
-    final currentKey = AdjacencyDictKey(child: n1, parent: n2);
+    final currentKey = AdjacencyDictKey(child: n2, parent: n1);
 
     // Связи между узлами может и не быть
     /*if (!adjacencyDict.containsKey(currentKey)) {
@@ -530,8 +580,27 @@ class TreeV1 implements GameTreeBase {
       throw Exception();
     }
 
+    // Делается snapshot текущего состояния. На нём делаются изменения и
+    // смотрятся зацикливания в дереве. Это очень тяжёлая операция, но
+    // ничего лучше пока я не придумал. Проблема в том, что после изменений
+    // (которых очень много) дерево может зациклиться и необходимо вернуться
+    // в исходное состояние. Всё усугубляется тем, что создающий дерево
+    // объект хранит в себе ссылки на поля дерева, и изменять их нельзя.
+    final snapshot = deepCopy() as TreeV1;
+    // Только после успешного добавления в снапшоте, добавялется в текущем дереве
+    if (!_checkTreeCyclesAfterAddEdge(
+        snapshot: snapshot,
+        n1: n1,
+        n2: n2,
+        n: n,
+        e1: e1,
+        e2: e2)) {
+      return false;
+    }
+
     nodes.add(n);
     nodesMap[newNodeID] = n;
+    assert(inputCompleter[newNodeID] == null);
     inputCompleter[newNodeID] = NodesInputCounter.empty();
 
     edges.add(e1);
@@ -542,25 +611,102 @@ class TreeV1 implements GameTreeBase {
     adjacencyDict[firstKey] = e1;
     adjacencyDict[secondKey] = e2;
     // n1 -> n -> n2
+    assert(adjacencyList[newNodeID] == null);
     adjacencyList[newNodeID] = [];
     adjacencyList[newNodeID]!.add(n2);
+
     adjacencyList[n1]!.add(newNodeID);
     adjacencyList[n1]!.removeWhere((element) => element == n2);
 
     inputCompleter[newNodeID]!.addMaxCount(1);
-
+    assert(nodesStartState[newNodeID] == null);
     nodesStartState[newNodeID] = false;
+    nodesStartState[n2] = false;
+
     assert(edges.length == adjacencyDict.length);
     // Необходимо удалить существующие связи, если они есть
     if (adjacencyDict[currentKey] != null) {
       final deletedEdgeID = adjacencyDict[currentKey]!.getId();
       adjacencyDict.remove(currentKey);
-      edgesMap.remove(deletedEdgeID);
+      final deleteEdgeRes = edgesMap.remove(deletedEdgeID);
+      assert(deleteEdgeRes != null);
       edges.removeWhere((element) => element.getId() == deletedEdgeID);
+    } else {
+      // Если связи между n1->n2 не сущестововало, к комплитеру n2 добавялется
+      // значение
+      assert(inputCompleter[n2] != null);
+      inputCompleter[n2]!.addMaxCount(1);
     }
-    assert(edges.length == adjacencyDict.length);
+
+    if (!_checkTreeCycles()) {
+      throw Exception("Зацикливания должны быть проверены в снапшоте. Неверная логика");
+      _test();
+      return false;
+    }
+
+    _test();
     return true;
   }
+
+  bool _checkTreeCyclesAfterAddEdge(
+      {required TreeV1 snapshot,
+        required int n1,
+        required int n2,
+        required TreeNodeBase n,
+        required TreeEdgeBase e1,
+        required TreeEdgeBase e2}) {
+
+    final newNodeID = n.getId();
+    final firstEdgeID = e1.getId();
+    final secondEdgeID = e2.getId();
+
+    final firstKey = AdjacencyDictKey(child: newNodeID, parent: n1);
+    final secondKey = AdjacencyDictKey(child: n2, parent: newNodeID);
+
+    final currentKey = AdjacencyDictKey(child: n2, parent: n1);
+
+    snapshot.nodes.add(n);
+    snapshot.nodesMap[newNodeID] = n;
+    assert(snapshot.inputCompleter[newNodeID] == null);
+    snapshot.inputCompleter[newNodeID] = NodesInputCounter.empty();
+
+    snapshot.edges.add(e1);
+    snapshot.edges.add(e2);
+    snapshot.edgesMap[firstEdgeID] = e1;
+    snapshot.edgesMap[secondEdgeID] = e2;
+
+    snapshot.adjacencyDict[firstKey] = e1;
+    snapshot.adjacencyDict[secondKey] = e2;
+    // n1 -> n -> n2
+    assert(snapshot.adjacencyList[newNodeID] == null);
+    snapshot.adjacencyList[newNodeID] = [];
+    snapshot.adjacencyList[newNodeID]!.add(n2);
+
+    snapshot.adjacencyList[n1]!.add(newNodeID);
+    snapshot.adjacencyList[n1]!.removeWhere((element) => element == n2);
+
+    snapshot.inputCompleter[newNodeID]!.addMaxCount(1);
+    assert(snapshot.nodesStartState[newNodeID] == null);
+    snapshot.nodesStartState[newNodeID] = false;
+    snapshot.nodesStartState[n2] = false;
+
+    assert(snapshot.edges.length == snapshot.adjacencyDict.length);
+    // Необходимо удалить существующие связи, если они есть
+    if (snapshot.adjacencyDict[currentKey] != null) {
+      final deletedEdgeID = snapshot.adjacencyDict[currentKey]!.getId();
+      snapshot.adjacencyDict.remove(currentKey);
+      final deleteEdgeRes = snapshot.edgesMap.remove(deletedEdgeID);
+      assert(deleteEdgeRes != null);
+      snapshot.edges.removeWhere((element) => element.getId() == deletedEdgeID);
+    } else {
+      // Если связи между n1->n2 не сущестововало, к комплитеру n2 добавялется
+      // значение
+      assert(snapshot.inputCompleter[n2] != null);
+      snapshot.inputCompleter[n2]!.addMaxCount(1);
+    }
+    return _checkTreeCycles(snapshot: snapshot);
+  }
+
 
   @override
   String toString() {
@@ -572,7 +718,7 @@ class TreeV1 implements GameTreeBase {
     for (var i in edges) {
       print('Edge id = ${i.getId()}');
     }*/
-    print('ADJACENCY DICT:');
+    /*print('ADJACENCY DICT:');
     for (var i in adjacencyDict.entries) {
       print('key - ${i.key} edge: ${i.value}');
     }
@@ -587,13 +733,13 @@ class TreeV1 implements GameTreeBase {
     print('NODE START STATE:');
     for(var i in nodesStartState.entries) {
       print('Node - ${i.key}, is start - ${i.value}');
-    }
+    }*/
     return super.toString();
   }
 
   @override
   IdCalculator getIdCalculator() {
-    return idCalculator;
+    return idCalculator!;
   }
 
   @override
@@ -604,7 +750,52 @@ class TreeV1 implements GameTreeBase {
   @override
   GameTreeBase deepCopy() {
 
-    throw Exception();
+    final newNodes = nodes.map((e) => e.deepCopy()).toList();
+    final newNodesMap = <int, TreeNodeBase>{};
+    for (var i in nodesMap.entries) {
+      newNodesMap[i.key] = i.value.deepCopy();
+    }
+
+    final newEdges = edges.map((e) => e.deepCopy()).toList();
+    final newEdgesMap = <int, TreeEdgeBase>{};
+    for (var i in edgesMap.entries) {
+      newEdgesMap[i.key] = i.value.deepCopy();
+    }
+
+    final newAdjList = <int, List<int>>{};
+    for (var i in adjacencyList.entries) {
+      newAdjList[i.key] = i.value.map((e) => e).toList();
+    }
+
+    final newAdjDict = <AdjacencyDictKey, TreeEdgeBase>{};
+    for (var i in adjacencyDict.entries) {
+      newAdjDict[i.key.deepCopy()] = i.value.deepCopy();
+    }
+
+    final newInputCompleter = <int, NodesInputCounter>{};
+    for (var i in inputCompleter.entries) {
+      newInputCompleter[i.key] = i.value.deepCopy();
+    }
+
+    final newNodesStartState = <int, bool>{};
+    for (var i in nodesStartState.entries) {
+      newNodesStartState[i.key] = i.value;
+    }
+
+    return TreeV1(
+        input: input,
+        output: output,
+        nodes: newNodes,
+        nodesMap: newNodesMap,
+        edges: newEdges,
+        edgesMap: newEdgesMap,
+        adjacencyDict: newAdjDict,
+        initFrom: true,
+        adjacencyList: newAdjList,
+        nodesStartState: newNodesStartState,
+        inputCompleter: newInputCompleter,
+        idCalculator: idCalculator!.deepCopy(),
+    );
 
   }
 }
@@ -630,12 +821,20 @@ class NodesInputCounter {
         maxInputsCount: 0);
   }
 
+  int getMaxInputCount() {
+    return maxInputsCount;
+  }
+
   bool isComplete() {
     return currentInputs.length == maxInputsCount;
   }
 
   void addCompleteValue(double val) {
     currentInputs.add(val);
+    if (currentInputs.length > maxInputsCount) {
+      print('asdfadfafd');
+
+    }
     assert(
         currentInputs.length <= maxInputsCount,
         'Неверная логика, входов в'
@@ -651,6 +850,13 @@ class NodesInputCounter {
   }
 
   void addMaxCount(int val) {
+    if (val != 1 && val != -1) {
+      throw Exception();
+    }
+    assert(currentInputs.isEmpty);
+    if ((maxInputsCount + val) < 0) {
+      maxInputsCount = 0;
+    }
     maxInputsCount += val;
   }
 

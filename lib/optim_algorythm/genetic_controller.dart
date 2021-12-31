@@ -478,7 +478,7 @@ class GeneticController {
         print('Сохранение чекпоинта успешно!');
       }
       // Генетические процесс происходят каждые n поколений // todo 5
-      if ((generation + 1) % 2 == 0) {
+      if ((generation + 1) % 5 == 0) {
         // Показать в UI бой лучшего индивида, если нужно
         if (showBestBattle && updateStateContext != null) {
           await startIndividBattle(
@@ -723,9 +723,10 @@ class GeneticController {
     _makeSelection();
     print('Мутации ...');
     //for (var i = 0; i < individs.length ~/ 5; i++) {
-    for (var i = 0; i < individs.length ~/ 3; i++) {
+    for (var i = 0; i < individs.length ~/ 3; i++) { // todo ~/ 3
       _mutateRandom();
     }
+
     print('Кросс ...');
     // Юниты отсортированы, делаем кросс лушчего
     //_crossUnitByIndex(bestIndex: 0, times: 1);
@@ -775,8 +776,11 @@ class GeneticController {
 
   void _mutateRandom() {
     final randomIndex = random.nextInt(individs.length - 5) + 5;
-
     individs[randomIndex].mutate();
+
+    //todo
+    //individs[0].mutate();
+    //individs[1].mutate();
   }
 
   _crossUnitByIndex({int? times, required int bestIndex}) {

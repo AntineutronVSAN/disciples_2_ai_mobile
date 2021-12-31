@@ -71,6 +71,9 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
   if (args.length == 1) {
     fromCheckpoint = args[0];
   }
+
+  //fromCheckpoint = 'Gen-199';
+
   final GameRepository repository = GameRepository(
     gattacksProvider: GattacksProvider(),
     gunitsProvider: GunitsProvider(),
@@ -152,12 +155,11 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
   );
 
   // Инициализация с чекпоинта
-  // /data/data/com.example.d2_ai_v2/app_flutter/2021-12-26 10:25:37.634445__Gen-39.json
   if (fromCheckpoint != null) {
     gc.initFromCheckpoint(fromCheckpoint);
   }
 
   print('Запуск алгоритма');
-  await gc.startParallel(10, showBestBattle: false, safeEveryEpochs: 100);
+  await gc.startParallel(5, showBestBattle: false, safeEveryEpochs: 100);
   print('Стоп алгоритма');
 }

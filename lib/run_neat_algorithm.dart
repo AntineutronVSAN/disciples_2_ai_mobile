@@ -22,6 +22,7 @@ Future<void> startNeatAlgorithm() async {
       adjacencyDict: {},
       adjacencyList: {},
       initFrom: false,
+      idCalculator: null,
     nodesStartState: {},
     inputCompleter: {},
   );
@@ -33,10 +34,10 @@ Future<void> startNeatAlgorithm() async {
   //final te = EdgeV1.random(IdCalculator.getNextId());
 
   NodeV1 tn() {
-    return NodeV1.random(tree.idCalculator.getNextId());
+    return NodeV1.random(tree.getIdCalculator().getNextId());
   }
   EdgeV1 te() {
-    return EdgeV1.random(tree.idCalculator.getNextId());
+    return EdgeV1.random(tree.getIdCalculator().getNextId());
   }
 
   //tree.addEdge(0, 10, EdgeV1.random(IdCalculator.getNextId()));

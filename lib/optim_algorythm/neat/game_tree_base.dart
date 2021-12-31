@@ -32,4 +32,5 @@ abstract class GameTreeBase implements AiAlgorithm {
   IdCalculator getIdCalculator();
 
   GameTreeBase deepCopy();
+
 }

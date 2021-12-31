@@ -9,7 +9,17 @@ mixin MathMixin {
   final random = Random();
 
   List<double> sigmoid(List<double> inp) {
-    return inp.map((el) => (1 / (1 - pow(e, el)))).toList();
+    return inp.map((el) {
+
+      if (el == 0.0) {
+        return 0.0;
+      }
+      if (el == 1.0) {
+        return 1.0;
+      }
+
+      return (1 / (1 - pow(e, el)));
+    }).toList();
   }
 
   List<double> relu(List<double> inp) {
@@ -20,7 +30,12 @@ mixin MathMixin {
 
     final expVec = inp.map((value) => pow(e, value)*1.0).toList();
     final sum = expVec.sum;
-    final res = expVec.map((e) => e/sum).toList();
+    final res = expVec.map((e) {
+      if (sum == 0.0) {
+        throw Exception();
+      }
+      return e/sum;
+    }).toList();
     return res;
   }
 

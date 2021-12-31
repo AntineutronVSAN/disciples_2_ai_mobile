@@ -38,7 +38,8 @@ class NeatFactory implements IndividualFactoryBase {
 
   @override
   IndividualBase individualFromJson(Map<String, dynamic> json) {
-    return NeatIndivid.fromJson(json);
+    final newInd = NeatIndivid.fromJson(json);
+    return newInd;
   }
 
   @override
