@@ -31,7 +31,7 @@ void main(List<String> arguments) async {
   ////PropertyChangeNotifier
 
 
-
+  // TODO Есть утечка памяти!!
   await startOnlyGeneticAlgorithm(arguments);
 
   /*final nn = MultilayerPerceptron(
