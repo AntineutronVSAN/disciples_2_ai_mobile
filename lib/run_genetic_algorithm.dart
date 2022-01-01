@@ -146,7 +146,7 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
     aiController: AiController(),
     updateStateContext: null,
     generationCount: 100000,
-    maxIndividsCount: 20,
+    maxIndividsCount: 20, // 20
     units: units.map((e) => e.copyWith()).toList(),
     individController: AiController(),
     fileProvider: DartFileProvider(),
@@ -160,6 +160,6 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
   }
 
   print('Запуск алгоритма');
-  await gc.startParallel(5, showBestBattle: false, safeEveryEpochs: 100);
+  await gc.startParallel(6, showBestBattle: false, safeEveryEpochs: 100); // 6
   print('Стоп алгоритма');
 }

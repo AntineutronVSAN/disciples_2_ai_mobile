@@ -536,7 +536,10 @@ class GeneticController {
     while (response == null) {
       await Future.delayed(const Duration(microseconds: 1));
     }
+    p.close();
     newIsolator.kill(priority: Isolate.immediate);
+    //newIsolator.kill();
+
     return response!;
   }
 
@@ -547,6 +550,7 @@ class GeneticController {
     final requestData = (await curRport.first) as _ParallelCalculatingRequest;
     response = await calculateIndivids(requestData);
     p.send(response);
+    curRport.close();
   }
 
   /*Future<_ParallelCalculatingResponse> _startCalculateInBackground(
@@ -728,11 +732,7 @@ class GeneticController {
     }
 
     print('Кросс ...');
-    // Юниты отсортированы, делаем кросс лушчего
-    //_crossUnitByIndex(bestIndex: 0, times: 1);
-    //_crossUnitByIndex(bestIndex: 1, times: 2);
     for (var i = 0; i < individs.length ~/ 3; i++) {
-      // print(i);
       final newInd = _cross();
       if (newInd != null) {
         individs.add(newInd);
@@ -763,6 +763,7 @@ class GeneticController {
     if (individs.length <= maxIndividsCount) {
       return;
     }
+
     individs = individs.sublist(0, maxIndividsCount);
 
     // Сразу убираем некоторых юнитов

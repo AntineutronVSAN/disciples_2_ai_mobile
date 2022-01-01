@@ -20,6 +20,8 @@ flutter pub run build_runner build --delete-conflicting-outputs
 
 # Profiling
 dart run --pause-isolates-on-start --observe main.dart
+dart --pause-isolates-on-start --observe lib\run_genetic_algorithm.dart
+
 
 # Compile
 dart compile exe lib\run_genetic_algorithm.dart
