@@ -53,6 +53,8 @@ class GeneticController {
 
   final int mutationsCount;
   final int crossesCount;
+  final int immutableIndividsCount;
+  final int geneticProcessesEvery;
 
   GeneticController({
     required this.gameController,
@@ -68,6 +70,8 @@ class GeneticController {
     required this.individualAiFactory,
     required this.mutationsCount,
     required this.crossesCount,
+    required this.immutableIndividsCount,
+    required this.geneticProcessesEvery,
   }) {
     if (initPopulation) {
       for (var i = 0; i < maxIndividsCount; i++) {
@@ -466,8 +470,8 @@ class GeneticController {
         _saveCheckpoint(generation);
         print('Сохранение чекпоинта успешно!');
       }
-      // Генетические процесс происходят каждые n поколений // todo 5
-      if ((generation + 1) % 5 == 0) {
+      // Генетические процесс происходят каждые geneticProcessesEvery поколений
+      if ((generation + 1) % geneticProcessesEvery == 0) {
         // Показать в UI бой лучшего индивида, если нужно
         if (showBestBattle && updateStateContext != null) {
           await startIndividBattle(
@@ -741,12 +745,18 @@ class GeneticController {
     // за несколько интераций. Таким образом сглаживается влияние промахов
     // и случайныхъ побед слабых индивидов
     individs.forEach((element) {
-      final mean = element.getFitnessHistory().isNotEmpty
+      /*final mean = element.getFitnessHistory().isNotEmpty
           ? element.getFitnessHistory().average
           : 0.0;
       print(
           'Individ old fit - ${element.getFitness().toStringAsFixed(2)} new fit - ${mean.toStringAsFixed(2)}');
-      element.setFitness(mean);
+      element.setFitness(mean);*/
+      final maxVal = element.getFitnessHistory().isNotEmpty
+          ? element.getFitnessHistory().reduce(max)
+          : 0.0;
+      print(
+          'Individ old fit - ${element.getFitness().toStringAsFixed(2)} new fit - ${maxVal.toStringAsFixed(2)}');
+      element.setFitness(maxVal);
       element.getFitnessHistory().clear();
     });
 
@@ -771,7 +781,7 @@ class GeneticController {
   }
 
   bool _mutateRandom() {
-    final randomIndex = random.nextInt(individs.length - 5) + 5;
+    final randomIndex = random.nextInt(individs.length - immutableIndividsCount) + immutableIndividsCount;
     return individs[randomIndex].mutate();
   }
 

@@ -146,7 +146,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       '',*/
 
       // Для тренеровки ИИ!! ИИ играет за топоовую команду
-      'Рейнджер',
+      /*'Рейнджер',
       'Жрец',
       'Рейнджер',
       'Сквайр',
@@ -158,9 +158,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       'Орк',
       'Русалка',
       '',
-      '',
+      '',*/
 
-      /*'Русалка',
+      'Русалка',
       '',
       '',
       'Орк',
@@ -172,7 +172,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       'Сквайр',
       'Рейнджер',
       'Жрец',
-      'Рейнджер',*/
+      'Рейнджер',
     ];
     assert(unitsNames.length == 12);
     var index = 0;
@@ -354,7 +354,13 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
     //aiController.init(_warUnitsCopies);
     await aiController.initFromFile(
-        _warUnitsCopies, 'default_ai_controller', fp, individualAiFactory);
+        _warUnitsCopies,
+        'default_ai_controller',
+        fp,
+        individualAiFactory,
+      individIndex: 19,
+    );
+
 
     emit(state.copyWith(
       warScreenState: WarScreenState.pve,

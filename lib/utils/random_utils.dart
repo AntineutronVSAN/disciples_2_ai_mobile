@@ -29,6 +29,7 @@ int randomRanges(List<PairValues<int>> ranges, Random random) {
     }
     rangeRandomValues.add(randomBetween(i.first, i.end, random));
   }
+  if (rangeRandomValues.isEmpty) throw Exception();
   final randomIndex = random.nextInt(rangeRandomValues.length);
   return rangeRandomValues[randomIndex];
 

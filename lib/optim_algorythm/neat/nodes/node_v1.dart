@@ -39,9 +39,12 @@ class NodeV1 with MathMixin implements TreeNodeBase {
 
   factory NodeV1.random(int id, Random random) {
     return NodeV1(
-      activation: getRandomElement<String>(['sigmoid',
+      activation: getRandomElement<String>([
+        'sigmoid',
         'relu',
-        'th','elu', 'lrelu'], random),
+        'th',
+        'elu',
+        'lrelu'], random),
       id: id,
       bias: randomRange(-1.0, 1.0, random),
     );
@@ -112,6 +115,8 @@ class NodeV1 with MathMixin implements TreeNodeBase {
       () => setActivation('sigmoid'),
       () => setActivation('relu'),
       () => setActivation('elu'),
+      () => setActivation('lrelu'),
+      () => setActivation('th'),
     ], random);
   }
 }

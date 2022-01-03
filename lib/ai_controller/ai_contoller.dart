@@ -115,12 +115,13 @@ class AiController {
       String filePath,
       FileProviderBase fileProvider,
       IndividualFactoryBase factory,
+      {int individIndex=0}
       ) async {
     //final fileProvider = FileProvider(); // todo
     await fileProvider.init();
     //final checkPoint = NeatCheckpoint.fromJson(await fileProvider.getDataByFileName(filePath));
     final checkPoint = await factory.getCheckpoint(filePath, fileProvider);
-    algorithm = checkPoint.getIndividuals()[0].getAlgorithm();
+    algorithm = checkPoint.getIndividuals()[individIndex].getAlgorithm();
     unitsRefs = units;
     inited = true;
   }

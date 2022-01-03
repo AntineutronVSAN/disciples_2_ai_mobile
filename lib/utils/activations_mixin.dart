@@ -103,6 +103,38 @@ void callRandomFunc(List<Function()> funcs, Random random) {
   return;
 }
 
+/// Вероятностый вызов одной из функций списка funcs
+void callRandomFuncByProps(
+    List<Function()> funcs, List<int> props, Random random) {
+  if (funcs.isEmpty) {
+    return;
+  }
+  if (props.isEmpty) {
+    return;
+  }
+
+  if (props.length != funcs.length) {
+    return;
+  }
+
+  final funcCount = funcs.length;
+
+  final randomValue = random.nextInt(1000);
+
+  final rangesStep = 1000 ~/ funcCount;
+
+  for (var i = 0; i < funcCount; i++) {
+    if ((randomValue > i * rangesStep) &&
+        (randomValue <= (i + 1) * rangesStep)) {
+      funcs[i]();
+      return;
+    }
+  }
+
+  funcs.last();
+  return;
+}
+
 T getRandomElement<T>(List<T> values, Random random) {
   final randomIndex = random.nextInt(values.length);
   return values[randomIndex];
@@ -117,6 +149,6 @@ double randomRange(double start, double end, Random random) {
   if (start >= end) {
     throw Exception();
   }
-  final randomValue = start + random.nextDouble()*(end-start);
+  final randomValue = start + random.nextDouble() * (end - start);
   return randomValue;
 }

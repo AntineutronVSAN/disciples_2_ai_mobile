@@ -116,8 +116,11 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
 
     generationCount: 100000,
     maxIndividsCount: 20, // 20
-    mutationsCount: 10,
+    mutationsCount: 200,
     crossesCount: 4,
+
+    immutableIndividsCount: 5,
+    geneticProcessesEvery: 10, // 10
 
     units: units.map((e) => e.copyWith()).toList(),
     individController: AiController(),

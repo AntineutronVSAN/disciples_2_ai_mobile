@@ -260,6 +260,30 @@ class NeatIndivid implements IndividualBase {
     return tree!.changeNode(getRandomElement(nodesId, random));
   }
 
+  bool _deleteRandomEdge() {
+    final edgesId = tree!.getEdgesId();
+    if (edgesId.isEmpty) {
+      return false;
+    }
+    return tree!.deleteEdge(getRandomElement(edgesId, random));
+  }
+
+  bool _deleteRandomNode() {
+    final nodesId = tree!.getNodesId();
+    final allNodesCount = nodesId.length;
+
+    if (allNodesCount < input+output+1) {
+      return false;
+    }
+
+    final nodeIndex = randomRanges([
+      PairValues<int>(first: input + output, end: allNodesCount),
+    ], random);
+
+    return tree!.deleteNode(nodesId[nodeIndex]);
+  }
+
+
   @override
   bool mutate() {
     /*
@@ -287,6 +311,8 @@ class NeatIndivid implements IndividualBase {
       () => res = _addNodeBetween(allNodesId, idCalculator),
       () => res = _changeRandomEdge(),
       () => res = _changeRandomNode(),
+      () => res = _deleteRandomEdge(),
+      () => res = _deleteRandomNode(),
     ], random);
 
     adjacencyDictKeys = adjacencyDict!.keys.toList();

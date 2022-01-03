@@ -28,6 +28,9 @@ abstract class GameTreeBase implements AiAlgorithm {
   bool changeNode(int nodeId);
   bool changeEdge(int edgeId);
 
+  bool deleteEdge(int edgeId);
+  bool deleteNode(int nodeID);
+
   @override
   List<double> forward(List<double> inp);
 
