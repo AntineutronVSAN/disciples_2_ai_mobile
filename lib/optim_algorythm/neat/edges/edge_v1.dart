@@ -22,8 +22,8 @@ class EdgeV1 with MathMixin implements TreeEdgeBase {
   @override
   Map<String, dynamic> toJson() => _$EdgeV1ToJson(this);
 
-  factory EdgeV1.random(int id) {
-    return EdgeV1(id: id, weight: Random().nextDouble());
+  factory EdgeV1.random(int id, Random random) {
+    return EdgeV1(id: id, weight: randomRange(-1.0, 1.0, random));
   }
 
   @override
@@ -54,5 +54,15 @@ class EdgeV1 with MathMixin implements TreeEdgeBase {
   @override
   EdgeV1 deepCopy() {
     return EdgeV1(id: id, weight: weight);
+  }
+
+  @override
+  void mutate() {
+    callRandomFunc([
+      () => weight = 0.0,
+      () => weight = 1.0,
+      () => weight += random.nextDouble(),
+      () => weight -= random.nextDouble(),
+    ], random);
   }
 }

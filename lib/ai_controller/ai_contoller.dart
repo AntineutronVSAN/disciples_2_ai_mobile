@@ -83,19 +83,11 @@ TODO:
 */
 
 import 'package:d2_ai_v2/controllers/game_controller.dart';
-import 'package:d2_ai_v2/dart_nural/linear_network.dart';
-import 'package:d2_ai_v2/dart_nural/neural_base.dart';
 import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/optim_algorythm/base.dart';
-import 'package:d2_ai_v2/optim_algorythm/genetic/genetic_checkpoint.dart';
-import 'package:d2_ai_v2/optim_algorythm/genetic/individs/genetic_individ.dart';
 import 'package:d2_ai_v2/optim_algorythm/individual_base.dart';
-import 'package:d2_ai_v2/optim_algorythm/neat/game_tree_base.dart';
 import 'package:d2_ai_v2/providers/file_provider_base.dart';
-
-
-import '../const.dart';
 
 
 class AiController {
@@ -118,11 +110,17 @@ class AiController {
     inited = true;
   }
 
-  Future<void> initFromFile(List<Unit> units, String filePath, FileProviderBase fileProvider) async {
+  Future<void> initFromFile(
+      List<Unit> units,
+      String filePath,
+      FileProviderBase fileProvider,
+      IndividualFactoryBase factory,
+      ) async {
     //final fileProvider = FileProvider(); // todo
     await fileProvider.init();
-    final checkPoint = GeneticAlgorithmCheckpoint.fromJson(await fileProvider.getDataByFileName(filePath));
-    algorithm = checkPoint.individs[0].getAlgorithm();
+    //final checkPoint = NeatCheckpoint.fromJson(await fileProvider.getDataByFileName(filePath));
+    final checkPoint = await factory.getCheckpoint(filePath, fileProvider);
+    algorithm = checkPoint.getIndividuals()[0].getAlgorithm();
     unitsRefs = units;
     inited = true;
   }

@@ -4,7 +4,7 @@ import 'base.dart';
 abstract class IndividualBase {
 
   IndividualBase? cross(IndividualBase target);
-  void mutate();
+  bool mutate();
 
   double getFitness();
   void setFitness(double fitness);

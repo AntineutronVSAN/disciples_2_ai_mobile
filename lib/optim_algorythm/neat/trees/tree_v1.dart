@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:math';
 
 import 'package:d2_ai_v2/optim_algorythm/neat/adjacency_dict.dart';
 import 'package:d2_ai_v2/optim_algorythm/neat/edge_base.dart';
@@ -10,11 +11,9 @@ import 'package:d2_ai_v2/optim_algorythm/neat/nodes/node_v1.dart';
 import '../game_tree_base.dart';
 import '../id_calculator.dart';
 
-
 import 'package:json_annotation/json_annotation.dart';
 
 part 'tree_v1.g.dart';
-
 
 class TreeV1 implements GameTreeBase {
   final List<TreeNodeBase> nodes;
@@ -68,7 +67,6 @@ class TreeV1 implements GameTreeBase {
     required this.inputCompleter,
     required this.idCalculator,
   }) {
-
     if (initFrom) {
       assert(idCalculator != null);
       /*assert(
@@ -88,7 +86,6 @@ class TreeV1 implements GameTreeBase {
         print('asdfasfd');
         throw Exception();
       }
-
     } else {
       /*assert(nodes.isEmpty &&
           nodesMap.isEmpty &&
@@ -96,15 +93,16 @@ class TreeV1 implements GameTreeBase {
           edgesMap.isEmpty &&
           adjacencyDict.isEmpty &&
           adjacencyList.isEmpty);*/
-      _initRandom();
+      _initRandom(Random());
     }
   }
 
-  void _initRandom() {
+  void _initRandom(Random random) {
     // Входные узлы. id узла равен индексу элемента входного вектора
     var i = 0;
     for (; i < input; i++) {
-      final newNode = NodeV1.randomWithoutActivation(idCalculator!.fromID(i));
+      final newNode =
+          NodeV1.randomWithoutActivation(idCalculator!.fromID(i), random);
       // id узла newNode равен индексу i вектора input
       final currentNodeID = newNode.getId();
       nodes.add(newNode);
@@ -115,7 +113,7 @@ class TreeV1 implements GameTreeBase {
     }
     // Выходные узлы
     for (; i < input + output; i++) {
-      final newNode = NodeV1.randomWithoutActivation(idCalculator!.fromID(i));
+      final newNode = NodeV1.random(idCalculator!.fromID(i), random);
       // id узла newNode равен индексу i вектора input
       final currentNodeID = newNode.getId();
       nodes.add(newNode);
@@ -125,19 +123,15 @@ class TreeV1 implements GameTreeBase {
       nodesStartState[currentNodeID] = false;
     }
     assert(nodes.length == input + output);
-    _test();
+    _test(tree: this);
   }
 
   /// Своеобразный юнит тест топологии
-  void _test() {
-
+  void _test({bool needForward = true, required TreeV1 tree}) {
     // todo Убрать после отладки
-
-
-    for( var i in inputCompleter.entries) {
+    for (var i in tree.inputCompleter.entries) {
       if (i.key < input) {
         if (i.value.getMaxInputCount() != 0) {
-          print('asdfasdf');
           throw Exception();
         }
       } else {
@@ -145,8 +139,65 @@ class TreeV1 implements GameTreeBase {
       }
     }
 
-    assert(edges.length == adjacencyDict.length);
+    // Случается ошибка, когда узел ссылается на другой узел, но
+    // в словаре смежностей такого ключа нет. Следующий блок
+    // кода предназначен для выявления такого случая
+    for (var i in tree.adjacencyList.entries) {
+      final parentNodeId = i.key;
+      for (var childNodeId in i.value) {
+        final currentAdjKey =
+            AdjacencyDictKey(child: childNodeId, parent: parentNodeId);
+        final keyExists = tree.adjacencyDict.containsKey(currentAdjKey);
+        if (!keyExists) {
+          throw Exception('Узел $parentNodeId ссылается на $childNodeId в '
+              'списке ${i.value}, но словарь смежностей '
+              'не содержит ключ $currentAdjKey');
+        }
+      }
+    }
 
+    final copyCompleterValuesFromAdjList = <int, int>{};
+    final copyCompleterValuesFromAdjDict = <int, int>{};
+    // Тест значений комплитера
+    for (var i in tree.adjacencyList.entries) {
+      for (var j in i.value) {
+        final hasKey = copyCompleterValuesFromAdjList.containsKey(j);
+        if (hasKey) {
+          copyCompleterValuesFromAdjList[j] =
+              copyCompleterValuesFromAdjList[j]! + 1;
+        } else {
+          copyCompleterValuesFromAdjList[j] = 1;
+        }
+      }
+    }
+    for (var i in tree.adjacencyDict.entries) {
+      final childId = i.key.child;
+      final hasKey = copyCompleterValuesFromAdjDict.containsKey(childId);
+      if (hasKey) {
+        copyCompleterValuesFromAdjDict[childId] =
+            copyCompleterValuesFromAdjDict[childId]! + 1;
+      } else {
+        copyCompleterValuesFromAdjDict[childId] = 1;
+      }
+    }
+    // Сравнение значений с текущим комплиетром
+    for (var i in copyCompleterValuesFromAdjList.entries) {
+      assert(
+        copyCompleterValuesFromAdjDict[i.key] == i.value,
+      );
+    }
+    for (var i in copyCompleterValuesFromAdjDict.entries) {
+      final maxVal = tree.inputCompleter[i.key]!.getMaxInputCount();
+      assert(maxVal == i.value);
+      //assert(copyCompleterValuesFromAdjDict[i.key] == maxVal);
+    }
+
+    // Тестовый прямой проход. Ловится ошибка зацикленности
+    if (needForward) {
+      tree.forward(List.generate(input, (index) => Random().nextDouble()));
+    }
+
+    assert(tree.edges.length == tree.adjacencyDict.length);
   }
 
   @override
@@ -156,7 +207,7 @@ class TreeV1 implements GameTreeBase {
       алгоритма. Возможно, в будущем для сравнения будет добавлен и рекурсивный
       алгоритм
     */
-    _test();
+    _test(tree: this, needForward: false);
     // Очередь обработки узлов
     Queue<int> inputQueue = Queue<int>();
     Queue<int> outputQueue = Queue<int>();
@@ -198,7 +249,6 @@ class TreeV1 implements GameTreeBase {
       // Проверка, все ли имеются данные, которые приходят в узел
       // Т.к. это первые узлы, то данные должны быть
       if (!inputCompleter[currentNodeID]!.isComplete()) {
-        print('asdfasdfasdf');
         throw Exception();
       }
       // Выходное значение после узла
@@ -212,7 +262,6 @@ class TreeV1 implements GameTreeBase {
             AdjacencyDictKey(child: nextNodeID, parent: currentNodeID);
 
         if (adjacencyDict[currentAdjKey] == null) {
-          print('asdfasdf');
           throw Exception();
         }
         final currentEdgeObject = adjacencyDict[currentAdjKey]!;
@@ -258,7 +307,7 @@ class TreeV1 implements GameTreeBase {
         // Ищётся ребро между узлами, данные прогоняются через ребро
         // и отправляется в список inputs следующего узла.
         final currentAdjKey =
-        AdjacencyDictKey(child: nextNodeID, parent: currentNodeID);
+            AdjacencyDictKey(child: nextNodeID, parent: currentNodeID);
         final currentEdgeObject = adjacencyDict[currentAdjKey]!;
 
         final data = currentEdgeObject.calculate(value);
@@ -297,58 +346,93 @@ class TreeV1 implements GameTreeBase {
       nodeCompleter.clear();
 
       resultVector.add(value);
-
     }
 
     assert(resultVector.length == output, "${resultVector.length} != $output");
-    _test();
+    // needForward false, что бы избавиться от зацкленности
+    _test(needForward: false, tree: this);
     return resultVector;
   }
 
   /// Проверить дерево на предмет зацикливаний
-  bool _checkTreeCycles({TreeV1? snapshot}) {
-    _CycleFindBypassContext context = _CycleFindBypassContext();
-    List<int> allStartNodes = [];
-
-    final entries = snapshot == null
-        ? nodesStartState.entries
-        : snapshot.nodesStartState.entries;
-
-    for(var i in entries) {
-      if (i.value) {
-        allStartNodes.add(i.key);
-      }
-    }
-    for(var id in allStartNodes) {
-      context.refresh();
-      //print('--------------------- ID = $id');
-      final res = _checkTreeCyclesBypass(id, context, snapshot: snapshot);
+  /// Начинается обход от каждого узла. Если по дереву можно добраться
+  /// до самого себя - дерево зациклено. Это довольно долгая опрерация, так
+  /// как приходится делать обход от каждого узла
+  /// в будущем стоит придумать что-то получше и побыстрее
+  bool _treeCorrect({required TreeV1 tree}) {
+    for(var i in tree.nodesMap.keys) {
+      final newContext = _CycleFindBypassContext(
+          currentNodeId: i,
+          visitedNodes: []);
+      final res = _checkTreeCyclesBypass(nodeId: i, context: newContext, tree: tree);
       if (!res) {
-        print('Дерево зациклено!');
         return false;
       }
     }
-    _test();
     return true;
   }
 
-  bool _checkTreeCyclesBypass(int nodeId, _CycleFindBypassContext context, {TreeV1? snapshot}) {
-    context.visitedNodes[nodeId] = true;
+  bool _checkTreeCyclesBypass({
+    required int nodeId,
+    required _CycleFindBypassContext context,
+    required TreeV1 tree}) {
+
     context.addRec();
+    context.visitedNodes.add(nodeId);
 
-    final adjList = snapshot == null ? adjacencyList : snapshot.adjacencyList;
-
-    for(var nextId in adjList[nodeId]!) {
-      //print('next - $nextId');
-      if (context.visitedNodes[nextId] != null) {
+    for(var nextNodeId in tree.adjacencyList[nodeId]!) {
+      // Если удалось по дереву добраться до начального узла - дерево зациклено
+      if (nextNodeId == context.currentNodeId) {
         return false;
       }
-      final res = _checkTreeCyclesBypass(nextId, context, snapshot: snapshot);
+      if (context.visitedNodes.contains(nextNodeId)) {
+        continue;
+      }
+      final res = _checkTreeCyclesBypass(nodeId: nextNodeId, context: context, tree: tree);
       if (!res) {
         return false;
       }
     }
+    return true;
+  }
 
+  ///// Удалить ребро
+  /*bool deleteEdge(int e) {
+
+    if (!edgesMap.containsKey(e)) {
+      return false;
+    }
+    final currentKey = edgesMap[e]!;
+    // При удалении ребра, учитывается:
+    // 1) Удалить ключ из словаря смежностей
+    // 2) Нужно удалить ссылку parent узла на child
+    // 3) Поменять startState у узлов
+
+    _test();
+    return false;
+  }*/
+
+  /// Изменить параетры узла
+  @override
+  bool changeNode(int nodeId) {
+    final hasNode = nodesMap.containsKey(nodeId);
+    if (!hasNode) {
+      throw Exception();
+      return false;
+    }
+
+    nodesMap[nodeId]!.mutate();
+    return true;
+  }
+
+  /// Изменить параметры ребра
+  @override
+  bool changeEdge(int edgeId) {
+    final hasEdge = edgesMap.containsKey(edgeId);
+    if (!hasEdge) {
+      throw Exception();
+    }
+    edgesMap[edgeId]!.mutate();
     return true;
   }
 
@@ -362,7 +446,7 @@ class TreeV1 implements GameTreeBase {
       return false;
     }
     // Запрещено добавлять связь от выходного узла
-    if (n1 >= input && n1 < output+input) {
+    if (n1 >= input && n1 < output + input) {
       //throw Exception("Запрещено добавлять связь от выходного узла");
       return false;
     }
@@ -382,7 +466,6 @@ class TreeV1 implements GameTreeBase {
       return false;
       throw Exception();
     }
-
 
     final hasEdge = edgesMap.containsKey(edge.getId());
     if (hasEdge) {
@@ -407,7 +490,7 @@ class TreeV1 implements GameTreeBase {
 
     // При добавлении связи между существующими узлами, дерево может
     // зациклиться. Необходимо проверить
-    final treeCorrect = _checkTreeCycles();
+    final treeCorrect = _treeCorrect(tree: this);
     if (!treeCorrect) {
       // Сброс
       adjacencyDict.remove(newKey);
@@ -416,17 +499,17 @@ class TreeV1 implements GameTreeBase {
       adjacencyList[n1]!.removeWhere((element) => element == n2);
       inputCompleter[n2]!.addMaxCount(-1);
       nodesStartState[n2] = lastState;
-      _test();
+      _test(tree: this);
       return false;
     }
-    _test();
+    _test(tree: this);
     return true;
   }
 
   @override
   bool addNewNextNode(int current, TreeNodeBase node, TreeEdgeBase edge) {
     /* current -> edge -> node */
-    if (current >= input && current < output+input) {
+    if (current >= input && current < output + input) {
       //throw Exception("Запрещено добавить связь от выходного узла");
       return false;
     }
@@ -466,7 +549,7 @@ class TreeV1 implements GameTreeBase {
     inputCompleter[newNodeID]!.addMaxCount(1);
 
     nodesStartState[newNodeID] = false;
-    _test();
+    _test(tree: this);
     return true;
   }
 
@@ -517,7 +600,7 @@ class TreeV1 implements GameTreeBase {
     nodesStartState[target] = false;
 
     inputCompleter[target]!.addMaxCount(1);
-    _test();
+    _test(tree: this);
     return true;
   }
 
@@ -525,19 +608,46 @@ class TreeV1 implements GameTreeBase {
   bool addNodeBetween(
       int n1, int n2, TreeNodeBase n, TreeEdgeBase e1, TreeEdgeBase e2) {
     // n1 -> e1 -> n -> e2 -> n2
-    if (n1 < input && n2 < input) {
+
+    // Делается попытка сделать изменения на снапшоте
+    final snapshot = deepCopy() as TreeV1;
+    final result = _addNodeBetween(tree: snapshot, n1: n1, n2: n2, n: n, e1: e1, e2: e2);
+    if (!result) {
+      return false;
+    }
+    // Только после успешного добавление в снапшоте, добавяем в текущее дерево
+    final resultThis = _addNodeBetween(tree: this, n1: n1, n2: n2, n: n, e1: e1, e2: e2);
+    if (!resultThis) {
+      throw Exception();
+    }
+    _test(tree: this);
+    return true;
+  }
+
+  /// Добавить узел между. Метод не привязывется к конкретному дереву и передаётся в
+  /// параметре tree. Обычно, это может быть либо this, либо snapshot для
+  /// тестирования зацикленностей в дереве после добавления новых связей
+  bool _addNodeBetween(
+      {required TreeV1 tree,
+      required int n1,
+      required int n2,
+      required TreeNodeBase n,
+      required TreeEdgeBase e1,
+      required TreeEdgeBase e2}) {
+
+    if (n1 < tree.input && n2 < tree.input) {
       //throw Exception("Запрещено добавлять связи между входными узлами");
       return false;
     }
-    if (n2 < input) {
+    if (n2 < tree.input) {
       //throw Exception("Запрещено добавлять связи к входному узлу");
       return false;
     }
-    if (n1 >= input && n2 <= output) {
+    if (n1 >= tree.input && n2 <= tree.output) {
       //throw Exception("Запрещено добавлять связь от выходного узла");
       return false;
     }
-    if (nodesStartState[n2]!) {
+    if (tree.nodesStartState[n2]!) {
       // Узел может быть и не стартовым
       //throw Exception();
     }
@@ -549,12 +659,12 @@ class TreeV1 implements GameTreeBase {
     final firstEdgeID = e1.getId();
     final secondEdgeID = e2.getId();
 
-    final hasFirstNode = nodesMap.containsKey(n1);
-    final hasSecondNode = nodesMap.containsKey(n2);
-    final hasNewNode = nodesMap.containsKey(newNodeID);
+    final hasFirstNode = tree.nodesMap.containsKey(n1);
+    final hasSecondNode = tree.nodesMap.containsKey(n2);
+    final hasNewNode = tree.nodesMap.containsKey(newNodeID);
 
-    final hasFirstEdge = edgesMap.containsKey(firstEdgeID);
-    final hasSecondEdge = edgesMap.containsKey(secondEdgeID);
+    final hasFirstEdge = tree.edgesMap.containsKey(firstEdgeID);
+    final hasSecondEdge = tree.edgesMap.containsKey(secondEdgeID);
 
     if (!hasFirstNode || !hasSecondNode) {
       throw Exception();
@@ -568,157 +678,103 @@ class TreeV1 implements GameTreeBase {
 
     final firstKey = AdjacencyDictKey(child: newNodeID, parent: n1);
     final secondKey = AdjacencyDictKey(child: n2, parent: newNodeID);
-
     final currentKey = AdjacencyDictKey(child: n2, parent: n1);
 
-    // Связи между узлами может и не быть
-    /*if (!adjacencyDict.containsKey(currentKey)) {
-      throw Exception();
-    }*/
-    if (adjacencyDict.containsKey(firstKey) ||
-        adjacencyDict.containsKey(secondKey)) {
+    if (tree.adjacencyDict.containsKey(firstKey) ||
+        tree.adjacencyDict.containsKey(secondKey)) {
       throw Exception();
     }
 
-    // Делается snapshot текущего состояния. На нём делаются изменения и
-    // смотрятся зацикливания в дереве. Это очень тяжёлая операция, но
-    // ничего лучше пока я не придумал. Проблема в том, что после изменений
-    // (которых очень много) дерево может зациклиться и необходимо вернуться
-    // в исходное состояние. Всё усугубляется тем, что создающий дерево
-    // объект хранит в себе ссылки на поля дерева, и изменять их нельзя.
-    final snapshot = deepCopy() as TreeV1;
-    // Только после успешного добавления в снапшоте, добавялется в текущем дереве
-    if (!_checkTreeCyclesAfterAddEdge(
-        snapshot: snapshot,
-        n1: n1,
-        n2: n2,
-        n: n,
-        e1: e1,
-        e2: e2)) {
+    tree.nodes.add(n);
+    tree.nodesMap[newNodeID] = n;
+
+    tree.edges.add(e1);
+    tree.edges.add(e2);
+    tree.edgesMap[firstEdgeID] = e1;
+    tree.edgesMap[secondEdgeID] = e2;
+
+    // Существовала ли связь между n1->n2 или n2->n1
+    final currentEdgeExists = tree.adjacencyDict.containsKey(currentKey);
+
+    // Если связь существовала, нужно определить направление связи
+    // true - n1 -> n2
+    // false - n2 -> n1
+    // null - связи нет
+    bool? currentEdgeDir;
+
+    if (currentEdgeExists) {
+      final deletedEdgeId = tree.adjacencyDict[currentKey]!.getId();
+      if (tree.adjacencyList[n1]!.contains(n2)) {
+        // n1 -> n2 . Проверка невозможности n2 -> n1
+        if (tree.adjacencyList[n2]!.contains(n1)) {
+          throw Exception();
+        }
+        assert(!nodesStartState[n2]!);
+        tree.inputCompleter[n2]!.addMaxCount(-1);
+        tree.adjacencyList[n1]!.remove(n2);
+        tree.adjacencyDict.remove(currentKey);
+
+      } else if (tree.adjacencyList[n2]!.contains(n1)) {
+        // n2 -> n1 . Проверка невозможности n1 -> n2
+        if (tree.adjacencyList[n1]!.contains(n2)) {
+          throw Exception();
+        }
+        assert(!tree.nodesStartState[n1]!);
+        tree.inputCompleter[n1]!.addMaxCount(-1);
+        tree.adjacencyList[n2]!.remove(n1);
+        tree.adjacencyDict.remove(currentKey);
+      } else {
+        throw Exception();
+      }
+
+      // Удалить ребро
+      tree.edges.removeWhere((element) => element.getId() == deletedEdgeId);
+      tree.edgesMap.remove(deletedEdgeId);
+
+    } else {
+      currentEdgeDir = null;
+    }
+
+    tree.nodesStartState[n2] = false;
+    tree.inputCompleter[n2]!.addMaxCount(1);
+
+    tree.adjacencyList[n1]!.add(newNodeID);
+
+    assert(tree.inputCompleter[newNodeID] == null);
+    assert(tree.adjacencyList[newNodeID] == null);
+
+    tree.inputCompleter[newNodeID] = NodesInputCounter.empty();
+    tree.inputCompleter[newNodeID]!.addMaxCount(1);
+
+    tree.adjacencyList[newNodeID] = [];
+    tree.adjacencyList[newNodeID]!.add(n2);
+
+    tree.nodesStartState[newNodeID] = false;
+
+    tree.adjacencyDict[firstKey] = e1;
+    tree.adjacencyDict[secondKey] = e2;
+
+    final treeCorrect = _treeCorrect(tree: tree);
+
+    if (treeCorrect) {
+      _test(tree: tree);
+      return true;
+    } else {
       return false;
     }
-
-    nodes.add(n);
-    nodesMap[newNodeID] = n;
-    assert(inputCompleter[newNodeID] == null);
-    inputCompleter[newNodeID] = NodesInputCounter.empty();
-
-    edges.add(e1);
-    edges.add(e2);
-    edgesMap[firstEdgeID] = e1;
-    edgesMap[secondEdgeID] = e2;
-
-    adjacencyDict[firstKey] = e1;
-    adjacencyDict[secondKey] = e2;
-    // n1 -> n -> n2
-    assert(adjacencyList[newNodeID] == null);
-    adjacencyList[newNodeID] = [];
-    adjacencyList[newNodeID]!.add(n2);
-
-    adjacencyList[n1]!.add(newNodeID);
-    adjacencyList[n1]!.removeWhere((element) => element == n2);
-
-    inputCompleter[newNodeID]!.addMaxCount(1);
-    assert(nodesStartState[newNodeID] == null);
-    nodesStartState[newNodeID] = false;
-    nodesStartState[n2] = false;
-
-    assert(edges.length == adjacencyDict.length);
-    // Необходимо удалить существующие связи, если они есть
-    if (adjacencyDict[currentKey] != null) {
-      final deletedEdgeID = adjacencyDict[currentKey]!.getId();
-      adjacencyDict.remove(currentKey);
-      final deleteEdgeRes = edgesMap.remove(deletedEdgeID);
-      assert(deleteEdgeRes != null);
-      edges.removeWhere((element) => element.getId() == deletedEdgeID);
-    } else {
-      // Если связи между n1->n2 не сущестововало, к комплитеру n2 добавялется
-      // значение
-      assert(inputCompleter[n2] != null);
-      inputCompleter[n2]!.addMaxCount(1);
-    }
-
-    if (!_checkTreeCycles()) {
-      throw Exception("Зацикливания должны быть проверены в снапшоте. Неверная логика");
-      _test();
-      return false;
-    }
-
-    _test();
-    return true;
   }
-
-  bool _checkTreeCyclesAfterAddEdge(
-      {required TreeV1 snapshot,
-        required int n1,
-        required int n2,
-        required TreeNodeBase n,
-        required TreeEdgeBase e1,
-        required TreeEdgeBase e2}) {
-
-    final newNodeID = n.getId();
-    final firstEdgeID = e1.getId();
-    final secondEdgeID = e2.getId();
-
-    final firstKey = AdjacencyDictKey(child: newNodeID, parent: n1);
-    final secondKey = AdjacencyDictKey(child: n2, parent: newNodeID);
-
-    final currentKey = AdjacencyDictKey(child: n2, parent: n1);
-
-    snapshot.nodes.add(n);
-    snapshot.nodesMap[newNodeID] = n;
-    assert(snapshot.inputCompleter[newNodeID] == null);
-    snapshot.inputCompleter[newNodeID] = NodesInputCounter.empty();
-
-    snapshot.edges.add(e1);
-    snapshot.edges.add(e2);
-    snapshot.edgesMap[firstEdgeID] = e1;
-    snapshot.edgesMap[secondEdgeID] = e2;
-
-    snapshot.adjacencyDict[firstKey] = e1;
-    snapshot.adjacencyDict[secondKey] = e2;
-    // n1 -> n -> n2
-    assert(snapshot.adjacencyList[newNodeID] == null);
-    snapshot.adjacencyList[newNodeID] = [];
-    snapshot.adjacencyList[newNodeID]!.add(n2);
-
-    snapshot.adjacencyList[n1]!.add(newNodeID);
-    snapshot.adjacencyList[n1]!.removeWhere((element) => element == n2);
-
-    snapshot.inputCompleter[newNodeID]!.addMaxCount(1);
-    assert(snapshot.nodesStartState[newNodeID] == null);
-    snapshot.nodesStartState[newNodeID] = false;
-    snapshot.nodesStartState[n2] = false;
-
-    assert(snapshot.edges.length == snapshot.adjacencyDict.length);
-    // Необходимо удалить существующие связи, если они есть
-    if (snapshot.adjacencyDict[currentKey] != null) {
-      final deletedEdgeID = snapshot.adjacencyDict[currentKey]!.getId();
-      snapshot.adjacencyDict.remove(currentKey);
-      final deleteEdgeRes = snapshot.edgesMap.remove(deletedEdgeID);
-      assert(deleteEdgeRes != null);
-      snapshot.edges.removeWhere((element) => element.getId() == deletedEdgeID);
-    } else {
-      // Если связи между n1->n2 не сущестововало, к комплитеру n2 добавялется
-      // значение
-      assert(snapshot.inputCompleter[n2] != null);
-      snapshot.inputCompleter[n2]!.addMaxCount(1);
-    }
-    return _checkTreeCycles(snapshot: snapshot);
-  }
-
 
   @override
   String toString() {
-    /*print('ALL NODES:');
+    print('ALL NODES:');
     for (var i in nodes) {
       print('Node id = ${i.getId()}');
     }
     print('ALL EDGES:');
     for (var i in edges) {
       print('Edge id = ${i.getId()}');
-    }*/
-    /*print('ADJACENCY DICT:');
+    }
+    print('ADJACENCY DICT:');
     for (var i in adjacencyDict.entries) {
       print('key - ${i.key} edge: ${i.value}');
     }
@@ -731,9 +787,9 @@ class TreeV1 implements GameTreeBase {
       print('Node id - ${i.key}. Value - ${i.value}');
     }
     print('NODE START STATE:');
-    for(var i in nodesStartState.entries) {
+    for (var i in nodesStartState.entries) {
       print('Node - ${i.key}, is start - ${i.value}');
-    }*/
+    }
     return super.toString();
   }
 
@@ -749,7 +805,6 @@ class TreeV1 implements GameTreeBase {
 
   @override
   GameTreeBase deepCopy() {
-
     final newNodes = nodes.map((e) => e.deepCopy()).toList();
     final newNodesMap = <int, TreeNodeBase>{};
     for (var i in nodesMap.entries) {
@@ -783,20 +838,24 @@ class TreeV1 implements GameTreeBase {
     }
 
     return TreeV1(
-        input: input,
-        output: output,
-        nodes: newNodes,
-        nodesMap: newNodesMap,
-        edges: newEdges,
-        edgesMap: newEdgesMap,
-        adjacencyDict: newAdjDict,
-        initFrom: true,
-        adjacencyList: newAdjList,
-        nodesStartState: newNodesStartState,
-        inputCompleter: newInputCompleter,
-        idCalculator: idCalculator!.deepCopy(),
+      input: input,
+      output: output,
+      nodes: newNodes,
+      nodesMap: newNodesMap,
+      edges: newEdges,
+      edgesMap: newEdgesMap,
+      adjacencyDict: newAdjDict,
+      initFrom: true,
+      adjacencyList: newAdjList,
+      nodesStartState: newNodesStartState,
+      inputCompleter: newInputCompleter,
+      idCalculator: idCalculator!.deepCopy(),
     );
+  }
 
+  @override
+  List<int> getEdgesId() {
+    return edges.map((e) => e.getId()).toList();
   }
 }
 
@@ -809,16 +868,16 @@ class NodesInputCounter {
   int maxInputsCount = 0;
   final List<double> currentInputs;
 
-  NodesInputCounter({required this.currentInputs, required this.maxInputsCount});
+  NodesInputCounter(
+      {required this.currentInputs, required this.maxInputsCount});
 
   factory NodesInputCounter.fromJson(Map<String, dynamic> json) =>
       _$NodesInputCounterFromJson(json);
+
   Map<String, dynamic> toJson() => _$NodesInputCounterToJson(this);
 
   factory NodesInputCounter.empty() {
-    return NodesInputCounter(
-        currentInputs: [],
-        maxInputsCount: 0);
+    return NodesInputCounter(currentInputs: [], maxInputsCount: 0);
   }
 
   int getMaxInputCount() {
@@ -833,7 +892,6 @@ class NodesInputCounter {
     currentInputs.add(val);
     if (currentInputs.length > maxInputsCount) {
       print('asdfadfafd');
-
     }
     assert(
         currentInputs.length <= maxInputsCount,
@@ -866,18 +924,19 @@ class NodesInputCounter {
   }
 
   NodesInputCounter deepCopy() {
-    return NodesInputCounter(currentInputs: currentInputs, maxInputsCount: maxInputsCount);
+    return NodesInputCounter(
+        currentInputs: currentInputs, maxInputsCount: maxInputsCount);
   }
 }
 
 /// Вспомогательный класс-контекст для обхода дерева при поиске зацикливаний
 class _CycleFindBypassContext {
-  Map<int, bool> visitedNodes = {};
   int recCounter = 0;
-  void refresh() {
-    recCounter = 0;
-    visitedNodes.clear();
-  }
+  int currentNodeId;
+  List<int> visitedNodes;
+
+  _CycleFindBypassContext({required this.currentNodeId, required this.visitedNodes});
+
   void addRec() {
     if (recCounter > 10000) {
       throw Exception();

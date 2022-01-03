@@ -1,4 +1,4 @@
-
+import 'dart:math';
 
 import 'package:collection/src/iterable_extensions.dart';
 import 'package:d2_ai_v2/utils/activations_mixin.dart';
@@ -10,43 +10,62 @@ part 'node_v1.g.dart';
 
 @JsonSerializable()
 class NodeV1 with MathMixin implements TreeNodeBase {
-
   int id;
   String activation;
+  double bias;
   late Activation _activationFunc;
 
-  /// Дефолтное значение, которые выдаёт узел, если в него нет входов
-  final double defaultValue;
+  static List<String> activations = [
+    'none',
+    'sigmoid',
+    'relu',
+    'th',
+    'elu',
+    'lrelu',
+  ];
 
   NodeV1({
     required this.id,
     required this.activation,
-    required this.defaultValue,
+    required this.bias,
   }) {
     _activationFunc = activationFunctionFromString(activation);
   }
 
-  factory NodeV1.fromJson(Map<String, dynamic> json) =>
-      _$NodeV1FromJson(json);
+  factory NodeV1.fromJson(Map<String, dynamic> json) => _$NodeV1FromJson(json);
+
   @override
   Map<String, dynamic> toJson() => _$NodeV1ToJson(this);
 
-  factory NodeV1.random(int id) {
-    return NodeV1(activation: getRandomActivation(), id: id, defaultValue: getRandomValue());
+  factory NodeV1.random(int id, Random random) {
+    return NodeV1(
+      activation: getRandomElement<String>(['sigmoid',
+        'relu',
+        'th','elu', 'lrelu'], random),
+      id: id,
+      bias: randomRange(-1.0, 1.0, random),
+    );
   }
-  factory NodeV1.randomWithoutActivation(int id) {
-    return NodeV1(activation: 'none', id: id, defaultValue: getRandomValue());
+
+  factory NodeV1.randomWithoutActivation(int id, Random random) {
+    return NodeV1(
+      activation: 'none',
+      id: id,
+      bias: randomRange(-1.0, 1.0, random),
+    );
   }
 
   @override
   double calculate(List<double> input) {
     if (input.isEmpty) {
-      return defaultValue;
+      return bias;
     }
 
-    final currentVector = _activationFunc([input.sum]);
-    return currentVector[0];
+    var vectorSum = input.sum;
+    vectorSum += bias;
 
+    final currentVector = _activationFunc([vectorSum]);
+    return currentVector[0];
   }
 
   @override
@@ -67,7 +86,32 @@ class NodeV1 with MathMixin implements TreeNodeBase {
 
   @override
   NodeV1 deepCopy() {
-    return NodeV1(id: id, activation: activation, defaultValue: defaultValue);
+    return NodeV1(
+        id: id, activation: activation, bias: bias);
   }
 
+  @override
+  void mutate() {
+    callRandomFunc([
+      _mutateBias,
+      _mutateActivation,
+    ], random);
+  }
+
+  void _mutateBias() {
+    callRandomFunc([
+      () => bias += random.nextDouble(),
+      () => bias -= random.nextDouble(),
+      () => bias = 1.0,
+      () => bias = 0.0,
+    ], random);
+  }
+
+  void _mutateActivation() {
+    callRandomFunc([
+      () => setActivation('sigmoid'),
+      () => setActivation('relu'),
+      () => setActivation('elu'),
+    ], random);
+  }
 }

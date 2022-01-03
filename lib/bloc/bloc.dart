@@ -1,17 +1,13 @@
-
-
 import 'package:d2_ai_v2/ai_controller/ai_contoller.dart';
 import 'package:d2_ai_v2/bloc/states.dart';
 import 'package:d2_ai_v2/controllers/game_controller.dart';
-import 'package:d2_ai_v2/dart_nural/linear_network.dart';
 import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
-import 'package:d2_ai_v2/optim_algorythm/genetic_controller.dart';
+import 'package:d2_ai_v2/optim_algorythm/factories/neat_factory.dart';
 import 'package:d2_ai_v2/providers/file_provider.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
 import 'package:d2_ai_v2/update_state_context/update_state_context.dart';
 import 'package:d2_ai_v2/utils/cell_utils.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 import '../const.dart';
@@ -28,10 +24,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   final AiController aiController;
 
   final List<Unit> _allUnits = [];
+
   /// Ключ - id юнита в игре (не путить с id в битве)
   final Map<String, Unit> _allUnitsMap = {};
 
   final List<Unit> _units = [];
+
   /// Копии юнитов, они отправляются в контроллер битвы, что бы не терять
   /// оригинальных
   final List<Unit> _warUnitsCopies = [];
@@ -41,27 +39,26 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   /// Счётчик совершённых невозможных действий от ИИ
   int impossibleAiActions = 0;
 
-  GameBloc(GameState initialState, {
+  GameBloc(
+    GameState initialState, {
     required this.repository,
     required this.controller,
     required this.aiController,
   }) : super(initialState) {
-    _units.addAll(
-        [
-          Unit.empty(),
-          Unit.empty(),
-          Unit.empty(),
-          Unit.empty(),
-          Unit.empty(),
-          Unit.empty(),
-          Unit.empty(),
-          Unit.empty(),
-          Unit.empty(),
-          Unit.empty(),
-          Unit.empty(),
-          Unit.empty(),
-        ]
-    );
+    _units.addAll([
+      Unit.empty(),
+      Unit.empty(),
+      Unit.empty(),
+      Unit.empty(),
+      Unit.empty(),
+      Unit.empty(),
+      Unit.empty(),
+      Unit.empty(),
+      Unit.empty(),
+      Unit.empty(),
+      Unit.empty(),
+      Unit.empty(),
+    ]);
     repository.init();
     _allUnits.addAll(repository.getAllUnits());
     for (var element in _allUnits) {
@@ -71,25 +68,35 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
     initialState.units.addAll(_units);
 
-    on<OnPVPStartedEvent>((event, emit) => _handleEvent(() => _onPVPStarted(event, emit)));
-    on<OnPVEStartedEvent>((event, emit) => _handleEvent(() => _onPVEStarted(event, emit)));
-    on<OnEVEStartedEvent>((event, emit) => _handleEvent(() => _onEVEStarted(event, emit)));
+    on<OnPVPStartedEvent>(
+        (event, emit) => _handleEvent(() => _onPVPStarted(event, emit)));
+    on<OnPVEStartedEvent>(
+        (event, emit) => _handleEvent(() => _onPVEStarted(event, emit)));
+    on<OnEVEStartedEvent>(
+        (event, emit) => _handleEvent(() => _onEVEStarted(event, emit)));
 
-    on<OnCellTapEvent>((event, emit) => _handleEvent(() => _onCellTap(event, emit)));
-    on<OnCellLongTapEvent>((event, emit) => _handleEvent(() => _onCellLongTap(event, emit)));
+    on<OnCellTapEvent>(
+        (event, emit) => _handleEvent(() => _onCellTap(event, emit)));
+    on<OnCellLongTapEvent>(
+        (event, emit) => _handleEvent(() => _onCellLongTap(event, emit)));
 
-    on<OnUnitSelected>((event, emit) => _handleEvent(() => _onUnitSelected(event, emit)));
+    on<OnUnitSelected>(
+        (event, emit) => _handleEvent(() => _onUnitSelected(event, emit)));
 
     on<OnReset>((event, emit) => _handleEvent(() => _onReset(event, emit)));
 
-    on<OnUnitProtectClick>((event, emit) => _handleEvent(() => _onProtect(event, emit)));
-    on<OnUnitWaitClick>((event, emit) => _handleEvent(() => _onWait(event, emit)));
+    on<OnUnitProtectClick>(
+        (event, emit) => _handleEvent(() => _onProtect(event, emit)));
+    on<OnUnitWaitClick>(
+        (event, emit) => _handleEvent(() => _onWait(event, emit)));
 
     on<OnRetreat>((event, emit) => _handleEvent(() => _onRetreat(event, emit)));
 
-    on<OnUnitsListFilters>((event, emit) => _handleEvent(() => _onUnitsListFilters(event, emit)));
+    on<OnUnitsListFilters>(
+        (event, emit) => _handleEvent(() => _onUnitsListFilters(event, emit)));
 
-    on<OnUnitsLoad>((event, emit) => _handleEvent(() => _onUnitsLoad(event, emit)));
+    on<OnUnitsLoad>(
+        (event, emit) => _handleEvent(() => _onUnitsLoad(event, emit)));
   }
 
   Future<void> _handleEvent(Function() func) async {
@@ -138,7 +145,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       'Гоблин-траппер',
       '',*/
 
-
       // Для тренеровки ИИ!! ИИ играет за топоовую команду
       'Рейнджер',
       'Жрец',
@@ -154,7 +160,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       '',
       '',
 
-     /*'Русалка',
+      /*'Русалка',
       '',
       '',
       'Орк',
@@ -167,13 +173,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       'Рейнджер',
       'Жрец',
       'Рейнджер',*/
-
-
-
     ];
     assert(unitsNames.length == 12);
     var index = 0;
-    for(var name in unitsNames) {
+    for (var name in unitsNames) {
       _units[index] = repository.getCopyUnitByName(name);
       index++;
     }
@@ -181,25 +184,21 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     emit(state.copyWith(units: _units));
   }
 
-  Future<void> _onUnitsListFilters(OnUnitsListFilters event, Emitter emit) async {
-
+  Future<void> _onUnitsListFilters(
+      OnUnitsListFilters event, Emitter emit) async {
     if (state.warScreenState == WarScreenState.view) {
-
       final subString = event.unitName;
       final subStringLen = event.unitName.length;
 
       emit(state.copyWith(
-        allUnits: _allUnits.where((element) {
-          final name = element.unitName;
-          if (subStringLen > name.length) {
-            return false;
-          }
-          return name.substring(0, subStringLen) == subString;
-        }).toList()
-      ));
-
+          allUnits: _allUnits.where((element) {
+        final name = element.unitName;
+        if (subStringLen > name.length) {
+          return false;
+        }
+        return name.substring(0, subStringLen) == subString;
+      }).toList()));
     }
-
   }
 
   Future<void> _onRetreat(OnRetreat event, Emitter emit) async {
@@ -214,16 +213,15 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     emit(state.copyWith(
       units: _warUnitsCopies,
     ));
-    if (checkIsTopTeam(response.activeCell!) && state.warScreenState == WarScreenState.pve) {
+    if (checkIsTopTeam(response.activeCell!) &&
+        state.warScreenState == WarScreenState.pve) {
       await _handleAiMove(response, emit);
     }
   }
 
   Future<void> _onWait(OnUnitWaitClick event, Emitter emit) async {
     final action = RequestAction(
-        type: ActionType.wait,
-        currentCellIndex: null,
-        targetCellIndex: null);
+        type: ActionType.wait, currentCellIndex: null, targetCellIndex: null);
     final response = await controller.makeAction(action);
     if (!handleResponse(response)) {
       return;
@@ -231,7 +229,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     emit(state.copyWith(
       units: _warUnitsCopies,
     ));
-    if (checkIsTopTeam(response.activeCell!) && state.warScreenState == WarScreenState.pve) {
+    if (checkIsTopTeam(response.activeCell!) &&
+        state.warScreenState == WarScreenState.pve) {
       await _handleAiMove(response, emit);
     }
   }
@@ -246,9 +245,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       return;
     }
     emit(state.copyWith(
-        units: _warUnitsCopies,
+      units: _warUnitsCopies,
     ));
-    if (checkIsTopTeam(response.activeCell!) && state.warScreenState == WarScreenState.pve) {
+    if (checkIsTopTeam(response.activeCell!) &&
+        state.warScreenState == WarScreenState.pve) {
       await _handleAiMove(response, emit);
     }
   }
@@ -279,7 +279,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   Future<void> _onPVPStarted(OnPVPStartedEvent event, Emitter emit) async {
-
     if (state.warScreenState != WarScreenState.view) {
       print("Битав уже начата");
       return;
@@ -346,10 +345,16 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     final fp = FileProvider();
     await fp.init();
 
+    final individualAiFactory = NeatFactory(
+        cellsCount: cellsCount,
+        cellVectorLength: cellVectorLength,
+        input: inputVectorLength,
+        output: actionsCount,
+        version: 1);
+
     //aiController.init(_warUnitsCopies);
     await aiController.initFromFile(
-        _warUnitsCopies,
-        'default_ai_controller', fp);
+        _warUnitsCopies, 'default_ai_controller', fp, individualAiFactory);
 
     emit(state.copyWith(
       warScreenState: WarScreenState.pve,
@@ -359,12 +364,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     if (checkIsTopTeam(currentActiveCell!)) {
       await _handleAiMove(response, emit);
     }
-
   }
 
   Future<void> _handleAiMove(ResponseAction action, Emitter emit) async {
     if (action.endGame) {
-      impossibleAiActions=0;
+      impossibleAiActions = 0;
       return;
     }
     print('-------- Ходит AI');
@@ -374,16 +378,16 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       units: _warUnitsCopies,
     ));
     await Future.delayed(const Duration(milliseconds: 500));
-    for(var r in requests) {
+    for (var r in requests) {
       r = r.copyWith(
-        context: UpdateStateContext(
-            emit: emit,
-            state: state,
+          context: UpdateStateContext(
+        emit: emit,
+        state: state,
       ));
       final response = await controller.makeAction(r);
       if (response.endGame) {
         success = response.success;
-        impossibleAiActions=0;
+        impossibleAiActions = 0;
         break;
       }
       if (response.success) {
@@ -407,9 +411,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     assert(success);
   }
 
-
   Future<void> _onEVEStarted(OnEVEStartedEvent event, Emitter emit) async {
-
     /*for (var element in _units) {
       _warUnitsCopies.add(element.copyWith());
     }
@@ -442,11 +444,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     print('Запуск алгоритма');
     await gc.startParallel(5, showBestBattle: true);
     print('Стоп алгоритма');*/
-
   }
 
   Future<void> _onCellTap(OnCellTapEvent event, Emitter emit) async {
-
     if (state.warScreenState == WarScreenState.view) {
       throw Exception();
     }
@@ -456,13 +456,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     }
 
     final action = RequestAction(
-        type: ActionType.click,
-        targetCellIndex: event.cellNumber,
-        currentCellIndex: null,
-        context: UpdateStateContext(
-            state: state,
-            emit: emit
-        ),
+      type: ActionType.click,
+      targetCellIndex: event.cellNumber,
+      currentCellIndex: null,
+      context: UpdateStateContext(state: state, emit: emit),
     );
 
     //final List<int> lastUnitsHp = _warUnitsCopies.map((e) => e.currentHp).toList();
@@ -474,19 +471,15 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
     emit(state.copyWith(units: _warUnitsCopies));
 
-
-    if (checkIsTopTeam(actionResponse.activeCell!) && state.warScreenState == WarScreenState.pve) {
+    if (checkIsTopTeam(actionResponse.activeCell!) &&
+        state.warScreenState == WarScreenState.pve) {
       await _handleAiMove(actionResponse, emit);
     }
-
   }
 
-  Future<void> _onCellLongTap(OnCellLongTapEvent event, Emitter emit) async {
-
-  }
+  Future<void> _onCellLongTap(OnCellLongTapEvent event, Emitter emit) async {}
 
   Future<void> _onUnitSelected(OnUnitSelected event, Emitter emit) async {
-
     // todo Копировать юнитов может только РЕПОЗИТОРИЙ
 
     if (state.warScreenState != WarScreenState.view) {
@@ -510,9 +503,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       unitAttack2: unit.unitAttack2?.copyWith(),
     );
     emit(state.copyWith(units: _units));
-
   }
-
 }
 
 /*class UpdateStateContext {
@@ -521,4 +512,3 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   UpdateStateContext({required this.emit, required this.state});
 }*/
-

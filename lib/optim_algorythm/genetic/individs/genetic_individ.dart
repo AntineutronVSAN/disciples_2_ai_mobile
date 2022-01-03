@@ -207,7 +207,7 @@ class GeneticIndivid implements IndividualBase {
     );
   }
 
-  void mutate() {
+  bool mutate() {
     final maxUnitNnParamsCount = input * unitLayers.first +
         unitLayers.sum +
         unitLayers.last * unitLayers.last;
@@ -347,6 +347,7 @@ class GeneticIndivid implements IndividualBase {
     nn = newNN;
 
     needCalculate = true;
+    return true;
   }
 
   @override

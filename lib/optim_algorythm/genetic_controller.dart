@@ -49,19 +49,10 @@ class GeneticController {
   int maxIndividsCount;
   bool inited = false;
 
-  // Характеристики индивида
-  //int input;
-  //int output;
-
-  //List<int> layers;
-  //List<int> unitLayers;
-
-  //int cellsCount;
-  //int unitVectorLength;
-
   final random = Random();
 
-  //final int networkVersion;
+  final int mutationsCount;
+  final int crossesCount;
 
   GeneticController({
     required this.gameController,
@@ -69,19 +60,14 @@ class GeneticController {
     required this.updateStateContext,
     required this.generationCount,
     required this.maxIndividsCount,
-    /*required this.input,
-    required this.output,
-    required this.layers,
-    required this.unitLayers,
-    required this.cellsCount,
-    required this.unitVectorLength,*/
     required List<Unit> units,
     required this.individController,
     required this.fileProvider,
     bool initPopulation = true,
-    //required this.networkVersion,
     required this.defaultAiFactory,
     required this.individualAiFactory,
+    required this.mutationsCount,
+    required this.crossesCount,
   }) {
     if (initPopulation) {
       for (var i = 0; i < maxIndividsCount; i++) {
@@ -233,19 +219,22 @@ class GeneticController {
       }
 
       // Штраф за число невозможных действий
-      final impossibleActionsFine = 0.0 + failedActions * 0.01;
+      //final impossibleActionsFine = 0.0 + failedActions * 0.01;
+      final impossibleActionsFine = 0.0;
 
       final hpFit = aisUnitsHp.sum / aisUnitsMaxHp.sum;
       final hpFitEnemy = 1 - enemyUnitsHp.sum / enemyUnitsMaxHp.sum;
       final rdFit = 100.0 / gameController.currentRound / 100;
       if (gameController.currentRound >= 100) {
         //ind.fitness = 0.0;
-        newFitness.add(-1000.0 - impossibleActionsFine);
+        //newFitness.add(-1000.0 - impossibleActionsFine);
+        newFitness.add(0.0 - impossibleActionsFine);
       } else {
         var newFitnessVal = (hpFit + hpFitEnemy / 3.0) - impossibleActionsFine;
         // Если индивид только защищался и ничего не делал
         if (hpFit == 0.0 && hpFitEnemy == 0.0) {
-          newFitnessVal = -1000.0;
+          //newFitnessVal = -1000.0;
+          newFitnessVal = 0.0;
         }
         newFitness.add(newFitnessVal);
       }
@@ -726,13 +715,19 @@ class GeneticController {
     print('Селекция ...');
     _makeSelection();
     print('Мутации ...');
-    //for (var i = 0; i < individs.length ~/ 5; i++) {
-    for (var i = 0; i < individs.length ~/ 3; i++) { // todo ~/ 3
-      _mutateRandom();
+
+    int successMutationsCount = 0;
+    for (var i = 0; i < mutationsCount; i++) {
+      final res = _mutateRandom();
+      if (res) {
+        successMutationsCount++;
+      }
     }
 
+    print('Успешно $successMutationsCount мутаций из $mutationsCount');
+
     print('Кросс ...');
-    for (var i = 0; i < individs.length ~/ 3; i++) {
+    for (var i = 0; i < crossesCount; i++) {
       final newInd = _cross();
       if (newInd != null) {
         individs.add(newInd);
@@ -775,13 +770,9 @@ class GeneticController {
     ind.mutate();
   }
 
-  void _mutateRandom() {
+  bool _mutateRandom() {
     final randomIndex = random.nextInt(individs.length - 5) + 5;
-    individs[randomIndex].mutate();
-
-    //todo
-    //individs[0].mutate();
-    //individs[1].mutate();
+    return individs[randomIndex].mutate();
   }
 
   _crossUnitByIndex({int? times, required int bestIndex}) {
@@ -798,32 +789,30 @@ class GeneticController {
     }
   }
 
-  IndividualBase? _cross() {
+  IndividualBase? _cross({int mutationsAfterCross = 10}) {
     final randomIndex1 = random.nextInt(individs.length);
     final randomIndex2 = random.nextInt(individs.length);
 
     if (randomIndex1 == randomIndex2) {
-      print("Кросс не удался");
+      print("Кросс не удался. Совпадение индексов");
       return null;
     }
 
     final newInd = individs[randomIndex1].cross(individs[randomIndex2]);
-    if (newInd != null) newInd.mutate();
+    if (newInd != null) {
+      int successMutations = 0;
+      for(var i =0; i<mutationsAfterCross; i++) {
+        final res = newInd.mutate();
+        if (res) {
+          successMutations++;
+        }
+      }
+      print('После успешного кросса сделано $successMutations мутаций из $mutationsAfterCross');
+    }
     return newInd;
   }
 
   Future<void> _saveCheckpoint(int generation) async {
-    /*final checkpoint = GeneticAlgorithmCheckpoint(
-      individs: individs.map((e) => e as GeneticIndivid).toList(), // todo
-      currentGeneration: generation,
-      input: input,
-      output: output,
-      layers: layers,
-      unitLayers: unitLayers,
-      cellsCount: cellsCount,
-      unitVectorLength: unitVectorLength,
-    ).toJson();*/
-
     //var fileName = DateTime.now().toString() + '_Gen-$generation';
     var fileName = 'Gen-$generation';
     //fileName = 'checkpoint';

@@ -22,7 +22,7 @@ Future<void> startNeatAlgorithm() async {
       adjacencyDict: {},
       adjacencyList: {},
       initFrom: false,
-      idCalculator: null,
+      idCalculator: IdCalculator(),
     nodesStartState: {},
     inputCompleter: {},
   );
@@ -33,31 +33,36 @@ Future<void> startNeatAlgorithm() async {
   //final tn = NodeV1.random(IdCalculator.getNextId());
   //final te = EdgeV1.random(IdCalculator.getNextId());
 
+  Random random = Random();
+
   NodeV1 tn() {
-    return NodeV1.random(tree.getIdCalculator().getNextId());
+    return NodeV1.random(tree.getIdCalculator().getNextId(), random);
   }
   EdgeV1 te() {
-    return EdgeV1.random(tree.getIdCalculator().getNextId());
+    return EdgeV1.random(tree.getIdCalculator().getNextId(), random);
   }
 
   //tree.addEdge(0, 10, EdgeV1.random(IdCalculator.getNextId()));
-  /*tree.addNewNextNode(0, tn(), te()); // ID = 20
+  bool res = false;
+  tree.addNewNextNode(0, tn(), te()); // ID = 20
   tree.addNewNextNode(20, tn(), te()); // ID = 22
   tree.addNewNextNode(22, tn(), te()); // ID = 24
   tree.addNewNextNode(24, tn(), te()); // ID = 26
   tree.addNewPrevNode(20, tn(), te()); // ID = 28
   tree.addNewPrevNode(20, tn(), te()); // ID = 30
   tree.addNewNextNode(20, tn(), te()); // ID = 32
-  tree.addEdge(28, 30, te());*/
+  tree.addEdge(28, 30, te());
+  res = tree.addNodeBetween(26, 22, tn(), te(), te());
+  print(res);
 
   print(tree);
 
-  final inputVector = List.generate(10, (index) => Random().nextDouble());
+  /*final inputVector = List.generate(10, (index) => Random().nextDouble());
 
   var result = tree.forward(inputVector);
   print(result);
   result = tree.forward(inputVector);
-  print(result);
+  print(result);*/
   /*final adjDict = <AdjacencyDictKey, bool>{};
   final k1 = AdjacencyDictKey(child: 1, parent: 0);
   final k2 = AdjacencyDictKey(child: 0, parent: 1);

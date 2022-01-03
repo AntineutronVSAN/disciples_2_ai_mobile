@@ -12,4 +12,6 @@ abstract class TreeNodeBase {
 
 
   TreeNodeBase deepCopy();
+
+  void mutate();
 }

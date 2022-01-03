@@ -12,4 +12,6 @@ abstract class TreeEdgeBase {
   double calculate(double input);
 
   TreeEdgeBase deepCopy();
+
+  void mutate();
 }

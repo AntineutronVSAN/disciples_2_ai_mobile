@@ -25,10 +25,15 @@ abstract class GameTreeBase implements AiAlgorithm {
       TreeEdgeBase e1,
       TreeEdgeBase e2);
 
+  bool changeNode(int nodeId);
+  bool changeEdge(int edgeId);
+
   @override
   List<double> forward(List<double> inp);
 
   List<int> getNodesId();
+  List<int> getEdgesId();
+
   IdCalculator getIdCalculator();
 
   GameTreeBase deepCopy();
