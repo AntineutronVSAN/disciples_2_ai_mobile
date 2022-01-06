@@ -22,12 +22,10 @@ class PowerController {
 
     final nextRandom = randomExponentialDistribution.getNextInt(100, lambda: 2.5);
 
+    return true; // todo Убрать
+
     return attackPower > nextRandom;
 
-    /*if (random.nextInt(100) < attackPower) {
-      return true;
-    }
-    return false;*/
   }
 
 }

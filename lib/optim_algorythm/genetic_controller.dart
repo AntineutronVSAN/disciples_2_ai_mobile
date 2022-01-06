@@ -1,15 +1,16 @@
 import 'dart:async';
 import 'dart:isolate';
 import 'dart:math';
+import 'package:d2_ai_v2/ai_controller/ai_controller_base.dart';
 import 'package:d2_ai_v2/dart_nural/networks/linear_network_v2.dart';
 import 'package:d2_ai_v2/dart_nural/neural_base.dart';
 import 'package:d2_ai_v2/optim_algorythm/base.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:d2_ai_v2/ai_controller/ai_contoller.dart';
-import 'package:d2_ai_v2/controllers/attack_controller.dart';
+import 'package:d2_ai_v2/controllers/attack_controller/attack_controller.dart';
 import 'package:d2_ai_v2/controllers/damage_scatter.dart';
 import 'package:d2_ai_v2/controllers/duration_controller.dart';
-import 'package:d2_ai_v2/controllers/game_controller.dart';
+import 'package:d2_ai_v2/controllers/game_controller/game_controller.dart';
 import 'package:d2_ai_v2/controllers/initiative_shuffler.dart';
 import 'package:d2_ai_v2/controllers/power_controller.dart';
 import 'package:d2_ai_v2/models/unit.dart';
@@ -29,8 +30,8 @@ part 'genetic_controller.g.dart';
 
 class GeneticController {
   /// Против какого ИИ будет обучаться текущий
-  final AiController aiController;
-  final AiController individController;
+  final AiControllerBase aiController;
+  final AiControllerBase individController;
   final GameController gameController;
   final UpdateStateContextBase? updateStateContext;
   final FileProviderBase fileProvider;
@@ -164,7 +165,7 @@ class GeneticController {
         final isTopTeam = checkIsTopTeam(currentActiveCellIndex!);
         if (isTopTeam && neuralIndividIsTopTeam) {
           // Ходит индивид
-          final actions = individController.getAction(currentActiveCellIndex);
+          final actions = await individController.getAction(currentActiveCellIndex);
           bool success = false;
           for (var a in actions) {
             final r = await gameController.makeAction(a);
@@ -183,7 +184,7 @@ class GeneticController {
           }
         } else {
           // Ходит другой ИИ (в будущем может быть другой индивид)
-          final actions = aiController.getAction(currentActiveCellIndex);
+          final actions = await aiController.getAction(currentActiveCellIndex);
           bool success = false;
           for (var a in actions) {
             final r = await gameController.makeAction(a);
@@ -254,7 +255,7 @@ class GeneticController {
   Future<void> startIndividBattle({
     required List<Unit> unitsCopies,
     required IndividualBase ind,
-    required AiController defaultController,
+    required AiControllerBase defaultController,
     required GameController gameController,
     required UpdateStateContextBase context,
     required bool individIsTopTeam,
@@ -281,7 +282,7 @@ class GeneticController {
       final isTopTeam = checkIsTopTeam(currentActiveCellIndex!);
       if (isTopTeam && individIsTopTeam) {
         // Ходит индивид
-        final actions = individPlayer.getAction(currentActiveCellIndex);
+        final actions = await individPlayer.getAction(currentActiveCellIndex);
         bool success = false;
         for (var a in actions) {
           a = a.copyWith(context: context);
@@ -299,7 +300,7 @@ class GeneticController {
         }
       } else {
         // Ходит другой ИИ (в будущем может быть другой индивид)
-        final actions = defaultController.getAction(currentActiveCellIndex);
+        final actions = await defaultController.getAction(currentActiveCellIndex);
         bool success = false;
         for (var a in actions) {
           a = a.copyWith(context: context);
@@ -799,7 +800,7 @@ class GeneticController {
     }
   }
 
-  IndividualBase? _cross({int mutationsAfterCross = 10}) {
+  IndividualBase? _cross({int mutationsAfterCross = 200}) {
     final randomIndex1 = random.nextInt(individs.length);
     final randomIndex2 = random.nextInt(individs.length);
 

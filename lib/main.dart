@@ -1,6 +1,7 @@
 import 'package:d2_ai_v2/ai_controller/ai_contoller.dart';
+import 'package:d2_ai_v2/ai_controller/ai_controller_ab_pruning.dart';
 import 'package:d2_ai_v2/bloc/bloc.dart';
-import 'package:d2_ai_v2/controllers/attack_controller.dart';
+import 'package:d2_ai_v2/controllers/attack_controller/attack_controller.dart';
 import 'package:d2_ai_v2/controllers/damage_scatter.dart';
 import 'package:d2_ai_v2/controllers/duration_controller.dart';
 import 'package:d2_ai_v2/controllers/power_controller.dart';
@@ -16,7 +17,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'bloc/events.dart';
 import 'bloc/states.dart';
 
-import 'controllers/game_controller.dart';
+import 'controllers/game_controller/game_controller.dart';
 import 'controllers/initiative_shuffler.dart';
 
 void main() async {
@@ -56,7 +57,8 @@ class MyApp extends StatelessWidget {
                       randomExponentialDistribution:
                           RandomExponentialDistribution()),
                 ),
-                aiController: AiController()),
+                //aiController: AiController()),
+                aiController: AlphaBetaPruningController(treeDepth: 5, isTopTeam: true)),
             child: BlocBuilder<GameBloc, GameState>(
               builder: (context, state) {
                 return MyHomePage();
@@ -239,9 +241,13 @@ class _MyHomePageState extends State<MyHomePage> {
     final hasDebuff = unit.damageLower || unit.initLower;
     final busted = unit.damageBusted;
 
-    final scaleFactor = (curHp / maxHp - 1.0) < 0
+    var scaleFactor = (curHp / maxHp - 1.0) < 0
         ? -(curHp / maxHp - 1.0)
         : (curHp / maxHp - 1.0);
+
+    if (maxHp == 0.0) {
+      scaleFactor = 0.0;
+    }
 
     //final damageColor = paralyzed ? Colors.red.withOpacity(0.5) : Colors.red;
     //final unitHpColor = paralyzed ? Colors.green.withOpacity(0.5) : Colors.green;

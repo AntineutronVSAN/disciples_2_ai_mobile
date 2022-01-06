@@ -431,6 +431,10 @@ class TreeV1 implements GameTreeBase {
   /// Изменить параетры узла
   @override
   bool changeNode(int nodeId) {
+    if (nodeId < input+output) {
+      // Нельзя изменять входные и выходные узлы
+      return false;
+    }
     final hasNode = nodesMap.containsKey(nodeId);
     if (!hasNode) {
       throw Exception();

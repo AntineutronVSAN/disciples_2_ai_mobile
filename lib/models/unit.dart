@@ -84,40 +84,72 @@ class Unit {
   });
 
   factory Unit.fromJson(Map<String, dynamic> json) => _$UnitFromJson(json);
+
   Map<String, dynamic> toJson() => _$UnitToJson(this);
+
+  Unit deepCopy() {
+    return Unit(isDead: isDead,
+        isMoving: isMoving,
+        isProtected: isProtected,
+        isWaiting: isWaiting,
+        currentHp: currentHp,
+        maxHp: maxHp,
+        unitName: unitName,
+        unitGameID: unitGameID,
+        unitWarId: unitWarId,
+        isDoubleAttack: isDoubleAttack,
+        unitAttack: unitAttack.deepCopy(),
+        unitAttack2: unitAttack2?.deepCopy(),
+        armor: armor,
+        attacks: attacks.map((e) => e.deepCopy()).toList(),
+        attacksMap: attacksMap.map((key, value) => MapEntry(key, value.deepCopy())),
+
+        currentAttack: currentAttack,
+        uiInfo: uiInfo,
+        retreat: retreat,
+        paralyzed: paralyzed,
+        poisoned: poisoned,
+        blistered: blistered,
+        frostbited: frostbited,
+        damageLower: damageLower,
+        revived: revived,
+        petrified: petrified,
+        initLower: initLower,
+        damageBusted: damageBusted,
+    );
+  }
 
   /// Скопировать юнита с новыми параметрами.
   /// Важно помнить, что у новой копии по имолчанию параметр [uiInfo]
   /// пустой
-  Unit copyWith(
-      {isMoving,
-      isDead,
-      isProtected,
-      isWaiting,
-      maxHp,
-      currentHp,
-      unitName,
-      unitGameID,
-      unitWarId,
-      isDoubleAttack,
-      currentAttack,
-      unitAttack,
-      unitAttack2,
-      attacks,
-      attacksMap,
-      uiInfo,
-      retreat,
-      armor,
-      paralyzed,
-        poisoned,
-        blistered,
-        frostbited,
-        damageLower,
-        revived,
-        petrified,
-        initLower,
-        damageBusted,
-      }) {
+  Unit copyWith({isMoving,
+    isDead,
+    isProtected,
+    isWaiting,
+    maxHp,
+    currentHp,
+    unitName,
+    unitGameID,
+    unitWarId,
+    isDoubleAttack,
+    currentAttack,
+    unitAttack,
+    unitAttack2,
+    attacks,
+    attacksMap,
+    uiInfo,
+    retreat,
+    armor,
+    paralyzed,
+    poisoned,
+    blistered,
+    frostbited,
+    damageLower,
+    revived,
+    petrified,
+    initLower,
+    damageBusted,
+  }) {
     return Unit(
       isMoving: isMoving ?? this.isMoving,
       isDead: isDead ?? this.isDead,
@@ -134,36 +166,36 @@ class Unit {
       unitAttack2: unitAttack2 ?? this.unitAttack2,
       attacks: attacks ?? this.attacks,
       attacksMap: attacksMap ?? this.attacksMap,
-      uiInfo: (uiInfo is String) ? uiInfo : ((uiInfo != null) ? uiInfo.toString() : ""),
+      uiInfo: (uiInfo is String) ? uiInfo : ((uiInfo != null) ? uiInfo
+          .toString() : ""),
       retreat: retreat ?? this.retreat,
-        armor: armor ?? this.armor,
-        paralyzed: paralyzed ?? this.paralyzed,
-        poisoned: poisoned ?? this.poisoned,
-        blistered: blistered ?? this.blistered,
-        frostbited: frostbited ?? this.frostbited,
-        damageLower: damageLower ?? this.damageLower,
-        revived: revived ?? this.revived,
-        petrified: petrified ?? this.petrified,
-        initLower: initLower ?? this.initLower,
-        damageBusted: damageBusted ?? this.damageBusted,
+      armor: armor ?? this.armor,
+      paralyzed: paralyzed ?? this.paralyzed,
+      poisoned: poisoned ?? this.poisoned,
+      blistered: blistered ?? this.blistered,
+      frostbited: frostbited ?? this.frostbited,
+      damageLower: damageLower ?? this.damageLower,
+      revived: revived ?? this.revived,
+      petrified: petrified ?? this.petrified,
+      initLower: initLower ?? this.initLower,
+      damageBusted: damageBusted ?? this.damageBusted,
     );
   }
 
-  Unit copyWithDead(
-      {
-        maxHp,
-        currentHp,
-        unitName,
-        unitGameID,
-        unitWarId,
-        isDoubleAttack,
-        unitAttack,
-        unitAttack2,
-        attacks,
-        attacksMap,
-        armor,
-        revived,
-      }) {
+  Unit copyWithDead({
+    maxHp,
+    currentHp,
+    unitName,
+    unitGameID,
+    unitWarId,
+    isDoubleAttack,
+    unitAttack,
+    unitAttack2,
+    attacks,
+    attacksMap,
+    armor,
+    revived,
+  }) {
     this.attacksMap.clear();
     this.attacks.clear();
     return Unit(
@@ -202,21 +234,21 @@ class Unit {
 
   static Unit empty() {
     return Unit(
-      isMoving: false,
-      isDead: false,
-      maxHp: 100,
-      currentHp: 100,
-      unitName: 'Empty',
-      unitGameID: "",
-      isProtected: false,
-      isWaiting: false,
-      unitWarId: "",
-      isDoubleAttack: false,
-      unitAttack: UnitAttack.empty(),
-      unitAttack2: null,
-      armor: 0,
-      attacks: [],
-      attacksMap: {}
+        isMoving: false,
+        isDead: false,
+        maxHp: 0,
+        currentHp: 0,
+        unitName: 'Empty',
+        unitGameID: "",
+        isProtected: false,
+        isWaiting: false,
+        unitWarId: "",
+        isDoubleAttack: false,
+        unitAttack: UnitAttack.empty(),
+        unitAttack2: null,
+        armor: 0,
+        attacks: [],
+        attacksMap: {}
 
     );
   }

@@ -11,8 +11,25 @@ void main() async {
   await startNeatAlgorithm();
 }
 
+class Test {
+  TestEnum en;
+  Test({required this.en});
+}
+
+enum TestEnum {
+  value1,
+  value2,
+}
+
 Future<void> startNeatAlgorithm() async {
-  final tree = TreeV1(
+
+  /*final cls = Test(en: TestEnum.value1);
+  final cls2 = Test(en: cls.en);
+  print("${cls.en} ${cls2.en}");
+  cls.en = TestEnum.value2;
+  print("${cls.en} ${cls2.en}");*/
+
+  /*final tree = TreeV1(
       input: 10,
       output: 10,
       nodes: [],
@@ -55,7 +72,7 @@ Future<void> startNeatAlgorithm() async {
   res = tree.addNodeBetween(26, 22, tn(), te(), te());
   print(res);
 
-  print(tree);
+  print(tree);*/
 
   /*final inputVector = List.generate(10, (index) => Random().nextDouble());
 

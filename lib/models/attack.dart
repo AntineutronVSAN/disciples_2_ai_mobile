@@ -36,13 +36,32 @@ class UnitAttack {
     required this.infinite,
     required this.attackId,
     this.currentDuration = 0,
+
     /// Первоначальный урон. Неизменяемый!
     required this.firstDamage,
     required this.level,
     required this.firstInitiative,
   });
 
-  factory UnitAttack.fromJson(Map<String, dynamic> json) => _$UnitAttackFromJson(json);
+  UnitAttack deepCopy() {
+    return UnitAttack(
+      currentDuration: currentDuration,
+      power: power,
+      heal: heal,
+      damage: damage,
+      initiative: initiative,
+      targetsCount: targetsCount,
+      attackClass: attackClass,
+      infinite: infinite,
+      attackId: attackId,
+      firstDamage: firstDamage,
+      level: level,
+      firstInitiative: firstInitiative);
+  }
+
+  factory UnitAttack.fromJson(Map<String, dynamic> json) =>
+      _$UnitAttackFromJson(json);
+
   Map<String, dynamic> toJson() => _$UnitAttackToJson(this);
 
   UnitAttack copyWith({
@@ -80,19 +99,19 @@ class UnitAttack {
       damage: 0,
       initiative: 0,
       targetsCount: TargetsCount.any,
-      attackClass: AttackClass.L_BESTOW_WARDS,
+      attackClass: AttackClass.L_DAMAGE,
       infinite: false,
-        attackId: "",
+      attackId: "",
       firstDamage: 0,
-      level: 1,
-        firstInitiative: 0,
+      level: 0,
+      firstInitiative: 0,
     );
   }
 
 }
 
 AttackClass attackClassFromGameAttack(int cls) {
-  switch(cls) {
+  switch (cls) {
     case 1:
       return AttackClass.L_DAMAGE;
     case 2:
@@ -147,52 +166,74 @@ AttackClass attackClassFromGameAttack(int cls) {
 enum AttackClass {
   /// Простой урон
   L_DAMAGE,
+
   /// Истощение (вампиризм)
   /// Использует урон [qty_dam] и пополняет здоровье на половину нанесённого урона
   L_DRAIN,
+
   /// Паралич
   L_PARALYZE,
+
   /// Исцеление
   L_HEAL,
+
   /// Страх
   L_FEAR,
+
   /// Увеличение урона
   L_BOOST_DAMAGE,
+
   /// Окаменение
   L_PETRIFY,
+
   /// Снижение повреждения
   /// Требует параметра игрового юнита [level]
   /// Если [level] == 1 - снижение 50%
   /// Если [level] == 2 - снижение 33%
   L_LOWER_DAMAGE,
+
   /// Снижение ини
   L_LOWER_INITIATIVE,
+
   /// Яд
   L_POISON,
+
   /// Мороз
   L_FROSTBITE,
+
   /// Воскрешение
   L_REVIVE,
+
   /// Выпить жизненную сиду
   L_DRAIN_OVERFLOW,
+
   /// Лечение (эффектов)
   L_CURE,
+
   /// Призыв
   L_SUMMON,
+
   /// Понизить уровень
   L_DRAIN_LEVEL,
+
   /// Прибавить атаку
   L_GIVE_ATTACK,
+
   /// Передать жизненную сиду
   L_DOPPELGANGER,
+
   /// Превраить себя
   L_TRANSFORM_SELF,
+
   /// Превратить другого
   L_TRANSFORM_OTHER,
+
   /// Ожёг
   L_BLISTER,
+
   /// Защита от стихий
   L_BESTOW_WARDS,
+
   /// Разбить броню
   L_SHATTER,
 }

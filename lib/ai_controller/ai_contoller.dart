@@ -82,15 +82,18 @@ TODO:
 
 */
 
-import 'package:d2_ai_v2/controllers/game_controller.dart';
+import 'package:d2_ai_v2/controllers/game_controller/actions.dart';
+import 'package:d2_ai_v2/controllers/game_controller/game_controller.dart';
 import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/optim_algorythm/base.dart';
 import 'package:d2_ai_v2/optim_algorythm/individual_base.dart';
 import 'package:d2_ai_v2/providers/file_provider_base.dart';
 
+import 'ai_controller_base.dart';
 
-class AiController {
+
+class AiController implements AiControllerBase {
 
   /// В основе контроллера ИИ лежит алгоритм. Сущность алгоритма - интерфейс
   /// Алгоритм может быть различным. В частность, нейронной сетью или алгоритмом
@@ -104,12 +107,15 @@ class AiController {
   late List<Unit> unitsRefs;
 
 
+  @override
   void initFromIndivid(List<Unit> units, IndividualBase ind) {
     algorithm = ind.getAlgorithm();
     unitsRefs = units;
     inited = true;
   }
 
+
+  @override
   Future<void> initFromFile(
       List<Unit> units,
       String filePath,
@@ -126,6 +132,7 @@ class AiController {
     inited = true;
   }
 
+  @override
   void init(List<Unit> units, {
     required AiAlgorithm algorithm,
   }) {
@@ -138,7 +145,8 @@ class AiController {
   /// Вернёт список действий, отсортированный в порядке
   /// убывания увренности. Тоесть вызывающий метод, в случае неуспеха
   /// лучшего действия, должен применить следующее
-  List<RequestAction> getAction(int currentActiveUnitCellIndex) {
+  @override
+  Future<List<RequestAction>> getAction(int currentActiveUnitCellIndex, {GameController? gameController}) async {
     if (!inited) {
       throw Exception();
     }

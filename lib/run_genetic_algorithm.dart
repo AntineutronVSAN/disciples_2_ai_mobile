@@ -6,12 +6,13 @@ import 'package:d2_ai_v2/optim_algorythm/factories/neat_factory.dart';
 import 'package:d2_ai_v2/optim_algorythm/factories/networks_factory.dart';
 import 'package:d2_ai_v2/providers/dart_file_provider.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
+import 'package:d2_ai_v2/units_pack.dart';
 import 'package:d2_ai_v2/utils/math_utils.dart';
 import 'const.dart';
-import 'controllers/attack_controller.dart';
+import 'controllers/attack_controller/attack_controller.dart';
 import 'controllers/damage_scatter.dart';
 import 'controllers/duration_controller.dart';
-import 'controllers/game_controller.dart';
+import 'controllers/game_controller/game_controller.dart';
 import 'controllers/initiative_shuffler.dart';
 import 'controllers/power_controller.dart';
 import 'models/unit.dart';
@@ -50,7 +51,7 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
 
   final List<Unit> units = List.generate(12, (index) => Unit.empty());
 
-  final List<String> unitNames = [
+  /*final List<String> unitNames = [
     'Рейнджер',
     'Жрец',
     'Рейнджер',
@@ -64,7 +65,10 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
     'Русалка',
     '',
     '',
-  ];
+  ];*/
+
+  final List<String> unitNames = UnitsPack.packs[0];
+
   assert(unitNames.length == 12);
   var index = 0;
   for (var name in unitNames) {
@@ -115,12 +119,12 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
     updateStateContext: null,
 
     generationCount: 100000,
-    maxIndividsCount: 20, // 20
-    mutationsCount: 200,
+    maxIndividsCount: 200, // 20
+    mutationsCount: 200, // 200
     crossesCount: 4,
 
     immutableIndividsCount: 5,
-    geneticProcessesEvery: 10, // 10
+    geneticProcessesEvery: 5, // 10
 
     units: units.map((e) => e.copyWith()).toList(),
     individController: AiController(),
@@ -135,6 +139,6 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
   }
 
   print('Запуск алгоритма');
-  await gc.startParallel(6, showBestBattle: false, safeEveryEpochs: 100); // 6
+  await gc.startParallel(5, showBestBattle: false, safeEveryEpochs: 100); // 6
   print('Стоп алгоритма');
 }

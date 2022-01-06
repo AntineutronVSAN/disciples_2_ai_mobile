@@ -1,6 +1,8 @@
 import 'package:d2_ai_v2/ai_controller/ai_contoller.dart';
+import 'package:d2_ai_v2/ai_controller/ai_controller_base.dart';
 import 'package:d2_ai_v2/bloc/states.dart';
-import 'package:d2_ai_v2/controllers/game_controller.dart';
+import 'package:d2_ai_v2/controllers/game_controller/actions.dart';
+import 'package:d2_ai_v2/controllers/game_controller/game_controller.dart';
 import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/optim_algorythm/factories/neat_factory.dart';
@@ -11,6 +13,7 @@ import 'package:d2_ai_v2/utils/cell_utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 import '../const.dart';
+import '../units_pack.dart';
 import 'events.dart';
 
 import 'dart:math';
@@ -21,7 +24,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   final GameRepository repository;
   final GameController controller;
-  final AiController aiController;
+  final AiControllerBase aiController;
 
   final List<Unit> _allUnits = [];
 
@@ -116,8 +119,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   Future<void> _onUnitsLoad(OnUnitsLoad event, Emitter emit) async {
     // todo
 
-    List<String> unitsNames = [
-      /*'Тень',
+    /*List<String> unitsNames = [
+      *//*'Тень',
       'Патриарх',
       'Верховный вампир',
       'Воин-призрак',
@@ -129,9 +132,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       'Мастер клинка',
       'Ассасин',
       'Покровитель',
-      'Инкуб',*/
+      'Инкуб',*//*
 
-      /*'Охотник',
+      'Охотник',
       'Оракул',
       'Охотник',
       '',
@@ -143,10 +146,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       'Кентавр-латник',
       'Гоблин-лучник',
       'Гоблин-траппер',
-      '',*/
+      '',
 
       // Для тренеровки ИИ!! ИИ играет за топоовую команду
-      /*'Рейнджер',
+      *//*'Рейнджер',
       'Жрец',
       'Рейнджер',
       'Сквайр',
@@ -158,9 +161,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       'Орк',
       'Русалка',
       '',
-      '',*/
+      '',*//*
 
-      'Русалка',
+      *//*'Русалка',
       '',
       '',
       'Орк',
@@ -172,8 +175,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       'Сквайр',
       'Рейнджер',
       'Жрец',
-      'Рейнджер',
-    ];
+      'Рейнджер',*//*
+    ];*/
+
+    final List<String> unitsNames = UnitsPack.packs[3];
+
     assert(unitsNames.length == 12);
     var index = 0;
     for (var name in unitsNames) {
@@ -353,13 +359,14 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         version: 1);
 
     //aiController.init(_warUnitsCopies);
-    await aiController.initFromFile(
+    // TODO Тут инициализация с файла
+    /*await aiController.initFromFile(
         _warUnitsCopies,
         'default_ai_controller',
         fp,
         individualAiFactory,
-      individIndex: 19,
-    );
+      individIndex: 0,
+    );*/
 
 
     emit(state.copyWith(
@@ -378,7 +385,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       return;
     }
     print('-------- Ходит AI');
-    final requests = aiController.getAction(action.activeCell!);
+    final requests = await aiController.getAction(action.activeCell!, gameController: controller);
     var success = false;
     emit(state.copyWith(
       units: _warUnitsCopies,
@@ -392,7 +399,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       ));
       final response = await controller.makeAction(r);
       if (response.endGame) {
-        success = response.success;
+        //success = response.success;
+        success = true;
         impossibleAiActions = 0;
         break;
       }

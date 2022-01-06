@@ -303,7 +303,7 @@ class NeatIndivid implements IndividualBase {
     final idCalculator = tree!.getIdCalculator();
 
     bool res = false;
-
+    // todo Обязательное добавление узлов от/к выходных/выходных узлов
     callRandomFunc([
       () => res = _addEdge(allNodesId, idCalculator),
       () => res = _addNextNode(allNodesId, idCalculator),
