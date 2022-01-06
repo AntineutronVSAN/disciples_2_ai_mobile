@@ -178,7 +178,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       'Рейнджер',*//*
     ];*/
 
-    final List<String> unitsNames = UnitsPack.packs[3];
+    final List<String> unitsNames = UnitsPack.packs[5];
 
     assert(unitsNames.length == 12);
     var index = 0;

@@ -208,6 +208,13 @@ class AlphaBetaPruningController extends AiControllerBase {
     // Следующий список возможных действий
     // TODO У юнита, который бьёт по всем не обязательно рассматривать
     // клик на каждого юнита. Достаточно только за одного
+
+    bool currentUnitAllTargets = currentSnapshot
+        .units[newActiveCellIndex]
+        .unitAttack
+        .targetsCount == TargetsCount.all;
+    bool currentUnitClicked = false;
+
     List<RequestAction> currentPossibleActions = [];
     for (var defaultAction in context.possibleActions) {
       // На всякий пожарный делается копия действия
@@ -215,6 +222,17 @@ class AlphaBetaPruningController extends AiControllerBase {
       final g = currentSnapshot.getSnapshot();
       final r = g.makeAction(a);
       if (r.success) {
+        if (a.type == ActionType.click) {
+
+          if (currentUnitAllTargets) {
+            if (currentUnitClicked) {
+              continue;
+            } else {
+              currentUnitClicked = true;
+            }
+          }
+
+        }
         currentPossibleActions.add(a);
       }
     }
@@ -359,10 +377,20 @@ class AlphaBetaPruningController extends AiControllerBase {
     }
     //final hpFit = aisUnitsHp.sum / aisUnitsMaxHp.sum;
 
-    var hpFitEnemy = 1 - enemyUnitsHp.sum / enemyUnitsMaxHp.sum;
+    /// Statistic Function Ratio
+    var sfr = 0.0;
+
+    // Как раздамажен соперник
+    sfr += (1.0 - enemyUnitsHp.sum / enemyUnitsMaxHp.sum) * 0.33;
+    // Сколько своих погибло
+    sfr += (1.0 - aiUnitsDead/aiUnitsCount) * 0.33;
+    // Как раздамажен свой отряд
+    sfr += (aisUnitsHp.sum / aisUnitsMaxHp.sum) * 0.33;
+
+    //var hpFitEnemy = 1 - enemyUnitsHp.sum / enemyUnitsMaxHp.sum;
     //hpFitEnemy -= (1.0 - aiUnitsCount/aiUnitsDead);
 
-    return hpFitEnemy;
+    return sfr;
   }
 
   @override
