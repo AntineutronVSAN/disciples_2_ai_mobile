@@ -58,7 +58,7 @@ class MyApp extends StatelessWidget {
                           RandomExponentialDistribution()),
                 ),
                 //aiController: AiController()),
-                aiController: AlphaBetaPruningController(treeDepth: 15, isTopTeam: true)),
+                aiController: AlphaBetaPruningController(treeDepth: 10, isTopTeam: true)),
             child: BlocBuilder<GameBloc, GameState>(
               builder: (context, state) {
                 return MyHomePage();

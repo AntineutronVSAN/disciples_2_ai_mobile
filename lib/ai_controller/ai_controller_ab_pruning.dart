@@ -82,10 +82,26 @@ class AlphaBetaPruningController extends AiControllerBase {
     final isMax = checkIsTopTeam(currentActiveUnitCellIndex);
     final isMin = !isMax;
 
+    bool currentUnitAllTargets = currentSnapshot
+        .units[currentActiveUnitCellIndex]
+        .unitAttack
+        .targetsCount == TargetsCount.all;
+    bool currentUnitClicked = false;
+
+    final List<RequestAction> _resultActions = [];
+    final List<double> _results = [];
+
     if (isMax) {
       var maxEval = -double.infinity;
       int index = 0;
       for (var cpa in currentPossibleActions) {
+
+        // Для юнитов со всеми целями не нужно считать каждый клик. Достаточно
+        // одного
+        if (currentUnitAllTargets && currentUnitClicked && cpa.type == ActionType.click) {
+          continue;
+        }
+
         final res = _bypass(
             context: context,
             action: cpa,
@@ -99,6 +115,9 @@ class AlphaBetaPruningController extends AiControllerBase {
             'таргет ${currentPossibleActions[index].targetCellIndex}. Результат ${res.value}');
         assert(context.currentTreeDepth == 0);
         if (res.value >= maxEval) {
+          if (currentUnitAllTargets) {
+            currentUnitClicked = true;
+          }
           bestResultActionIndex = index;
         }
         maxEval = max(res.value, maxEval);
@@ -111,38 +130,9 @@ class AlphaBetaPruningController extends AiControllerBase {
       }
     } else if (isMin) {
       throw Exception();
-      int index = 0;
-      var minEval = double.infinity;
-      for (var cpa in currentPossibleActions) {
-        final res = await _bypass(
-            context: context,
-            action: cpa,
-            snapshot: currentSnapshot,
-            //branchNumber: index,
-            activeCellIndex: currentActiveUnitCellIndex,
-            alpha: alpha,
-            beta: beta
-        );
-        print('Ход $index. Тип действия ${currentPossibleActions[index].type}, '
-            'таргет ${currentPossibleActions[index].targetCellIndex}. Результат ${res.value}');
-        assert(context.currentTreeDepth == 0);
-        if (res.value <= minEval) {
-          bestResultActionIndex = index;
-        }
-        minEval = min(res.value, minEval);
-        beta = min(beta, res.value);
-        if (beta <= alpha) {
-          break;
-        }
-        index++;
-      }
     } else {
       throw Exception();
     }
-
-
-
-    //final int bestFitnessBranch = context.bestFitnessBranchNumber;
 
     return [currentPossibleActions[bestResultActionIndex]];
   }
@@ -190,15 +180,25 @@ class AlphaBetaPruningController extends AiControllerBase {
       }
     }*/
 
+    final currentIsMin = checkIsTopTeam(activeCellIndex);
+    final currentIsMax = !currentIsMin;
+
     int newActiveCellIndex = res.activeCell!;
-    final isMax = checkIsTopTeam(newActiveCellIndex);
-    final isMin = !isMax;
+    final newIsMax = checkIsTopTeam(newActiveCellIndex);
+    final newIsMin = !newIsMax;
 
     if (res.endGame || context.currentTreeDepth > treeDepth) {
       context.currentTreeDepth--;
-      if (isMax) {
+      /*if (isMax) {
         return _ABPruningReturnValue(value: maxValue);
       } else if (isMin) {
+        return _ABPruningReturnValue(value: minValue);
+      } else {
+        throw Exception();
+      }*/
+      if (currentIsMax) {
+        return _ABPruningReturnValue(value: maxValue);
+      } else if (currentIsMin) {
         return _ABPruningReturnValue(value: minValue);
       } else {
         throw Exception();
@@ -238,9 +238,16 @@ class AlphaBetaPruningController extends AiControllerBase {
     }
     if (currentPossibleActions.isEmpty) {
       context.currentTreeDepth--;
-      if (isMax) {
+      /*if (newIsMax) {
         return _ABPruningReturnValue(value: maxValue);
-      } else if (isMin) {
+      } else if (newIsMin) {
+        return _ABPruningReturnValue(value: minValue);
+      } else {
+        throw Exception();
+      }*/
+      if (currentIsMax) {
+        return _ABPruningReturnValue(value: maxValue);
+      } else if (currentIsMax) {
         return _ABPruningReturnValue(value: minValue);
       } else {
         throw Exception();
@@ -248,21 +255,8 @@ class AlphaBetaPruningController extends AiControllerBase {
     }
 
     assert(currentPossibleActions.length < context.possibleActions.length);
-    /*if (!(currentPossibleActions.length < context.possibleActions.length)) {
-      print('');
-    }*/
-    //print(currentPossibleActions.length);
-    /*double currentVal;
 
-    if (isMax) {
-      currentVal = -double.infinity;
-    } else if (isMin) {
-      currentVal = double.infinity;
-    } else {
-      throw Exception();
-    }*/
-    //print('Сейчас ходит $activeCellIndex. Действие - $action. Глубина - ${context.currentTreeDepth}');
-    if (isMax) {
+    if (newIsMax) {
       var maxEval = -double.infinity;
       assert(currentPossibleActions.isNotEmpty);
       for (var cpa in currentPossibleActions) {
@@ -276,9 +270,6 @@ class AlphaBetaPruningController extends AiControllerBase {
           alpha: alpha,
           beta: beta,
         );
-        //print('Походил $newActiveCellIndex. '
-        //    'Действие $cpa. '
-        //    'Результат ${res.value}. Это ${isMax ? 'MAX' : 'MIN'}');
         maxEval = max(res.value, maxEval);
         alpha = max(alpha, res.value);
         if (beta <= alpha) {
@@ -289,7 +280,7 @@ class AlphaBetaPruningController extends AiControllerBase {
       context.currentTreeDepth--;
       return _ABPruningReturnValue(value: maxEval);
 
-    } else if (isMin) {
+    } else if (newIsMin) {
       var minEval = double.infinity;
       assert(currentPossibleActions.isNotEmpty);
       for (var cpa in currentPossibleActions) {
@@ -385,7 +376,7 @@ class AlphaBetaPruningController extends AiControllerBase {
     // Сколько своих погибло
     sfr += (1.0 - aiUnitsDead/aiUnitsCount) * 0.33;
     // Как раздамажен свой отряд
-    sfr += (aisUnitsHp.sum / aisUnitsMaxHp.sum) * 0.33;
+    //sfr += (aisUnitsHp.sum / aisUnitsMaxHp.sum) * 0.33;
 
     //var hpFitEnemy = 1 - enemyUnitsHp.sum / enemyUnitsMaxHp.sum;
     //hpFitEnemy -= (1.0 - aiUnitsCount/aiUnitsDead);
