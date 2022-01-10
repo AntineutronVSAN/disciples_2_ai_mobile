@@ -70,25 +70,9 @@ class SyncGameController {
       newQueue.add(tempUnitsMap[i.unitWarId]!);
     }
     snapshot.unitsQueue = newQueue;
-    /*snapshot.units = units.map((e) => e.deepCopy()).toList();
-    snapshot.unitsRef = [];
-    for(var i in unitsRef) {
-      final u = snapshot.units.where((element) => element.unitWarId == i.unitWarId).toList();
-      assert(u.length == 1);
-      snapshot.unitsRef.add(u[0]);
-    }
-    assert(unitsRef.length == snapshot.unitsRef.length);
-    final newQueue = Queue<Unit>();
-    for(var i in unitsQueue!) {
-      final u = snapshot.units.where((element) => element.unitWarId == i.unitWarId).toList();
-      assert(u.length == 1);
-      newQueue.add(u[0]);
-    }
-    snapshot.unitsQueue = newQueue;*/
 
-
-    assert(units.length == snapshot.units.length);
-    assert(unitsQueue!.length == snapshot.unitsQueue!.length);
+    //assert(units.length == snapshot.units.length);
+    //assert(unitsQueue!.length == snapshot.unitsQueue!.length);
 
 
     snapshot.unitPosition = unitPosition.map((key, value) => MapEntry(key, value));

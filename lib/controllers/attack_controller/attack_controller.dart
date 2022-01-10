@@ -3,6 +3,7 @@ import 'package:d2_ai_v2/controllers/game_controller/actions.dart';
 import 'package:d2_ai_v2/controllers/power_controller.dart';
 import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
+import 'package:d2_ai_v2/repositories/game_repository.dart';
 import 'package:d2_ai_v2/update_state_context/update_state_context_base.dart';
 import 'package:d2_ai_v2/utils/cell_utils.dart';
 
@@ -14,14 +15,20 @@ import 'attack_context.dart';
 class AttackController {
   final PowerController powerController;
   final DamageScatter damageScatter;
+  final GameRepository gameRepository;
   final AttackDurationController attackDurationController;
 
   Function(Unit unit)? _onUnitAdd2Queue;
 
+  /// Хеш, запоминающий оригинальных юнитов при превращении
+  final Map<String, Unit> _transformedUnitsCache = {};
+
   AttackController(
       {required this.powerController,
       required this.damageScatter,
-      required this.attackDurationController});
+      required this.attackDurationController,
+        required this.gameRepository,
+      });
 
   UpdateStateContextBase? updateStateContext;
   List<Unit>? units;
@@ -113,7 +120,7 @@ class AttackController {
             atcksToRemove.add(atckId);
             units[index] = units[index]
                 .copyWith(paralyzed: false, uiInfo: 'Паралич прошёл');
-            //await _onUpdate();
+            await _onUpdate();
           } else {
             canMove = false;
             units[index].attacksMap[atckId] = units[index]
@@ -122,7 +129,7 @@ class AttackController {
                     currentDuration:
                         units[index].attacksMap[atckId]!.currentDuration - 1);
             units[index] = units[index].copyWith(uiInfo: 'Пас');
-            //await _onUpdate();
+            await _onUpdate();
           }
 
           break;
@@ -144,6 +151,7 @@ class AttackController {
             atcksToRemove.add(atckId);
             units[index] = units[index]
                 .copyWith(petrified: false, uiInfo: 'Окаменение прошло');
+            await _onUpdate();
           } else {
             canMove = false;
             units[index].attacksMap[atckId] = units[index]
@@ -180,11 +188,12 @@ class AttackController {
             currentHp: newUnitHp,
             uiInfo: newUnitHp - currentUnitHp,
           );
-
+          await _onUpdate();
           if (atckValue.currentDuration == 1) {
             atcksToRemove.add(atckId);
             units[index] = units[index]
                 .copyWith(poisoned: false, uiInfo: newUnitHp - currentUnitHp);
+
           } else {
             units[index].attacksMap[atckId] = units[index]
                 .attacksMap[atckId]!
@@ -213,7 +222,7 @@ class AttackController {
             currentHp: newUnitHp,
             uiInfo: newUnitHp - currentUnitHp,
           );
-
+          await _onUpdate();
           if (atckValue.currentDuration == 1) {
             atcksToRemove.add(atckId);
             units[index] = units[index]
@@ -245,7 +254,80 @@ class AttackController {
           // TODO: Handle this case.
           break;
         case AttackClass.L_TRANSFORM_OTHER:
-          // TODO: Handle this case.
+
+          /*
+          units[target] = units[target].copyWith(
+            unitName: transformedUnit.unitName,
+            armor: transformedUnit.armor,
+            unitAttack: transformedUnit.unitAttack,
+            unitAttack2: transformedUnit.unitAttack2,
+            uiInfo: 'Превращение',
+            transformed: true,
+          );
+          */
+          if (units[index].isWaiting) {
+            break;
+          }
+          if (atckValue.currentDuration < 0) {
+            throw Exception();
+          }
+          if (atckValue.currentDuration == 1) {
+            atcksToRemove.add(atckId);
+            final unitId = units[index].unitWarId;
+            final oldUnit = _transformedUnitsCache[unitId]!;
+
+            _transformedUnitsCache.remove(unitId);
+
+            units[index] = units[index].copyWith(
+              unitName: oldUnit.unitName,
+              armor: oldUnit.armor,
+              unitAttack: oldUnit.unitAttack,
+              unitAttack2: oldUnit.unitAttack2,
+              uiInfo: 'Восстановление формы',
+              transformed: false,
+            );
+            await _onUpdate();
+            break;
+          } else {
+            units[index].attacksMap[atckId] = units[index]
+                .attacksMap[atckId]!
+                .copyWith(
+                currentDuration:
+                units[index].attacksMap[atckId]!.currentDuration - 1);
+          }
+          // У ждущего юнита первращение не сбрасывается
+          /*if (units[index].isWaiting) {
+            break;
+          }
+          if (atckValue.currentDuration < 0) {
+            throw Exception();
+          }
+          if (atckValue.currentDuration == 1) {
+
+            atcksToRemove.add(atckId);
+
+            final unitId = units[index].unitWarId;
+
+            // Возвращается прежний юнит
+            units[index] = _transformedUnitsCache[unitId]!.copyWith(
+              transformed: false,
+              attacksMap: Map.fromIterables(
+                  units[index].attacksMap.keys,
+                  units[index].attacksMap.values),
+              uiInfo: 'Восстановить обличие',
+            );
+
+            _transformedUnitsCache.remove(unitId);
+
+          } else {
+            units[index].attacksMap[atckId] = units[index]
+                .attacksMap[atckId]!
+                .copyWith(
+                currentDuration:
+                units[index].attacksMap[atckId]!.currentDuration - 1);
+          }*/
+
+
           break;
         case AttackClass.L_BLISTER:
           if (units[index].isWaiting) {
@@ -267,7 +349,7 @@ class AttackController {
             currentHp: newUnitHp,
             uiInfo: newUnitHp - currentUnitHp,
           );
-
+          await _onUpdate();
           if (atckValue.currentDuration == 1) {
             atcksToRemove.add(atckId);
             units[index] = units[index]
@@ -287,7 +369,7 @@ class AttackController {
           // TODO: Handle this case.
           break;
       }
-      await _onUpdate();
+      //await _onUpdate();
     }
 
     for (var atck in atcksToRemove) {
@@ -508,23 +590,23 @@ class AttackController {
       case AttackClass.L_FEAR:
         return await _handleFear(context);
       case AttackClass.L_BOOST_DAMAGE:
-        return _handleBustDamage(context);
+        return await _handleBustDamage(context);
       case AttackClass.L_PETRIFY:
-        return _handlePetrify(context);
+        return await _handlePetrify(context);
       case AttackClass.L_LOWER_DAMAGE:
-        return _handleLowerDamage(context);
+        return await _handleLowerDamage(context);
       case AttackClass.L_LOWER_INITIATIVE:
-        return _handleLowerIni(context);
+        return await _handleLowerIni(context);
       case AttackClass.L_POISON:
-        return _handlePoison(context);
+        return await _handlePoison(context);
       case AttackClass.L_FROSTBITE:
-        return _handleFrostbite(context);
+        return await _handleFrostbite(context);
       case AttackClass.L_REVIVE:
-        return _handleRevive(context);
+        return await _handleRevive(context);
       case AttackClass.L_DRAIN_OVERFLOW:
-        return _handleDrainOverflow(context);
+        return await _handleDrainOverflow(context);
       case AttackClass.L_CURE:
-        return _handleCure(context);
+        return await _handleCure(context);
       case AttackClass.L_SUMMON:
         // TODO: Handle this case.
         break;
@@ -540,8 +622,7 @@ class AttackController {
         // TODO: Handle this case.
         break;
       case AttackClass.L_TRANSFORM_OTHER:
-        // TODO: Handle this case.
-        break;
+        return await _handleTransformOther(context);
       case AttackClass.L_BLISTER:
         return await _handleBlister(context);
       case AttackClass.L_BESTOW_WARDS:
@@ -1199,7 +1280,35 @@ class AttackController {
         // TODO: Handle this case.
         break;
       case AttackClass.L_TRANSFORM_OTHER:
-        // TODO: Handle this case.
+
+        final targetUnitHasThisAttck = targetUnit.attacksMap.containsKey(attack.attackClass);
+
+        if (!targetUnitHasThisAttck) {
+          final currentAttackDuration =
+            attackDurationController.getDuration(attack);
+          // В кого превращает юнит
+          var transformedUnit = gameRepository.getTransformUnitByAttackId(attack.attackId);
+          // Нужно запомнить текущее состояние юнита
+          assert(_transformedUnitsCache[targetUnit.unitWarId] == null);
+          _transformedUnitsCache[targetUnit.unitWarId] = targetUnit.copyWith();
+
+          units[target].attacksMap[attack.attackClass] =
+              attack.copyWith(currentDuration: currentAttackDuration);
+
+          units[target] = units[target].copyWith(
+            unitName: transformedUnit.unitName,
+            // todo Резисты переносятся также с юнита в кого превращаемся
+            armor: transformedUnit.armor,
+            unitAttack: transformedUnit.unitAttack,
+            unitAttack2: transformedUnit.unitAttack2, // todo баг если атака null,
+            // а у превращаемого юнита не null
+            uiInfo: 'Превращение',
+            transformed: true,
+          );
+          await _onUpdate();
+
+        }
+
         break;
       case AttackClass.L_BLISTER:
         final targetUnitHasThisAttack =
@@ -2715,6 +2824,95 @@ class AttackController {
   }
 
 // L_DRAIN_OVERFLOW END
+// L_TRANSFORM_OTHER BEGIN
 
+  Future<ResponseAction> _handleTransformOther(AttackContext context) async {
+    final currentUnitAttack = context.units[context.current].unitAttack;
+    final currentUnit = context.units[context.current];
+    final targetUnit = context.units[context.target];
+    final currentUnitIsTopTeam = checkIsTopTeam(context.current);
+    final targetUnitIsTopTeam = checkIsTopTeam(context.target);
+
+    if (currentUnitIsTopTeam == targetUnitIsTopTeam) {
+      return ResponseAction.error('Своих превращать нельзя');
+    }
+    if (targetUnit.isDead || targetUnit.isEmpty()) {
+      return ResponseAction.error(
+          'Невозможное действие над мёртвым/пустым юнитом');
+    }
+    // Если юнит уже превращён, превратить его снова нельзя
+    if (targetUnit.transformed) {
+      return ResponseAction.error(
+          'Юнит уже превращён');
+    }
+    switch (currentUnitAttack.targetsCount) {
+      case TargetsCount.one:
+        return await _handleOneTargetTransformOther(context);
+
+      case TargetsCount.all:
+        return await _handleAllTargetTransformOther(context);
+
+      case TargetsCount.any:
+        return await _handleAnyTargetTransformOther(context);
+    }
+  }
+
+  Future<ResponseAction> _handleOneTargetTransformOther(
+      AttackContext context) async {
+    final currentUnit = context.units[context.current];
+    final targetUnit = context.units[context.target];
+    final currentUnitIsTopTeam = checkIsTopTeam(context.current);
+    final targetUnitIsTopTeam = checkIsTopTeam(context.target);
+
+    final canAttack = findNearestTarget(
+        unit: currentUnit,
+        index: context.current,
+        target: context.target,
+        cellHasUnit: context.cellHasUnit,
+        direction: currentUnitIsTopTeam,
+        topFrontEmpty: context.topFrontLineEmpty,
+        botFrontEmpty: context.botFrontLineEmpty,
+        currentRecursionLevel: 0);
+    if (!canAttack) {
+      return ResponseAction.error(
+          'Юнит ${currentUnit.unitName} не может превратить юнита ${targetUnit.unitName}');
+    }
+
+    final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
+        currentUnit.unitAttack2, context.target, context.units,
+        current: context.current);
+    return ResponseAction.success();
+  }
+
+  Future<ResponseAction> _handleAllTargetTransformOther(
+      AttackContext context) async {
+    final currentUnit = context.units[context.current];
+    final currentUnitIsTopTeam = checkIsTopTeam(context.current);
+    final targetUnitIsTopTeam = checkIsTopTeam(context.target);
+    var i1 = targetUnitIsTopTeam ? 0 : 6;
+    var i2 = targetUnitIsTopTeam ? 5 : 11;
+    for (var i = 0; i < context.units.length; i++) {
+      if (i >= i1 && i <= i2) {
+        if (context.units[i].isEmpty() || context.units[i].isDead) {
+          continue;
+        }
+        final resp = await _applyAttacksToUnit(
+            currentUnit.unitAttack, currentUnit.unitAttack2, i, context.units,
+            current: context.current);
+      }
+    }
+    return ResponseAction.success();
+  }
+
+  Future<ResponseAction> _handleAnyTargetTransformOther(
+      AttackContext context) async {
+    final currentUnit = context.units[context.current];
+    final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
+        currentUnit.unitAttack2, context.target, context.units,
+        current: context.current);
+    return ResponseAction.success();
+  }
+
+// L_TRANSFORM_OTHER END
 }
 

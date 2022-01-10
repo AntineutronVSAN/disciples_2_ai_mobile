@@ -6,6 +6,8 @@ class RequestAction {
   final int? targetCellIndex;
   final UpdateStateContextBase? context;
 
+  final double positionRating;
+
   final ActionType type;
 
   RequestAction({
@@ -13,14 +15,16 @@ class RequestAction {
     required this.targetCellIndex,
     required this.currentCellIndex,
     this.context,
+    this.positionRating = 0.5,
   });
 
-  RequestAction copyWith({currentCellIndex, targetCellIndex, context, type}) {
+  RequestAction copyWith({currentCellIndex, targetCellIndex, context, type, positionRating}) {
     return RequestAction(
       type: type ?? this.type,
       targetCellIndex: targetCellIndex ?? this.targetCellIndex,
       currentCellIndex: currentCellIndex ?? this.currentCellIndex,
       context: context ?? this.context,
+        positionRating: positionRating ?? this.positionRating
     );
   }
 
@@ -29,7 +33,8 @@ class RequestAction {
     return RequestAction(
         type: type,
         targetCellIndex: targetCellIndex,
-        currentCellIndex: currentCellIndex
+        currentCellIndex: currentCellIndex,
+        positionRating: positionRating,
     );
   }
 

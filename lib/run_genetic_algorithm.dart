@@ -45,6 +45,7 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
     gattacksProvider: GattacksProvider(),
     gunitsProvider: GunitsProvider(),
     tglobalProvider: TglobalProvider(),
+    gtransfProvider: GtransfProvider()
   );
   repository.init();
   // Создание юнитов
@@ -104,6 +105,11 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
   final gc = GeneticController(
     gameController: GameController(
       attackController: AttackController(
+        gameRepository: GameRepository(
+            gtransfProvider: GtransfProvider(),
+            tglobalProvider: TglobalProvider(),
+            gattacksProvider: GattacksProvider(),
+            gunitsProvider: GunitsProvider()),
         powerController: PowerController(
           randomExponentialDistribution: RandomExponentialDistribution(),
         ),

@@ -15,6 +15,7 @@ class GameRepository {
   final GunitsProvider gunitsProvider;
   final TglobalProvider tglobalProvider;
   final GattacksProvider gattacksProvider;
+  final GtransfProvider gtransfProvider;
 
   /// Мапа всех игровых юнитов с ID
   final Map<String, Gunits> _allGameUnits = {};
@@ -27,10 +28,26 @@ class GameRepository {
     required this.gunitsProvider,
     required this.tglobalProvider,
     required this.gattacksProvider,
+    required this.gtransfProvider,
   });
 
   List<Unit> getAllUnits() {
     return List.generate(_units.length, (index) => _units[index].copyWith());
+  }
+
+  /// Получить юнита, в которого превращает атака [attckId]
+  Unit getTransformUnitByAttackId(String attckId, {bool isBig=false}) {
+
+    final transfUnitIds = gtransfProvider.objects.where((element) => element.attack_id == attckId).toList();
+    assert(transfUnitIds.length == 2);
+
+    final firstUnit = getCopyUnitById(transfUnitIds[0].transf_id);
+    final secondUnit = getCopyUnitById(transfUnitIds[1].transf_id);
+
+    if (isBig) {
+      //todo
+    }
+    return firstUnit;
   }
 
   void init() {
@@ -52,9 +69,9 @@ class GameRepository {
 
       print('${newGameUnitText.text} '
           '---- ${attack.atck_class} '
-          '---- ${attack.qty_dam}'
+          '---- ${attack.alt_attack}'
           '---- ${attack2?.atck_class} '
-          '---- ${attack2?.qty_dam}');
+          '---- ${attack2?.infinite}');
 
       final unitAttack1 = UnitAttack(
         attackId: attack.att_id,
@@ -128,6 +145,28 @@ class GameRepository {
       unitAttack: _unitsNamesMap[name]!.unitAttack.copyWith(),
       unitAttack2: _unitsNamesMap[name]!.unitAttack2?.copyWith(),
     );
+  }
+
+  Unit getCopyUnitById(String id) {
+    Unit? newUnit;
+    bool unitFound = false;
+    for(var u in _units) {
+      if (u.unitGameID == id) {
+        newUnit = u.copyWith(
+          unitWarId: uuid.v1(),
+          attacksMap: <AttackClass, UnitAttack>{},
+          attacks: <UnitAttack>[],
+          unitAttack: u.unitAttack.copyWith(),
+          unitAttack2: u.unitAttack2?.copyWith(),
+        );
+        unitFound = true;
+        break;
+      }
+    }
+    assert(unitFound);
+
+
+    return newUnit!;
   }
 
   List<String> getAllNames() {

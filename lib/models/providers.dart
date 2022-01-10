@@ -1,4 +1,5 @@
 import 'package:d2_ai_v2/models/provider_base.dart';
+import 'Gtransf.dart';
 import 'game_models.dart';
 
 class TglobalProvider extends GameObjectsProviderBase<Tglobal> {
@@ -75183,6 +75184,1121 @@ class GunitsProvider extends GameObjectsProviderBase<Gunits> {
       dyn_upg2: 'g002DU3044',
       water_only: null,
       death_anim: 1,
+    ));
+  }
+}
+
+class GtransfProvider extends GameObjectsProviderBase<Gtransf>
+{
+  GtransfProvider()
+  {
+    objects.add(Gtransf(
+      attack_id: 'g000aa9022',
+      transf_id: 'g000uu0092',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa9101',
+      transf_id: 'g000uu0001',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa9102',
+      transf_id: 'g000uu0014',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa9103',
+      transf_id: 'g000uu0040',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa9104',
+      transf_id: 'g000uu5034',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa9105',
+      transf_id: 'g000uu0166',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa9106',
+      transf_id: 'g000uu0065',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa9107',
+      transf_id: 'g000uu0087',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa9108',
+      transf_id: 'g000uu0089',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa9109',
+      transf_id: 'g000uu0083',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa9110',
+      transf_id: 'g000uu0084',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa9111',
+      transf_id: 'g000uu0175',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa9112',
+      transf_id: 'g000uu5008',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa9113',
+      transf_id: 'g000uu5017',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa9114',
+      transf_id: 'g000uu5013',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa9115',
+      transf_id: 'g000uu5024',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa9140',
+      transf_id: 'g000uu5034',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa9140',
+      transf_id: 'g000uu8273',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa0164',
+      transf_id: 'g000uu0190',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa0153',
+      transf_id: 'g000uu6103',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa0067',
+      transf_id: 'g000uu5034',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa0067',
+      transf_id: 'g000uu8273',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa0068',
+      transf_id: 'g000uu5034',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa0068',
+      transf_id: 'g000uu8273',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa0173',
+      transf_id: 'g000uu5034',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa0173',
+      transf_id: 'g000uu8273',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa6013',
+      transf_id: 'g000uu5033',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa6013',
+      transf_id: 'g000uu0087',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa6014',
+      transf_id: 'g000uu0083',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa6014',
+      transf_id: 'g000uu0084',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa6014',
+      transf_id: 'g000uu0085',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa6014',
+      transf_id: 'g000uu0178',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa6014',
+      transf_id: 'g000uu0174',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa9021',
+      transf_id: 'g000uu5034',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa9021',
+      transf_id: 'g000uu8273',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa6007',
+      transf_id: 'g000uu5035',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa6007',
+      transf_id: 'g000uu0085',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa6007',
+      transf_id: 'g000uu0088',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa6007',
+      transf_id: 'g000uu0087',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa6014',
+      transf_id: 'g000uu0095',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa6014',
+      transf_id: 'g000uu0181',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa8007',
+      transf_id: 'g000uu5022',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa8007',
+      transf_id: 'g000uu0175',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa8012',
+      transf_id: 'g000uu8036',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9113',
+      transf_id: 'g000uu0092',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa0001',
+      transf_id: 'g000uu0190',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa0002',
+      transf_id: 'g000uu0001',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa0002',
+      transf_id: 'g000uu0002',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa0002',
+      transf_id: 'g000uu0003',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa0002',
+      transf_id: 'g000uu0004',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa0003',
+      transf_id: 'g001uu0104',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g011aa0153',
+      transf_id: 'g000uu5034',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa0004',
+      transf_id: 'g000uu0092',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa0153',
+      transf_id: 'g000uu6103',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g002aa1171',
+      transf_id: 'g005uu6120',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa0003',
+      transf_id: 'g001uu0103',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa0009',
+      transf_id: 'g000uu5033',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa6013',
+      transf_id: 'g001uu0101',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g021aa0009',
+      transf_id: 'g001uu0102',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g121aa0002',
+      transf_id: 'g000uu8036',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g121aa0002',
+      transf_id: 'g002uu8037',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa6008',
+      transf_id: 'g000uu5001',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa6013',
+      transf_id: 'g000uu0079',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9122',
+      transf_id: 'g000uu5023',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9116',
+      transf_id: 'g000uu0160',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9116',
+      transf_id: 'g000uu0151',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9116',
+      transf_id: 'g000uu8034',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9119',
+      transf_id: 'g000uu0014',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9142',
+      transf_id: 'g000uu0167',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9129',
+      transf_id: 'g000uu5037',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9129',
+      transf_id: 'g000uu5038',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9117',
+      transf_id: 'g000uu0157',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9118',
+      transf_id: 'g003uu8050',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9142',
+      transf_id: 'g000uu7572',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9142',
+      transf_id: 'g000uu0056',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9143',
+      transf_id: 'g000uu0032',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9143',
+      transf_id: 'g000uu0159',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9120',
+      transf_id: 'g002uu5026',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9120',
+      transf_id: 'g000uu6103',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9120',
+      transf_id: 'g002uu0025',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9120',
+      transf_id: 'g002uu0105',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9121',
+      transf_id: 'g000uu8046',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9121',
+      transf_id: 'g000uu8048',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9123',
+      transf_id: 'g001uu0070',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9123',
+      transf_id: 'g000uu0166',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9124',
+      transf_id: 'g000uu6121',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9126',
+      transf_id: 'g000uu0079',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9126',
+      transf_id: 'g000uu0094',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9126',
+      transf_id: 'g000uu0088',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9127',
+      transf_id: 'g000uu0152',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9128',
+      transf_id: 'g000uu0031',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9128',
+      transf_id: 'g000uu0158',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9130',
+      transf_id: 'g001uu0025',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9131',
+      transf_id: 'g000uu5027',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9131',
+      transf_id: 'g000uu5026',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9131',
+      transf_id: 'g000uu5028',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9132',
+      transf_id: 'g000uu5029',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g011aa9133',
+      transf_id: 'g000uu0095',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g011aa9133',
+      transf_id: 'g000uu0180',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g011aa9133',
+      transf_id: 'g000uu0181',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9134',
+      transf_id: 'g000uu5035',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9134',
+      transf_id: 'g000uu5036',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9136',
+      transf_id: 'g000uu5012',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9136',
+      transf_id: 'g000uu5016',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9136',
+      transf_id: 'g000uu8047',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9140',
+      transf_id: 'g000uu0173',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9140',
+      transf_id: 'g000uu0067',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9140',
+      transf_id: 'g000uu0068',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9138',
+      transf_id: 'g004uu5039',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9138',
+      transf_id: 'g004uu8005',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9139',
+      transf_id: 'g000uu5024',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9139',
+      transf_id: 'g000uu5025',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9125',
+      transf_id: 'g000uu0092',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9122',
+      transf_id: 'g000uu5019',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9122',
+      transf_id: 'g000uu5020',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9122',
+      transf_id: 'g000uu5021',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9122',
+      transf_id: 'g000uu5022',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9144',
+      transf_id: 'g000uu8041',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9144',
+      transf_id: 'g000uu8042',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9144',
+      transf_id: 'g000uu8043',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9144',
+      transf_id: 'g000uu8044',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9313',
+      transf_id: 'g001uu0024',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa2027',
+      transf_id: 'g000uu8158',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa2027',
+      transf_id: 'g000uu8159',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa2027',
+      transf_id: 'g000uu8160',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa2027',
+      transf_id: 'g000uu8161',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0009',
+      transf_id: 'g000uu8158',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0009',
+      transf_id: 'g000uu8159',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0009',
+      transf_id: 'g000uu8160',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0009',
+      transf_id: 'g000uu8161',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0009',
+      transf_id: 'g000uu8171',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0009',
+      transf_id: 'g000uu8168',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0009',
+      transf_id: 'g000uu8169',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0009',
+      transf_id: 'g000uu8170',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0010',
+      transf_id: 'g000uu8172',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0010',
+      transf_id: 'g000uu8173',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0010',
+      transf_id: 'g000uu8174',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0010',
+      transf_id: 'g000uu8175',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2041',
+      transf_id: 'g000uu8168',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2041',
+      transf_id: 'g000uu8169',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2041',
+      transf_id: 'g000uu8170',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2041',
+      transf_id: 'g000uu8171',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0010',
+      transf_id: 'g000uu8186',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa2042',
+      transf_id: 'g000uu8189',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa2042',
+      transf_id: 'g000uu8190',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2051',
+      transf_id: 'g000uu8172',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2051',
+      transf_id: 'g000uu8173',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2051',
+      transf_id: 'g000uu8174',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2051',
+      transf_id: 'g000uu8175',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2051',
+      transf_id: 'g000uu8186',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2052',
+      transf_id: 'g000uu8171',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2052',
+      transf_id: 'g000uu8168',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2052',
+      transf_id: 'g000uu8169',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2052',
+      transf_id: 'g000uu8170',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2052',
+      transf_id: 'g000uu8158',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2052',
+      transf_id: 'g000uu8159',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2052',
+      transf_id: 'g000uu8160',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2052',
+      transf_id: 'g000uu8161',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0011',
+      transf_id: 'g000uu8171',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0011',
+      transf_id: 'g000uu8168',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0011',
+      transf_id: 'g000uu8169',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0011',
+      transf_id: 'g000uu8170',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0012',
+      transf_id: 'g000uu8158',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0012',
+      transf_id: 'g000uu8159',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0012',
+      transf_id: 'g000uu8160',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0012',
+      transf_id: 'g000uu8161',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0013',
+      transf_id: 'g000uu8171',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0013',
+      transf_id: 'g000uu8168',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0013',
+      transf_id: 'g000uu8169',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0013',
+      transf_id: 'g000uu8170',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0013',
+      transf_id: 'g000uu8158',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0013',
+      transf_id: 'g000uu8159',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0013',
+      transf_id: 'g000uu8160',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0013',
+      transf_id: 'g000uu8161',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0014',
+      transf_id: 'g000uu8166',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0015',
+      transf_id: 'g000uu8174',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0015',
+      transf_id: 'g000uu8175',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0016',
+      transf_id: 'g000uu8172',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0016',
+      transf_id: 'g000uu8173',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0016',
+      transf_id: 'g000uu8186',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0017',
+      transf_id: 'g000uu8174',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0017',
+      transf_id: 'g000uu8175',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0017',
+      transf_id: 'g000uu8172',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0017',
+      transf_id: 'g000uu8173',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0017',
+      transf_id: 'g000uu8186',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0018',
+      transf_id: 'g000uu8174',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0018',
+      transf_id: 'g000uu8175',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0019',
+      transf_id: 'g000uu5017',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0019',
+      transf_id: 'g000uu5018',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0019',
+      transf_id: 'g000uu8196',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2073',
+      transf_id: 'g000uu8237',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2078',
+      transf_id: 'g001uu0171',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9134',
+      transf_id: 'g001uu8280',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9134',
+      transf_id: 'g001uu8281',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9134',
+      transf_id: 'g001uu8282',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9134',
+      transf_id: 'g001uu8283',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9134',
+      transf_id: 'g001uu8284',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2116',
+      transf_id: 'g001uu8282',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2116',
+      transf_id: 'g001uu8283',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2116',
+      transf_id: 'g001uu8284',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2116',
+      transf_id: 'g001uu8281',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2116',
+      transf_id: 'g000uu5035',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2116',
+      transf_id: 'g000uu5036',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2116',
+      transf_id: 'g001uu8280',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9121',
+      transf_id: 'g000uu8157',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9121',
+      transf_id: 'g000uu8213',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9122',
+      transf_id: 'g000uu8197',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9122',
+      transf_id: 'g001uu8269',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9139',
+      transf_id: 'g000uu8274',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9139',
+      transf_id: 'g000uu8275',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9142',
+      transf_id: 'g001uu8272',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa2132',
+      transf_id: 'g000uu5034',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa2132',
+      transf_id: 'g000uu8273',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa2116',
+      transf_id: 'g001uu8280',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa2116',
+      transf_id: 'g000uu5036',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa2116',
+      transf_id: 'g000uu5035',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa2116',
+      transf_id: 'g001uu8281',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa2116',
+      transf_id: 'g001uu8284',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa2116',
+      transf_id: 'g001uu8283',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa2116',
+      transf_id: 'g001uu8282',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2073',
+      transf_id: 'g000uu7566',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa2073',
+      transf_id: 'g000uu7567',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9125',
+      transf_id: 'g001uu7563',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9125',
+      transf_id: 'g001uu7564',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9125',
+      transf_id: 'g001uu7565',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9136',
+      transf_id: 'g001uu7546',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9136',
+      transf_id: 'g001uu7548',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9138',
+      transf_id: 'g001uu7571',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9142',
+      transf_id: 'g001uu7573',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9142',
+      transf_id: 'g001uu7574',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9131',
+      transf_id: 'g000uu8137',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9131',
+      transf_id: 'g000uu2006',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9123',
+      transf_id: 'g001uu0072',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa9145',
+      transf_id: 'g000uu5040',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa9145',
+      transf_id: 'g000uu8247',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa9146',
+      transf_id: 'g000uu0179',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa9146',
+      transf_id: 'g000uu8207',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa9147',
+      transf_id: 'g000uu5012',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g000aa9147',
+      transf_id: 'g001uu7546',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0042',
+      transf_id: 'g000uu8173',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0043',
+      transf_id: 'g000uu8186',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0044',
+      transf_id: 'g000uu8172',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0045',
+      transf_id: 'g000uu8174',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0046',
+      transf_id: 'g000uu8175',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa2171',
+      transf_id: 'g000uu0086',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa2171',
+      transf_id: 'g001uu0102',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa2173',
+      transf_id: 'g000uu5034',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa2173',
+      transf_id: 'g000uu8273',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g001aa9139',
+      transf_id: 'g000uu7590',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0049',
+      transf_id: 'g000uu8031',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0050',
+      transf_id: 'g000uu2006',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0051',
+      transf_id: 'g000uu7569',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0052',
+      transf_id: 'g001uu8308',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0053',
+      transf_id: 'g000uu8036',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0054',
+      transf_id: 'g001uu0101',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0055',
+      transf_id: 'g001uu0101',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0056',
+      transf_id: 'g000uu0086',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0057',
+      transf_id: 'g000uu0036',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0058',
+      transf_id: 'g000uu8014',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0059',
+      transf_id: 'g000uu0052',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0060',
+      transf_id: 'g006uu1030',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0061',
+      transf_id: 'g000uu5030',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0062',
+      transf_id: 'g000uu5002',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0063',
+      transf_id: 'g001uu7556',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0064',
+      transf_id: 'g000uu5009',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0065',
+      transf_id: 'g000uu0078',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0066',
+      transf_id: 'g000uu0067',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0067',
+      transf_id: 'g000uu8220',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0068',
+      transf_id: 'g000uu8220',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0068',
+      transf_id: 'g000uu5030',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0068',
+      transf_id: 'g000uu5031',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0069',
+      transf_id: 'g000uu2007',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0070',
+      transf_id: 'g000uu0012',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0071',
+      transf_id: 'g000uu2022',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0072',
+      transf_id: 'g000uu0079',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0073',
+      transf_id: 'g000uu8274',
+    ));
+    objects.add(Gtransf(
+      attack_id: 'g007aa0081',
+      transf_id: 'g001uu0073',
     ));
   }
 }

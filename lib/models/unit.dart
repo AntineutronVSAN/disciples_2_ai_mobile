@@ -53,6 +53,9 @@ class Unit {
 
   final bool damageBusted;
 
+  /// Юнит превращён в другого
+  final bool transformed;
+
   Unit({
     required this.isDead,
     required this.isMoving,
@@ -81,6 +84,7 @@ class Unit {
     this.petrified = false,
     this.initLower = false,
     this.damageBusted = false,
+    this.transformed = false,
   });
 
   factory Unit.fromJson(Map<String, dynamic> json) => _$UnitFromJson(json);
@@ -116,6 +120,7 @@ class Unit {
         petrified: petrified,
         initLower: initLower,
         damageBusted: damageBusted,
+      transformed: transformed,
     );
   }
 
@@ -149,6 +154,7 @@ class Unit {
     petrified,
     initLower,
     damageBusted,
+    transformed,
   }) {
     return Unit(
       isMoving: isMoving ?? this.isMoving,
@@ -179,8 +185,45 @@ class Unit {
       petrified: petrified ?? this.petrified,
       initLower: initLower ?? this.initLower,
       damageBusted: damageBusted ?? this.damageBusted,
+      transformed: transformed ?? this.transformed,
     );
   }
+
+  /// Превратить текущего юнита в target
+  /// Вернёт копию
+  /*Unit transformTo(Unit target) {
+    return target.copyWith(
+      isMoving: isMoving,
+      isDead: isDead,
+      isProtected: isProtected,
+      isWaiting: isWaiting,
+      maxHp: maxHp,
+      currentHp: currentHp,
+      //unitName: unitName,
+      //unitGameID: unitGameID,
+      unitWarId: unitWarId,
+      //isDoubleAttack: isDoubleAttack,
+      currentAttack: currentAttack,
+      //unitAttack: unitAttack,
+      //unitAttack2: unitAttack2,
+      attacks: attacks,
+      attacksMap: attacksMap,
+      uiInfo: (uiInfo is String) ? uiInfo : ((uiInfo != null) ? uiInfo
+          .toString() : ""),
+      retreat: retreat,
+      armor: armor,
+      paralyzed: paralyzed,
+      poisoned: poisoned,
+      blistered: blistered,
+      frostbited: frostbited,
+      damageLower: damageLower,
+      revived: revived,
+      petrified: petrified,
+      initLower: initLower,
+      damageBusted: damageBusted,
+      transformed: transformed,
+    );
+  }*/
 
   Unit copyWithDead({
     maxHp,
@@ -229,6 +272,7 @@ class Unit {
       initLower: false,
       damageBusted: false,
       revived: revived ?? this.revived,
+        transformed: false,
     );
   }
 

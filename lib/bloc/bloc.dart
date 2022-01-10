@@ -178,7 +178,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       'Рейнджер',*//*
     ];*/
 
-    final List<String> unitsNames = UnitsPack.packs[1];
+    final List<String> unitsNames = UnitsPack.packs[9];
     //final List<String> unitsNames = UnitsPack.tournaments[9];
 
     assert(unitsNames.length == 12);
@@ -373,6 +373,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     emit(state.copyWith(
       warScreenState: WarScreenState.pve,
       units: _warUnitsCopies,
+      positionRating: 0.5,
     ));
 
     if (checkIsTopTeam(currentActiveCell!)) {
@@ -409,6 +410,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         success = true;
         emit(state.copyWith(
           units: _warUnitsCopies,
+          positionRating: r.positionRating,
         ));
 
         if (checkIsTopTeam(response.activeCell!)) {

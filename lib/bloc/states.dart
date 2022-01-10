@@ -10,12 +10,15 @@ abstract class GameState {
   final double populationFitness;
   final int currentGeneration;
 
+  final double positionRating;
+
   GameState({
     required this.units,
     this.warScreenState = WarScreenState.view,
     required this.allUnits,
     this.currentGeneration = 0,
     this.populationFitness = 0.0,
+    this.positionRating = 0.5,
   });
 
   GameState copyWith({
@@ -24,6 +27,7 @@ abstract class GameState {
     allUnits,
     currentGeneration,
     populationFitness,
+    positionRating,
   });
 }
 
@@ -34,12 +38,14 @@ class GameSceneState extends GameState {
     required List<Unit> allUnits,
     int currentGeneration = 0,
     double populationFitness = 0.0,
+        double positionRating = 0.0,
   }) : super(
           units: units,
           warScreenState: warScreenState,
           allUnits: allUnits,
           currentGeneration: currentGeneration,
           populationFitness: populationFitness,
+      positionRating: positionRating
         );
 
   @override
@@ -50,6 +56,7 @@ class GameSceneState extends GameState {
     unitsDeltaHp,
     populationFitness,
     currentGeneration,
+    positionRating,
   }) {
     return GameSceneState(
       units ?? this.units,
@@ -57,6 +64,7 @@ class GameSceneState extends GameState {
       allUnits: allUnits ?? this.allUnits,
       populationFitness: populationFitness ?? this.populationFitness,
       currentGeneration: currentGeneration ?? this.currentGeneration,
+        positionRating: positionRating ?? this.positionRating,
     );
   }
 }

@@ -29,6 +29,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final repo = GameRepository(
+        gtransfProvider: GtransfProvider(),
+        tglobalProvider: TglobalProvider(),
+        gattacksProvider: GattacksProvider(),
+        gunitsProvider: GunitsProvider());
+
     return MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
@@ -37,12 +44,10 @@ class MyApp extends StatelessWidget {
         home: BlocProvider<GameBloc>(
             create: (BuildContext context) => GameBloc(
                 GameSceneState([], allUnits: []),
-                repository: GameRepository(
-                    tglobalProvider: TglobalProvider(),
-                    gattacksProvider: GattacksProvider(),
-                    gunitsProvider: GunitsProvider()),
+                repository: repo,
                 controller: GameController(
                   attackController: AttackController(
+                    gameRepository: repo,
                     powerController: PowerController(
                       randomExponentialDistribution:
                           RandomExponentialDistribution(),
@@ -58,7 +63,8 @@ class MyApp extends StatelessWidget {
                           RandomExponentialDistribution()),
                 ),
                 //aiController: AiController()),
-                aiController: AlphaBetaPruningController(treeDepth: 10, isTopTeam: true)),
+                aiController:
+                    AlphaBetaPruningController(treeDepth: 10, isTopTeam: true)),
             child: BlocBuilder<GameBloc, GameState>(
               builder: (context, state) {
                 return MyHomePage();
@@ -110,16 +116,75 @@ class _MyHomePageState extends State<MyHomePage> {
               const SizedBox(
                 height: 30,
               ),
-              _getTeamWidgets(context, true),
-              const SizedBox(
-                height: 40,
+              Stack(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _getTeamWidgets(context, true),
+                      const SizedBox(
+                        height: 40,
+                      ),
+                      _getTeamWidgets(context, false),
+
+                    ],
+                  ),
+                  if (bloc.state.warScreenState != WarScreenState.view)
+                    Positioned.fill(
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child:  _getRatingWidget(bloc.state.positionRating),)
+                    )
+                ],
               ),
-              _getTeamWidgets(context, false),
               _getActionsWidget(context),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _getRatingWidget(double currentPositionRating) {
+    assert(currentPositionRating >= 0.0 && currentPositionRating <= 1.0);
+
+    const maxContainerHeight = 400;
+
+    final topContainerHeight = currentPositionRating > 0.5
+        ? maxContainerHeight * (currentPositionRating - 0.5)
+        : 1.0;
+    final bottomContainerHeight = currentPositionRating < 0.5
+        ? maxContainerHeight * (0.5 - currentPositionRating)
+        : 1.0;
+
+    final isTopContainer = topContainerHeight > bottomContainerHeight;
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      //crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        AnimatedContainer(
+          width: 10,
+          height: isTopContainer ? topContainerHeight : bottomContainerHeight,
+          color: isTopContainer ? Colors.blue : Colors.blue.withOpacity(0.2),
+          duration: const Duration(milliseconds: 200),
+        ),
+        Text(
+          ((currentPositionRating - 0.5) * 10.0).toStringAsFixed(1),
+          style: const TextStyle(
+            fontSize: 25,
+            color: Colors.blue,
+            fontWeight: FontWeight.bold
+          ),
+        ),
+        AnimatedContainer(
+          width: 10,
+          height: isTopContainer ? topContainerHeight : bottomContainerHeight,
+          color: !isTopContainer ? Colors.blue : Colors.blue.withOpacity(0.2),
+          duration: const Duration(milliseconds: 200),
+        ),
+      ],
     );
   }
 

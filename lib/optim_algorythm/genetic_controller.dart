@@ -4,7 +4,9 @@ import 'dart:math';
 import 'package:d2_ai_v2/ai_controller/ai_controller_base.dart';
 import 'package:d2_ai_v2/dart_nural/networks/linear_network_v2.dart';
 import 'package:d2_ai_v2/dart_nural/neural_base.dart';
+import 'package:d2_ai_v2/models/providers.dart';
 import 'package:d2_ai_v2/optim_algorythm/base.dart';
+import 'package:d2_ai_v2/repositories/game_repository.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:d2_ai_v2/ai_controller/ai_contoller.dart';
 import 'package:d2_ai_v2/controllers/attack_controller/attack_controller.dart';
@@ -112,6 +114,11 @@ class GeneticController {
     final individController = AiController();
     final gameController = GameController(
       attackController: AttackController(
+        gameRepository: GameRepository(
+            gtransfProvider: GtransfProvider(),
+            tglobalProvider: TglobalProvider(),
+            gattacksProvider: GattacksProvider(),
+            gunitsProvider: GunitsProvider()),
         powerController: PowerController(
           randomExponentialDistribution: RandomExponentialDistribution(),
         ),

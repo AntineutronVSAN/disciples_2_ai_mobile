@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:d2_ai_v2/optim_algorythm/neat/adjacency_dict.dart';
 import 'package:d2_ai_v2/optim_algorythm/neat/id_calculator.dart';
 import 'package:d2_ai_v2/optim_algorythm/neat/trees/tree_v1.dart';
+import 'package:d2_ai_v2/utils/crc.dart';
 
 import 'optim_algorythm/neat/edges/edge_v1.dart';
 import 'optim_algorythm/neat/nodes/node_v1.dart';
@@ -23,6 +24,12 @@ enum TestEnum {
 
 Future<void> startNeatAlgorithm() async {
 
+  final test = <int>[1,2,3,4,5,6,77,75];
+  final test2 = <int>[1,2,3,4,5,6,77,75,2];
+  final test3 = <int>[1,2,3,4,5,6,77,256,2];
+
+  //print(CRC32.compute(test) == CRC32.compute(test2));
+  //print(CRC32.compute(test2) == CRC32.compute(test3));
   /*final cls = Test(en: TestEnum.value1);
   final cls2 = Test(en: cls.en);
   print("${cls.en} ${cls2.en}");
