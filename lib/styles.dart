@@ -16,4 +16,10 @@ class GameStyles {
         fontWeight: FontWeight.bold);
   }
 
+  static TextStyle getMainTextStyle() {
+    return const TextStyle(
+        fontSize: 12.0,
+        color: Colors.black);
+  }
+
 }

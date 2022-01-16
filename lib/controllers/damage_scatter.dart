@@ -13,8 +13,12 @@ class DamageScatter {
 
   DamageScatter({required this.randomExponentialDistribution});
 
-  int getScattedDamage(int damage) {
+  /// Если [rollMaxDamage], то при рассчёте берётся всегда максимальный разброс
+  int getScattedDamage(int damage, {required bool rollMaxDamage}) {
     //return damage + random.nextInt(maxScatterValue);
+    if (rollMaxDamage) {
+      return damage + maxScatterValue;
+    }
     return damage + randomExponentialDistribution.getNextInt(maxScatterValue);
   }
 

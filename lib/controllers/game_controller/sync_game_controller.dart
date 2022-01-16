@@ -9,6 +9,11 @@ class SyncGameController {
   SyncAttackController attackController;
   InitiativeShuffler initiativeShuffler;
 
+  /// Если true, все случайные параметры для верхней команды будут максимальными
+  bool rollMaxRandomParamsTopTeam = false;
+  /// Если true, все случайные параметры для нижней команды будут максимальными
+  bool rollMaxRandomParamsBotTeam = false;
+
   SyncGameController(
       {required this.attackController, required this.initiativeShuffler});
 
@@ -73,7 +78,8 @@ class SyncGameController {
 
     //assert(units.length == snapshot.units.length);
     //assert(unitsQueue!.length == snapshot.unitsQueue!.length);
-
+    snapshot.rollMaxRandomParamsBotTeam = rollMaxRandomParamsBotTeam;
+    snapshot.rollMaxRandomParamsTopTeam = rollMaxRandomParamsTopTeam;
 
     snapshot.unitPosition = unitPosition.map((key, value) => MapEntry(key, value));
     return snapshot;
@@ -341,6 +347,8 @@ class SyncGameController {
       ),
       updateStateContext: action.context,
       onAddUnit2Queue: _onUnitAdded2Queue,
+      rollMaxForTop: rollMaxRandomParamsTopTeam,
+      rollMaxForBot: rollMaxRandomParamsBotTeam,
     );
 
     if (!responseAction.success) {
@@ -435,20 +443,11 @@ class SyncGameController {
   }
 
   void _sortUnitsByInitiative() {
-    // todo Механики игры используют не строгую сортировку!
-    // todo У второй атаки тоже есть инициатива. Не пон7ятно какую юзать
-    /*unitsRef.sort((a, b) =>
-        b.unitAttack.initiative.compareTo(a.unitAttack.initiative));*/
-    initiativeShuffler.shuffleAndSort(unitsRef);
+    initiativeShuffler.shuffleAndSort(
+      unitsRef,
+      rollMaxIniForBot: rollMaxRandomParamsBotTeam,
+      rollMaxIniForTop: rollMaxRandomParamsTopTeam,
+    );
     unitsQueue = Queue<Unit>.from(unitsRef);
-  }
-
-  List<bool> _cellHasUnit() {
-    return units.map((e) {
-      if (e.isDead || e.isEmpty()) {
-        return false;
-      }
-      return true;
-    }).toList();
   }
 }

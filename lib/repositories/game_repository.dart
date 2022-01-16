@@ -1,9 +1,11 @@
 import 'dart:math';
 
 import 'package:collection/src/iterable_extensions.dart';
+import 'package:d2_ai_v2/controllers/evaluation/evaluation_controller.dart';
 import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/game_models.dart';
 import 'package:d2_ai_v2/models/providers.dart';
+import 'package:d2_ai_v2/utils/random_utils.dart';
 import 'package:uuid/uuid.dart';
 import 'package:d2_ai_v2/models/unit.dart';
 
@@ -23,6 +25,8 @@ class GameRepository {
   final List<Unit> _units = [];
 
   final Map<String, Unit> _unitsNamesMap = {};
+
+  final EvaluationController evalController = EvaluationController(); // TODO DI
 
   GameRepository({
     required this.gunitsProvider,
@@ -51,6 +55,9 @@ class GameRepository {
   }
 
   void init() {
+
+    final evals = <PairValues<String, double>>[];
+
     // Достаются юниты
     for (var unit in gunitsProvider.objects) {
       final newGameUnitText =
@@ -67,11 +74,11 @@ class GameRepository {
       //final attackType = attackTypeFromSource(attack.source)!;
       //final attackType2 = attackTypeFromSource(attack2?.source);
 
-      print('${newGameUnitText.text} '
+      /*print('${newGameUnitText.text} '
           '---- ${attack.atck_class} '
           '---- ${attack.alt_attack}'
           '---- ${attack2?.atck_class} '
-          '---- ${attack2?.infinite}');
+          '---- ${attack2?.infinite}');*/
 
       final unitAttack1 = UnitAttack(
         attackId: attack.att_id,
@@ -125,12 +132,34 @@ class GameRepository {
         attacksMap: newMapAtck,
       );
 
+
+      final unitEval = evalController.getUnitEvaluation(newUnit);
+      evals.add(PairValues<String, double>(first: newUnit.unitName, end: unitEval.getEval()));
+
       // todo Пока не поддерживаются двуклеточники
       if ((unit.size_small ?? false) || true) {
         _units.add(newUnit);
         _unitsNamesMap[newUnit.unitName] = newUnit;
       }
     }
+
+    evals.sort((a,b) => a.end.compareTo(b.end));
+    for(var i in evals) {
+      print('Юнит - ${i.first}. Ценность - ${i.end}');
+    }
+
+  }
+
+  Unit getRandomUnit({RandomUnitOptions? options}) {
+    final randomIndex = Random().nextInt(_unitsNamesMap.keys.length);
+    final randomName = _unitsNamesMap.keys.toList()[randomIndex];
+    return _unitsNamesMap[randomName]!.copyWith(
+      unitWarId: uuid.v1(),
+      attacksMap: <AttackClass, UnitAttack>{},
+      attacks: <UnitAttack>[],
+      unitAttack: _unitsNamesMap[randomName]!.unitAttack.copyWith(),
+      unitAttack2: _unitsNamesMap[randomName]!.unitAttack2?.copyWith(),
+    );
   }
 
   Unit getCopyUnitByName(String name) {
@@ -176,4 +205,8 @@ class GameRepository {
   List<String> _getAllGameUnits() {
     return gunitsProvider.objects.map((e) => e.unit_id).toList();
   }
+}
+
+class RandomUnitOptions {
+
 }

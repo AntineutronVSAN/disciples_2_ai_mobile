@@ -178,13 +178,14 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       'Рейнджер',*//*
     ];*/
 
-    final List<String> unitsNames = UnitsPack.packs[9];
+    final List<String> unitsNames = UnitsPack.packs[7];
     //final List<String> unitsNames = UnitsPack.tournaments[9];
 
     assert(unitsNames.length == 12);
     var index = 0;
     for (var name in unitsNames) {
       _units[index] = repository.getCopyUnitByName(name);
+      //_units[index] = repository.getRandomUnit();
       index++;
     }
 
@@ -349,7 +350,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     final currentActiveCell = response.activeCell;
     assert(currentActiveCell != null);
 
-    final fp = FileProvider();
+    /*final fp = FileProvider();
     await fp.init();
 
     final individualAiFactory = NeatFactory(
@@ -357,7 +358,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         cellVectorLength: cellVectorLength,
         input: inputVectorLength,
         output: actionsCount,
-        version: 1);
+        version: 1);*/
 
     //aiController.init(_warUnitsCopies);
     // TODO Тут инициализация с файла

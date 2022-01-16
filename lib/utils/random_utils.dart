@@ -3,9 +3,9 @@
 
 import 'dart:math';
 
-class PairValues<T> {
-  T first;
-  T end;
+class PairValues<F, E> {
+  F first;
+  E end;
   PairValues({ required this.first, required this.end});
 }
 
@@ -17,7 +17,7 @@ int randomBetween(int start, int end, Random random) {
 
 }
 
-int randomRanges(List<PairValues<int>> ranges, Random random) {
+int randomRanges(List<PairValues<int, int>> ranges, Random random) {
 
   final rangeRandomValues = [];
   for(var i in ranges) {

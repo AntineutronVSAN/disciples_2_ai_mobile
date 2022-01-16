@@ -108,6 +108,159 @@ class UnitAttack {
     );
   }
 
+  bool isHeal() {
+    switch (attackClass) {
+      case AttackClass.L_DAMAGE:
+        return false;
+      case AttackClass.L_DRAIN:
+        return false;
+      case AttackClass.L_PARALYZE:
+        return false;
+      case AttackClass.L_HEAL:
+        return heal > 0;
+      case AttackClass.L_FEAR:
+        return false;
+      case AttackClass.L_BOOST_DAMAGE:
+        return false;
+      case AttackClass.L_PETRIFY:
+        return false;
+      case AttackClass.L_LOWER_DAMAGE:
+        return false;
+      case AttackClass.L_LOWER_INITIATIVE:
+        return false;
+      case AttackClass.L_POISON:
+        return false;
+      case AttackClass.L_FROSTBITE:
+        return false;
+      case AttackClass.L_REVIVE:
+        return false;
+      case AttackClass.L_DRAIN_OVERFLOW:
+        return false;
+      case AttackClass.L_CURE:
+        return false;
+      case AttackClass.L_SUMMON:
+        return false;
+      case AttackClass.L_DRAIN_LEVEL:
+        return false;
+      case AttackClass.L_GIVE_ATTACK:
+        return false;
+      case AttackClass.L_DOPPELGANGER:
+        return false;
+      case AttackClass.L_TRANSFORM_SELF:
+        return false;
+      case AttackClass.L_TRANSFORM_OTHER:
+        return false;
+      case AttackClass.L_BLISTER:
+        return false;
+      case AttackClass.L_BESTOW_WARDS:
+        return false;
+      case AttackClass.L_SHATTER:
+        return false;
+    }
+  }
+
+  bool isDamage() {
+    switch (attackClass) {
+      case AttackClass.L_DAMAGE:
+        return true;
+      case AttackClass.L_DRAIN:
+        return true;
+      case AttackClass.L_PARALYZE:
+        return false;
+      case AttackClass.L_HEAL:
+        return false;
+      case AttackClass.L_FEAR:
+        return false;
+      case AttackClass.L_BOOST_DAMAGE:
+        return false;
+      case AttackClass.L_PETRIFY:
+        return false;
+      case AttackClass.L_LOWER_DAMAGE:
+        return false;
+      case AttackClass.L_LOWER_INITIATIVE:
+        return false;
+      case AttackClass.L_POISON:
+        return true;
+      case AttackClass.L_FROSTBITE:
+        return true;
+      case AttackClass.L_REVIVE:
+        return false;
+      case AttackClass.L_DRAIN_OVERFLOW:
+        return true;
+      case AttackClass.L_CURE:
+        return false;
+      case AttackClass.L_SUMMON:
+        return false;
+      case AttackClass.L_DRAIN_LEVEL:
+        return false;
+      case AttackClass.L_GIVE_ATTACK:
+        return false;
+      case AttackClass.L_DOPPELGANGER:
+        return false;
+      case AttackClass.L_TRANSFORM_SELF:
+        return false;
+      case AttackClass.L_TRANSFORM_OTHER:
+        return false;
+      case AttackClass.L_BLISTER:
+        return true;
+      case AttackClass.L_BESTOW_WARDS:
+        return false;
+      case AttackClass.L_SHATTER:
+        return false;
+    }
+  }
+
+  bool isDot() {
+    switch (attackClass) {
+      case AttackClass.L_DAMAGE:
+        return false;
+      case AttackClass.L_DRAIN:
+        return false;
+      case AttackClass.L_PARALYZE:
+        return false;
+      case AttackClass.L_HEAL:
+        return false;
+      case AttackClass.L_FEAR:
+        return false;
+      case AttackClass.L_BOOST_DAMAGE:
+        return false;
+      case AttackClass.L_PETRIFY:
+        return false;
+      case AttackClass.L_LOWER_DAMAGE:
+        return false;
+      case AttackClass.L_LOWER_INITIATIVE:
+        return false;
+      case AttackClass.L_POISON:
+        return true;
+      case AttackClass.L_FROSTBITE:
+        return true;
+      case AttackClass.L_REVIVE:
+        return false;
+      case AttackClass.L_DRAIN_OVERFLOW:
+        return false;
+      case AttackClass.L_CURE:
+        return false;
+      case AttackClass.L_SUMMON:
+        return false;
+      case AttackClass.L_DRAIN_LEVEL:
+        return false;
+      case AttackClass.L_GIVE_ATTACK:
+        return false;
+      case AttackClass.L_DOPPELGANGER:
+        return false;
+      case AttackClass.L_TRANSFORM_SELF:
+        return false;
+      case AttackClass.L_TRANSFORM_OTHER:
+        return false;
+      case AttackClass.L_BLISTER:
+        return true;
+      case AttackClass.L_BESTOW_WARDS:
+        return false;
+      case AttackClass.L_SHATTER:
+        return false;
+    }
+  }
+
 }
 
 AttackClass attackClassFromGameAttack(int cls) {
@@ -181,6 +334,10 @@ enum AttackClass {
   L_FEAR,
 
   /// Увеличение урона
+  /// Если [level] == 1 - +25%
+  /// Если [level] == 2 - +50%
+  /// Если [level] == 3 - +75%
+  /// Если [level] == 4 - +100%
   L_BOOST_DAMAGE,
 
   /// Окаменение
@@ -241,4 +398,53 @@ enum AttackClass {
 
 
 
-
+// Копипастим, когда что-то нужно проверить по классу атаки
+/*switch (attackClass) {
+      case AttackClass.L_DAMAGE:
+        return false;
+      case AttackClass.L_DRAIN:
+        return false;
+      case AttackClass.L_PARALYZE:
+        return false;
+      case AttackClass.L_HEAL:
+        return false;
+      case AttackClass.L_FEAR:
+        return false;
+      case AttackClass.L_BOOST_DAMAGE:
+        return false;
+      case AttackClass.L_PETRIFY:
+        return false;
+      case AttackClass.L_LOWER_DAMAGE:
+        return false;
+      case AttackClass.L_LOWER_INITIATIVE:
+        return false;
+      case AttackClass.L_POISON:
+        return false;
+      case AttackClass.L_FROSTBITE:
+        return false;
+      case AttackClass.L_REVIVE:
+        return false;
+      case AttackClass.L_DRAIN_OVERFLOW:
+        return false;
+      case AttackClass.L_CURE:
+        return false;
+      case AttackClass.L_SUMMON:
+        return false;
+      case AttackClass.L_DRAIN_LEVEL:
+        return false;
+      case AttackClass.L_GIVE_ATTACK:
+        return false;
+      case AttackClass.L_DOPPELGANGER:
+        return false;
+      case AttackClass.L_TRANSFORM_SELF:
+        return false;
+      case AttackClass.L_TRANSFORM_OTHER:
+        return false;
+      case AttackClass.L_BLISTER:
+        return false;
+      case AttackClass.L_BESTOW_WARDS:
+        return false;
+      case AttackClass.L_SHATTER:
+        return false;
+    }
+*/

@@ -11,7 +11,6 @@ import '../damage_scatter.dart';
 import '../duration_controller.dart';
 import 'attack_context.dart';
 
-
 class AttackController {
   final PowerController powerController;
   final DamageScatter damageScatter;
@@ -20,15 +19,21 @@ class AttackController {
 
   Function(Unit unit)? _onUnitAdd2Queue;
 
+  /// Если true, все случайные параметры для верхней команды будут максимальными
+  bool rollMaxRandomParamsTopTeam = false;
+
+  /// Если true, все случайные параметры для нижней команды будут максимальными
+  bool rollMaxRandomParamsBotTeam = false;
+
   /// Хеш, запоминающий оригинальных юнитов при превращении
   final Map<String, Unit> _transformedUnitsCache = {};
 
-  AttackController(
-      {required this.powerController,
-      required this.damageScatter,
-      required this.attackDurationController,
-        required this.gameRepository,
-      });
+  AttackController({
+    required this.powerController,
+    required this.damageScatter,
+    required this.attackDurationController,
+    required this.gameRepository,
+  });
 
   UpdateStateContextBase? updateStateContext;
   List<Unit>? units;
@@ -36,14 +41,13 @@ class AttackController {
   /// Обновить сосстояние UI, если необходимо и если объект предоставлен
   //Future<void> _onUpdate({int duration = 500}) async {
   Future<void> _onUpdate({int duration = 100}) async {
-
     if (updateStateContext != null && units != null) {
       /*updateStateContext!
           .emit(updateStateContext!.state.copyWith(units: units));*/
       updateStateContext!.update(units: units);
 
       //switch(updateStateContext!.state.warScreenState) {
-      switch(updateStateContext!.getWarScreenState()) {
+      switch (updateStateContext!.getWarScreenState()) {
         case WarScreenState.eve:
           duration = 200;
           break;
@@ -65,8 +69,18 @@ class AttackController {
   }
 
   Future<ResponseAction> applyAttack(
-      int current, int target, List<Unit> units, ResponseAction responseAction,
-      {UpdateStateContextBase? updateStateContext, required Function(Unit unit) onAddUnit2Queue}) async {
+    int current,
+    int target,
+    List<Unit> units,
+    ResponseAction responseAction, {
+    UpdateStateContextBase? updateStateContext,
+    required Function(Unit unit) onAddUnit2Queue,
+    required bool rollMaxForTop,
+    required bool rollMaxForBot,
+  }) async {
+    rollMaxRandomParamsTopTeam = rollMaxForTop;
+    rollMaxRandomParamsBotTeam = rollMaxForBot;
+
     this.updateStateContext = updateStateContext;
     this.units = units;
     _onUnitAdd2Queue = onAddUnit2Queue;
@@ -83,12 +97,14 @@ class AttackController {
 
   // --------------- UNIT PREPROCESSING BEGIN ---------------
   /// Обработать юнита перед его ходом
-  Future<bool> unitMovePreprocessing(int index, List<Unit> units,
-      {UpdateStateContextBase? updateStateContext,
-        required bool waiting,
-        required bool protecting,
-        required bool retriting,
-      }) async {
+  Future<bool> unitMovePreprocessing(
+    int index,
+    List<Unit> units, {
+    UpdateStateContextBase? updateStateContext,
+    required bool waiting,
+    required bool protecting,
+    required bool retriting,
+  }) async {
     final List<AttackClass> atcksToRemove = [];
 
     if (units[index].isDead) {
@@ -157,8 +173,8 @@ class AttackController {
             units[index].attacksMap[atckId] = units[index]
                 .attacksMap[atckId]!
                 .copyWith(
-                currentDuration:
-                units[index].attacksMap[atckId]!.currentDuration - 1);
+                    currentDuration:
+                        units[index].attacksMap[atckId]!.currentDuration - 1);
             units[index] = units[index].copyWith(uiInfo: 'Статуя');
           }
           break;
@@ -193,7 +209,6 @@ class AttackController {
             atcksToRemove.add(atckId);
             units[index] = units[index]
                 .copyWith(poisoned: false, uiInfo: newUnitHp - currentUnitHp);
-
           } else {
             units[index].attacksMap[atckId] = units[index]
                 .attacksMap[atckId]!
@@ -254,7 +269,6 @@ class AttackController {
           // TODO: Handle this case.
           break;
         case AttackClass.L_TRANSFORM_OTHER:
-
           /*
           units[target] = units[target].copyWith(
             unitName: transformedUnit.unitName,
@@ -286,14 +300,17 @@ class AttackController {
               uiInfo: 'Восстановление формы',
               transformed: false,
             );
+
+            // todo Нужно пересмотреть все бафы и дебафы после восстановления
+
             await _onUpdate();
             break;
           } else {
             units[index].attacksMap[atckId] = units[index]
                 .attacksMap[atckId]!
                 .copyWith(
-                currentDuration:
-                units[index].attacksMap[atckId]!.currentDuration - 1);
+                    currentDuration:
+                        units[index].attacksMap[atckId]!.currentDuration - 1);
           }
           // У ждущего юнита первращение не сбрасывается
           /*if (units[index].isWaiting) {
@@ -326,7 +343,6 @@ class AttackController {
                 currentDuration:
                 units[index].attacksMap[atckId]!.currentDuration - 1);
           }*/
-
 
           break;
         case AttackClass.L_BLISTER:
@@ -386,12 +402,14 @@ class AttackController {
   // --------------- UNIT PREPROCESSING END ---------------
   // --------------- UNIT POSTPROCESSING BEGIN ---------------
   /// Обработать юнита после хода
-  Future<void> unitMovePostProcessing(int index, List<Unit> units,
-      {UpdateStateContextBase? updateStateContext,
-        required bool waiting,
-        required bool protecting,
-        required bool retriting,
-      }) async {
+  Future<void> unitMovePostProcessing(
+    int index,
+    List<Unit> units, {
+    UpdateStateContextBase? updateStateContext,
+    required bool waiting,
+    required bool protecting,
+    required bool retriting,
+  }) async {
     final List<AttackClass> atcksToRemove = [];
 
     if (units[index].isDead) {
@@ -421,8 +439,6 @@ class AttackController {
             break;
           }
           if (atckValue.currentDuration == 1) {
-
-
             final newDamageCoeff = atckValue.level * 0.25;
 
             atcksToRemove.add(atckId);
@@ -431,15 +447,15 @@ class AttackController {
               uiInfo: 'Усиление закончено',
               unitAttack: units[index].unitAttack.copyWith(
                   damage: units[index].unitAttack.damage -
-                      (units[index].unitAttack.firstDamage * newDamageCoeff).toInt()
-              ),
+                      (units[index].unitAttack.firstDamage * newDamageCoeff)
+                          .toInt()),
             );
           } else {
             units[index].attacksMap[atckId] = units[index]
                 .attacksMap[atckId]!
                 .copyWith(
-                currentDuration:
-                units[index].attacksMap[atckId]!.currentDuration - 1);
+                    currentDuration:
+                        units[index].attacksMap[atckId]!.currentDuration - 1);
           }
 
           break;
@@ -453,12 +469,13 @@ class AttackController {
             final newDamageCoeff = atckValue.level == 1 ? 0.5 : 0.33;
             atcksToRemove.add(atckId);
             units[index] = units[index].copyWith(
-                damageLower: false,
-                uiInfo: 'Ослабление закончено',
-                unitAttack: units[index].unitAttack.copyWith(
-                  damage: units[index].unitAttack.damage +
-                      (units[index].unitAttack.firstDamage * newDamageCoeff).toInt(),
-              ),
+              damageLower: false,
+              uiInfo: 'Ослабление закончено',
+              unitAttack: units[index].unitAttack.copyWith(
+                    damage: units[index].unitAttack.damage +
+                        (units[index].unitAttack.firstDamage * newDamageCoeff)
+                            .toInt(),
+                  ),
             );
           } else {
             units[index].attacksMap[atckId] = units[index]
@@ -476,15 +493,15 @@ class AttackController {
               initLower: false,
               uiInfo: 'Замедление закончено',
               unitAttack: units[index].unitAttack.copyWith(
-                initiative: units[index].unitAttack.firstInitiative,
-              ),
+                    initiative: units[index].unitAttack.firstInitiative,
+                  ),
             );
           } else {
             units[index].attacksMap[atckId] = units[index]
                 .attacksMap[atckId]!
                 .copyWith(
-                currentDuration:
-                units[index].attacksMap[atckId]!.currentDuration - 1);
+                    currentDuration:
+                        units[index].attacksMap[atckId]!.currentDuration - 1);
           }
           break;
         case AttackClass.L_POISON:
@@ -526,8 +543,8 @@ class AttackController {
     for (var atck in atcksToRemove) {
       units[index].attacksMap.remove(atck);
     }
-
   }
+
 // --------------- UNIT POSTPROCESSING END ---------------
 
   Future<ResponseAction> _applyAttack(
@@ -637,7 +654,7 @@ class AttackController {
 
   Future<ResponseAction> _applyAttacksToUnit(
       UnitAttack attack, UnitAttack? attack2, int target, List<Unit> units,
-      {int? current, bool handlePower = true}) async {
+      {required int current, bool handlePower = true}) async {
     if (!handlePower) {
       await _applyAttackToUnit(attack, target, units, current: current);
       if (attack2 != null) {
@@ -646,7 +663,11 @@ class AttackController {
       return ResponseAction.success();
     }
 
-    if (powerController.applyAttack(attack)) {
+    final rollMax = checkIsTopTeam(current) && rollMaxRandomParamsTopTeam ||
+        !checkIsTopTeam(current) && rollMaxRandomParamsBotTeam;
+
+    if (powerController.applyAttack(attack,
+        rollMaxPower: rollMax)) {
       final responseAttack1 =
           await _applyAttackToUnit(attack, target, units, current: current);
 
@@ -656,7 +677,8 @@ class AttackController {
       }
 
       if (attack2 != null) {
-        if (powerController.applyAttack(attack2)) {
+        if (powerController.applyAttack(attack2,
+            rollMaxPower: rollMax)) {
           final responseAttack2 = await _applyAttackToUnit(
               attack2, target, units,
               current: current);
@@ -675,8 +697,11 @@ class AttackController {
 
   Future<ResponseAction> _applyAttackToUnit(
       UnitAttack attack, int target, List<Unit> units,
-      {int? current}) async {
+      {required int current}) async {
     final targetUnit = units[target];
+
+    final rollMax = checkIsTopTeam(current) && rollMaxRandomParamsTopTeam ||
+        !checkIsTopTeam(current) && rollMaxRandomParamsBotTeam;
 
     switch (attack.attackClass) {
       case AttackClass.L_DAMAGE:
@@ -690,7 +715,7 @@ class AttackController {
           assert(currentDamage > 0);
         }
 
-        final damage = (damageScatter.getScattedDamage(currentDamage) *
+        final damage = (damageScatter.getScattedDamage(currentDamage, rollMaxDamage: rollMax) *
                 _getArmorRatio(targetUnit))
             .toInt();
 
@@ -713,7 +738,7 @@ class AttackController {
         assert(current != null);
         assert(attack.damage > 0);
 
-        final currentUnit = units[current!];
+        final currentUnit = units[current];
 
         final currentUnitHp = currentUnit.currentHp;
         final currentUnitMaxHp = currentUnit.maxHp;
@@ -721,7 +746,7 @@ class AttackController {
 
         final currentAttackDamage = attack.damage;
 
-        final damage = (damageScatter.getScattedDamage(currentAttackDamage) *
+        final damage = (damageScatter.getScattedDamage(currentAttackDamage, rollMaxDamage: rollMax) *
                 _getArmorRatio(targetUnit))
             .toInt();
         var lifeSteel = damage ~/ 2;
@@ -761,7 +786,6 @@ class AttackController {
         await _onUpdate();
         break;
       case AttackClass.L_PARALYZE:
-
         if (targetUnit.petrified) {
           break;
         }
@@ -791,7 +815,6 @@ class AttackController {
         break;
 
       case AttackClass.L_HEAL:
-
         if (targetUnit.isDead) {
           break;
         }
@@ -818,7 +841,6 @@ class AttackController {
         await _onUpdate();
         break;
       case AttackClass.L_BOOST_DAMAGE:
-
         final attackLevel = attack.level;
         assert(attackLevel > 0 && attackLevel <= 4);
 
@@ -830,7 +852,7 @@ class AttackController {
         final newDamageCoeffStr = '${attackLevel * 25}%';
 
         final targetUnitHasThisAttack =
-          targetUnit.attacksMap.containsKey(attack.attackClass);
+            targetUnit.attacksMap.containsKey(attack.attackClass);
         final currentAttackDuration = attack.infinite ? 100 : 1;
 
         if (!targetUnitHasThisAttack) {
@@ -841,24 +863,24 @@ class AttackController {
                 '$newDamageCoeffStr%',
             damageBusted: true,
             unitAttack: units[target].unitAttack.copyWith(
-              damage: units[target].unitAttack.damage +
-                  (units[target].unitAttack.firstDamage * newDamageCoeff).toInt(),
-            ),
+                  damage: units[target].unitAttack.damage +
+                      (units[target].unitAttack.firstDamage * newDamageCoeff)
+                          .toInt(),
+                ),
           );
           await _onUpdate();
         }
         break;
 
       case AttackClass.L_PETRIFY:
-
         if (targetUnit.paralyzed) {
           break;
         }
 
         final targetUnitHasThisAttack =
-          targetUnit.attacksMap.containsKey(attack.attackClass);
+            targetUnit.attacksMap.containsKey(attack.attackClass);
         final currentAttackDuration =
-          attackDurationController.getDuration(attack);
+            attackDurationController.getDuration(attack);
 
         assert(currentAttackDuration > 0);
 
@@ -866,10 +888,7 @@ class AttackController {
           units[target].attacksMap[attack.attackClass] =
               attack.copyWith(currentDuration: currentAttackDuration);
           units[target] =
-              units[target].copyWith(
-                  petrified: true,
-                  uiInfo: 'Окаменение'
-              );
+              units[target].copyWith(petrified: true, uiInfo: 'Окаменение');
           await _onUpdate();
         }
 
@@ -898,9 +917,9 @@ class AttackController {
                 '$newDamageCoeffStr%',
             damageLower: true,
             unitAttack: units[target].unitAttack.copyWith(
-                  damage: units[target].unitAttack.damage -
-                      (units[target].unitAttack.firstDamage * newDamageCoeff).toInt()
-                ),
+                damage: units[target].unitAttack.damage -
+                    (units[target].unitAttack.firstDamage * newDamageCoeff)
+                        .toInt()),
           );
           await _onUpdate();
         } else {
@@ -944,7 +963,7 @@ class AttackController {
       case AttackClass.L_LOWER_INITIATIVE:
         final attackLevel = attack.level;
         // Судя по БД, уровень только 1
-        assert(attackLevel == 1 );
+        assert(attackLevel == 1);
 
         final targetUnitIniFirst = units[target].unitAttack.firstInitiative;
         if (targetUnitIniFirst <= 0) {
@@ -952,9 +971,9 @@ class AttackController {
         }
 
         final targetUnitHasThisAttack =
-          targetUnit.attacksMap.containsKey(attack.attackClass);
+            targetUnit.attacksMap.containsKey(attack.attackClass);
         final currentAttackDuration =
-          attackDurationController.getDuration(attack);
+            attackDurationController.getDuration(attack);
 
         if (!targetUnitHasThisAttack) {
           units[target].attacksMap[attack.attackClass] =
@@ -964,24 +983,23 @@ class AttackController {
                 '50%',
             initLower: true,
             unitAttack: units[target].unitAttack.copyWith(
-              initiative: (targetUnitIniFirst ~/ 2).toInt(),
-            ),
+                  initiative: (targetUnitIniFirst ~/ 2).toInt(),
+                ),
           );
           await _onUpdate();
         } else {
-            // Обновляем длительность, если у новой атаки она выше
-            final oldDebuffDuration =
-                units[target].attacksMap[attack.attackClass]!.currentDuration;
-            if (currentAttackDuration > oldDebuffDuration) {
-              units[target].attacksMap[attack.attackClass] = attack.copyWith(
-                currentDuration: currentAttackDuration,
-              );
-              units[target] = units[target].copyWith(
-                  uiInfo: 'Замедление обновлено', initLower: true);
-              await _onUpdate();
-            }
+          // Обновляем длительность, если у новой атаки она выше
+          final oldDebuffDuration =
+              units[target].attacksMap[attack.attackClass]!.currentDuration;
+          if (currentAttackDuration > oldDebuffDuration) {
+            units[target].attacksMap[attack.attackClass] = attack.copyWith(
+              currentDuration: currentAttackDuration,
+            );
+            units[target] = units[target]
+                .copyWith(uiInfo: 'Замедление обновлено', initLower: true);
+            await _onUpdate();
+          }
         }
-
 
         break;
 
@@ -1059,7 +1077,6 @@ class AttackController {
         await _onUpdate();
         break;
       case AttackClass.L_REVIVE:
-
         if (!targetUnit.isDead) {
           break;
         }
@@ -1077,24 +1094,23 @@ class AttackController {
           revived: true,
           uiInfo: 'Воскрешение',
           unitAttack: units[target].unitAttack.copyWith(
-            damage: units[target].unitAttack.firstDamage,
-            initiative: units[target].unitAttack.firstInitiative,
-          ),
+                damage: units[target].unitAttack.firstDamage,
+                initiative: units[target].unitAttack.firstInitiative,
+              ),
         );
         await _onUpdate();
 
         break;
       case AttackClass.L_DRAIN_OVERFLOW:
-
         final currentDamage = attack.damage;
         final targetHp = targetUnit.currentHp;
 
-        final currentUnitHp = units[current!].currentHp;
+        final currentUnitHp = units[current].currentHp;
         final currentUnitMaxHp = units[current].maxHp;
 
         assert(currentDamage > 0);
-        final damage = (damageScatter.getScattedDamage(currentDamage) *
-            _getArmorRatio(targetUnit))
+        final damage = (damageScatter.getScattedDamage(currentDamage, rollMaxDamage: rollMax) *
+                _getArmorRatio(targetUnit))
             .toInt();
 
         var newTargetHp = targetHp - damage;
@@ -1109,21 +1125,16 @@ class AttackController {
         }
 
         units[target] = units[target].copyWith(
-          currentHp: newTargetHp,
-          isDead: isDead,
-          uiInfo: ' - $damage'
-        );
+            currentHp: newTargetHp, isDead: isDead, uiInfo: ' - $damage');
 
         // Сначала лафйстилим себя, затем, если что-то осталось раздаём на остальных
         final currentUnitDeltaHp = currentUnitMaxHp - currentUnitHp;
         if (currentUnitDeltaHp >= lifesteel) {
           // Весь лайфстил на себя
           units[current] = units[current].copyWith(
-            uiInfo: ' + ${lifesteel.toInt()}',
-            currentHp: units[current].currentHp + lifesteel.toInt()
-          );
+              uiInfo: ' + ${lifesteel.toInt()}',
+              currentHp: units[current].currentHp + lifesteel.toInt());
           await _onUpdate();
-
         } else {
           // Долечиваем себя и раздаём на остальных
           var alliesLifesteel = lifesteel - currentUnitDeltaHp;
@@ -1131,8 +1142,7 @@ class AttackController {
           if (currentUnitDeltaHp != 0) {
             units[current] = units[current].copyWith(
                 uiInfo: ' + $lifesteel',
-                currentHp: units[current].currentHp + currentUnitDeltaHp
-            );
+                currentHp: units[current].currentHp + currentUnitDeltaHp);
             await _onUpdate();
           }
 
@@ -1143,7 +1153,7 @@ class AttackController {
 
           final List<bool> unitNeedHeal = [];
 
-          for (var i=0; i<units.length; i++) {
+          for (var i = 0; i < units.length; i++) {
             final e = units[i];
             if (i == current) {
               unitNeedHeal.add(false);
@@ -1173,9 +1183,8 @@ class AttackController {
             break;
           }
 
-          for(var i=0; i<units.length; i++) {
+          for (var i = 0; i < units.length; i++) {
             if (unitNeedHeal[i]) {
-
               final currentAllieUnitHp = units[i].currentHp;
               final currentAllieUnitMaxHp = units[i].maxHp;
 
@@ -1197,12 +1206,10 @@ class AttackController {
               }
               assert(!(alliesLifesteel < 0), '$alliesLifesteel');
 
-
               units[i] = units[i].copyWith(
                 currentHp: newHp,
                 uiInfo: '+ $oneUnitHealValue',
               );
-
             }
           }
           await _onUpdate();
@@ -1255,12 +1262,11 @@ class AttackController {
         // TODO: Handle this case.
         break;
       case AttackClass.L_GIVE_ATTACK:
-
         if (units[target].isDead || units[target].isEmpty()) {
           break;
         }
         assert(current != null);
-        if (units[target] == units[current!]) {
+        if (units[target] == units[current]) {
           break;
         }
         if (_onUnitAdd2Queue != null) {
@@ -1271,7 +1277,6 @@ class AttackController {
           throw Exception();
         }
 
-
         break;
       case AttackClass.L_DOPPELGANGER:
         // TODO: Handle this case.
@@ -1280,14 +1285,15 @@ class AttackController {
         // TODO: Handle this case.
         break;
       case AttackClass.L_TRANSFORM_OTHER:
-
-        final targetUnitHasThisAttck = targetUnit.attacksMap.containsKey(attack.attackClass);
+        final targetUnitHasThisAttck =
+            targetUnit.attacksMap.containsKey(attack.attackClass);
 
         if (!targetUnitHasThisAttck) {
           final currentAttackDuration =
-            attackDurationController.getDuration(attack);
+              attackDurationController.getDuration(attack);
           // В кого превращает юнит
-          var transformedUnit = gameRepository.getTransformUnitByAttackId(attack.attackId);
+          var transformedUnit =
+              gameRepository.getTransformUnitByAttackId(attack.attackId);
           // Нужно запомнить текущее состояние юнита
           assert(_transformedUnitsCache[targetUnit.unitWarId] == null);
           _transformedUnitsCache[targetUnit.unitWarId] = targetUnit.copyWith();
@@ -1300,13 +1306,16 @@ class AttackController {
             // todo Резисты переносятся также с юнита в кого превращаемся
             armor: transformedUnit.armor,
             unitAttack: transformedUnit.unitAttack,
-            unitAttack2: transformedUnit.unitAttack2, // todo баг если атака null,
+            unitAttack2: transformedUnit.unitAttack2,
+            // todo баг если атака null,
             // а у превращаемого юнита не null
             uiInfo: 'Превращение',
             transformed: true,
           );
-          await _onUpdate();
 
+          // todo Нужно пересмотреть все бафы и дебафы после превращения
+
+          await _onUpdate();
         }
 
         break;
@@ -1367,7 +1376,6 @@ class AttackController {
         units[target] = units[target].copyWith(
           uiInfo: 'Разрушение',
           armor: newUnitArmor,
-
         );
         await _onUpdate();
 
@@ -1424,7 +1432,7 @@ class AttackController {
     }
 
     return await _applyAttacksToUnit(currentUnit.unitAttack,
-        currentUnit.unitAttack2, context.target, context.units);
+        currentUnit.unitAttack2, context.target, context.units, current: context.current);
   }
 
   Future<ResponseAction> _handleAnyTargetDamage(AttackContext context) async {
@@ -1439,7 +1447,7 @@ class AttackController {
     }
 
     return await _applyAttacksToUnit(currentUnit.unitAttack,
-        currentUnit.unitAttack2, context.target, context.units);
+        currentUnit.unitAttack2, context.target, context.units, current: context.current);
   }
 
   Future<ResponseAction> _handleAllTargetDamage(AttackContext context) async {
@@ -1461,7 +1469,7 @@ class AttackController {
           continue;
         }
         final resp = await _applyAttacksToUnit(
-            currentUnit.unitAttack, currentUnit.unitAttack2, i, context.units);
+            currentUnit.unitAttack, currentUnit.unitAttack2, i, context.units, current: context.current);
       }
     }
     return ResponseAction.success();
@@ -1532,14 +1540,13 @@ class AttackController {
       if (i >= i1 && i <= i2) {
         if (context.units[i].isEmpty() ||
             (context.units[i].isDead &&
-                !(currentUnit.unitAttack2?.attackClass == AttackClass.L_REVIVE)
-            )
-        ) {
+                !(currentUnit.unitAttack2?.attackClass ==
+                    AttackClass.L_REVIVE))) {
           continue;
         }
         final resp = await _applyAttacksToUnit(
             currentUnit.unitAttack, currentUnit.unitAttack2, i, context.units,
-            handlePower: false);
+            handlePower: false, current: context.current);
       }
     }
 
@@ -1550,7 +1557,7 @@ class AttackController {
     final currentUnit = context.units[context.current];
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
         currentUnit.unitAttack2, context.target, context.units,
-        handlePower: false);
+        handlePower: false, current: context.current);
     return ResponseAction.success();
   }
 
@@ -1656,7 +1663,7 @@ class AttackController {
     }
     final targetUnitAttacks = targetUnit.attacksMap;
     if (targetUnitAttacks[AttackClass.L_PARALYZE] != null ||
-        targetUnitAttacks[AttackClass.L_PETRIFY] != null ) {
+        targetUnitAttacks[AttackClass.L_PETRIFY] != null) {
       return ResponseAction.error('Цель уже окаменена/парализована');
     }
     switch (currentUnitAttack.targetsCount) {
@@ -1671,8 +1678,7 @@ class AttackController {
     }
   }
 
-  Future<ResponseAction> _handleOneTargetParalyze(
-      AttackContext context) async {
+  Future<ResponseAction> _handleOneTargetParalyze(AttackContext context) async {
     final currentUnit = context.units[context.current];
     final targetUnit = context.units[context.target];
     final currentUnitIsTopTeam = checkIsTopTeam(context.current);
@@ -1698,8 +1704,7 @@ class AttackController {
     return ResponseAction.success();
   }
 
-  Future<ResponseAction> _handleAllTargetParalyze(
-      AttackContext context) async {
+  Future<ResponseAction> _handleAllTargetParalyze(AttackContext context) async {
     final currentUnit = context.units[context.current];
     final currentUnitIsTopTeam = checkIsTopTeam(context.current);
     final targetUnitIsTopTeam = checkIsTopTeam(context.target);
@@ -1718,8 +1723,7 @@ class AttackController {
     return ResponseAction.success();
   }
 
-  Future<ResponseAction> _handleAnyTargetParalyze(
-      AttackContext context) async {
+  Future<ResponseAction> _handleAnyTargetParalyze(AttackContext context) async {
     final currentUnit = context.units[context.current];
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
         currentUnit.unitAttack2, context.target, context.units,
@@ -2254,8 +2258,7 @@ class AttackController {
     }
   }
 
-  Future<ResponseAction> _handleOneTargetShatter(
-      AttackContext context) async {
+  Future<ResponseAction> _handleOneTargetShatter(AttackContext context) async {
     final currentUnit = context.units[context.current];
     final targetUnit = context.units[context.target];
     final currentUnitIsTopTeam = checkIsTopTeam(context.current);
@@ -2281,8 +2284,7 @@ class AttackController {
     return ResponseAction.success();
   }
 
-  Future<ResponseAction> _handleAllTargetShatter(
-      AttackContext context) async {
+  Future<ResponseAction> _handleAllTargetShatter(AttackContext context) async {
     final currentUnit = context.units[context.current];
     final currentUnitIsTopTeam = checkIsTopTeam(context.current);
     final targetUnitIsTopTeam = checkIsTopTeam(context.target);
@@ -2301,8 +2303,7 @@ class AttackController {
     return ResponseAction.success();
   }
 
-  Future<ResponseAction> _handleAnyTargetShatter(
-      AttackContext context) async {
+  Future<ResponseAction> _handleAnyTargetShatter(AttackContext context) async {
     final currentUnit = context.units[context.current];
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
         currentUnit.unitAttack2, context.target, context.units,
@@ -2328,8 +2329,7 @@ class AttackController {
       return ResponseAction.error('Юнит уже воскрешался');
     }
     if (targetUnit.isEmpty()) {
-      return ResponseAction.error(
-          'Невозможное действие над мёртвым юнитом');
+      return ResponseAction.error('Невозможное действие над мёртвым юнитом');
     }
     switch (currentUnitAttack.targetsCount) {
       case TargetsCount.one:
@@ -2343,8 +2343,7 @@ class AttackController {
     }
   }
 
-  Future<ResponseAction> _handleAllTargetRevive(
-      AttackContext context) async {
+  Future<ResponseAction> _handleAllTargetRevive(AttackContext context) async {
     final currentUnit = context.units[context.current];
     final currentUnitIsTopTeam = checkIsTopTeam(context.current);
     final targetUnitIsTopTeam = checkIsTopTeam(context.target);
@@ -2363,8 +2362,7 @@ class AttackController {
     return ResponseAction.success();
   }
 
-  Future<ResponseAction> _handleAnyTargetRevive(
-      AttackContext context) async {
+  Future<ResponseAction> _handleAnyTargetRevive(AttackContext context) async {
     final currentUnit = context.units[context.current];
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
         currentUnit.unitAttack2, context.target, context.units,
@@ -2392,7 +2390,7 @@ class AttackController {
     }
     final targetUnitAttacks = targetUnit.attacksMap;
     if (targetUnitAttacks[AttackClass.L_PARALYZE] != null ||
-        targetUnitAttacks[AttackClass.L_PETRIFY] != null ) {
+        targetUnitAttacks[AttackClass.L_PETRIFY] != null) {
       return ResponseAction.error('Цель уже окаменена/парализована');
     }
     switch (currentUnitAttack.targetsCount) {
@@ -2407,8 +2405,7 @@ class AttackController {
     }
   }
 
-  Future<ResponseAction> _handleOneTargetPetrify(
-      AttackContext context) async {
+  Future<ResponseAction> _handleOneTargetPetrify(AttackContext context) async {
     final currentUnit = context.units[context.current];
     final targetUnit = context.units[context.target];
     final currentUnitIsTopTeam = checkIsTopTeam(context.current);
@@ -2434,8 +2431,7 @@ class AttackController {
     return ResponseAction.success();
   }
 
-  Future<ResponseAction> _handleAllTargetPetrify(
-      AttackContext context) async {
+  Future<ResponseAction> _handleAllTargetPetrify(AttackContext context) async {
     final currentUnit = context.units[context.current];
     final currentUnitIsTopTeam = checkIsTopTeam(context.current);
     final targetUnitIsTopTeam = checkIsTopTeam(context.target);
@@ -2454,8 +2450,7 @@ class AttackController {
     return ResponseAction.success();
   }
 
-  Future<ResponseAction> _handleAnyTargetPetrify(
-      AttackContext context) async {
+  Future<ResponseAction> _handleAnyTargetPetrify(AttackContext context) async {
     final currentUnit = context.units[context.current];
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
         currentUnit.unitAttack2, context.target, context.units,
@@ -2497,8 +2492,7 @@ class AttackController {
     }
   }
 
-  Future<ResponseAction> _handleOneTargetLowerIni(
-      AttackContext context) async {
+  Future<ResponseAction> _handleOneTargetLowerIni(AttackContext context) async {
     final currentUnit = context.units[context.current];
     final targetUnit = context.units[context.target];
     final currentUnitIsTopTeam = checkIsTopTeam(context.current);
@@ -2524,8 +2518,7 @@ class AttackController {
     return ResponseAction.success();
   }
 
-  Future<ResponseAction> _handleAllTargetLowerIni(
-      AttackContext context) async {
+  Future<ResponseAction> _handleAllTargetLowerIni(AttackContext context) async {
     final currentUnit = context.units[context.current];
     final currentUnitIsTopTeam = checkIsTopTeam(context.current);
     final targetUnitIsTopTeam = checkIsTopTeam(context.target);
@@ -2544,8 +2537,7 @@ class AttackController {
     return ResponseAction.success();
   }
 
-  Future<ResponseAction> _handleAnyTargetLowerIni(
-      AttackContext context) async {
+  Future<ResponseAction> _handleAnyTargetLowerIni(AttackContext context) async {
     final currentUnit = context.units[context.current];
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
         currentUnit.unitAttack2, context.target, context.units,
@@ -2842,8 +2834,7 @@ class AttackController {
     }
     // Если юнит уже превращён, превратить его снова нельзя
     if (targetUnit.transformed) {
-      return ResponseAction.error(
-          'Юнит уже превращён');
+      return ResponseAction.error('Юнит уже превращён');
     }
     switch (currentUnitAttack.targetsCount) {
       case TargetsCount.one:
@@ -2915,4 +2906,3 @@ class AttackController {
 
 // L_TRANSFORM_OTHER END
 }
-

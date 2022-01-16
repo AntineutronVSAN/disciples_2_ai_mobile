@@ -182,11 +182,11 @@ class NeatIndivid implements IndividualBase {
 
     //final firstNodeIndex = random.nextInt(allNodesCount);
     final firstNodeIndex = randomRanges([
-      PairValues<int>(first: 0, end: input),
-      PairValues<int>(first: input + output, end: allNodesCount)
+      PairValues<int, int>(first: 0, end: input),
+      PairValues<int, int>(first: input + output, end: allNodesCount)
     ], random);
     final secondNodeIndex = randomRanges(
-        [PairValues<int>(first: input, end: allNodesCount)], random);
+        [PairValues<int, int>(first: input, end: allNodesCount)], random);
 
     if (firstNodeIndex == secondNodeIndex) {
       return false;
@@ -199,8 +199,8 @@ class NeatIndivid implements IndividualBase {
   bool _addNextNode(List<int> allNodesId, IdCalculator calculator) {
     final allNodesCount = allNodesId.length;
     final firstNodeIndex = randomRanges([
-      PairValues<int>(first: 0, end: input),
-      PairValues<int>(first: input + output, end: allNodesCount),
+      PairValues<int, int>(first: 0, end: input),
+      PairValues<int, int>(first: input + output, end: allNodesCount),
     ], random);
 
     final res = tree!.addNewNextNode(
@@ -214,7 +214,7 @@ class NeatIndivid implements IndividualBase {
     final allNodesCount = allNodesId.length;
 
     final secondNodeIndex = randomRanges(
-        [PairValues<int>(first: input, end: allNodesCount)], random);
+        [PairValues<int, int>(first: input, end: allNodesCount)], random);
 
     final res = tree!.addNewPrevNode(
         allNodesId[secondNodeIndex],
@@ -227,12 +227,12 @@ class NeatIndivid implements IndividualBase {
     final allNodesCount = allNodesId.length;
 
     final firstNodeIndex = randomRanges([
-      PairValues<int>(first: 0, end: input),
-      PairValues<int>(first: input + output, end: allNodesCount),
+      PairValues<int, int>(first: 0, end: input),
+      PairValues<int, int>(first: input + output, end: allNodesCount),
     ], random);
 
     final secondNodeIndex = randomRanges(
-        [PairValues<int>(first: input, end: allNodesCount)], random);
+        [PairValues<int, int>(first: input, end: allNodesCount)], random);
 
     final res = tree!.addNodeBetween(
         allNodesId[firstNodeIndex],
@@ -277,7 +277,7 @@ class NeatIndivid implements IndividualBase {
     }
 
     final nodeIndex = randomRanges([
-      PairValues<int>(first: input + output, end: allNodesCount),
+      PairValues<int, int>(first: input + output, end: allNodesCount),
     ], random);
 
     return tree!.deleteNode(nodesId[nodeIndex]);

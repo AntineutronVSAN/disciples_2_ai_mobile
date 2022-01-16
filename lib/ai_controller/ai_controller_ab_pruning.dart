@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:collection/src/iterable_extensions.dart';
 import 'package:d2_ai_v2/ai_controller/ai_controller_base.dart';
+import 'package:d2_ai_v2/controllers/evaluation/evaluation_controller.dart';
 import 'package:d2_ai_v2/controllers/game_controller/actions.dart';
 import 'package:d2_ai_v2/controllers/game_controller/game_controller.dart';
 import 'package:d2_ai_v2/controllers/game_controller/sync_game_controller.dart';
@@ -43,6 +44,10 @@ class AlphaBetaPruningController extends AiControllerBase {
   /// Суммарное время потраченное на рассчёт fintess
   int timeFitness = 0;
 
+  /// Контроллер для оценки позиции
+  EvaluationController evaluationController = EvaluationController(); // tood DI
+
+
 
 
   @override
@@ -56,6 +61,11 @@ class AlphaBetaPruningController extends AiControllerBase {
     timeCopyController = 0;
     timeAction = 0;
     timeFitness = 0;
+
+    // todo Дать врагам AI максимальный бонус к ини
+    // todo Дать врагам AI максимальный бонус к урону
+    // todo Подумать как можно адекватно учитывать точность
+    // todo Подумать как улучшить функцию оценки
 
     // Список всех возможных действий
     List<RequestAction> allPossibleActions = [
@@ -74,8 +84,11 @@ class AlphaBetaPruningController extends AiControllerBase {
       }),
     ];
 
-    // Текущий снапшот контролера
+    // Текущий снапшот контроллера
     final currentSnapshot = gameController!.getSnapshot();
+    // После создания снапшота, у соперника (команда bot) ролл случайных параметров
+    // выкручивается на максимум
+    currentSnapshot.rollMaxRandomParamsBotTeam = true;
 
     // Контекст обхода дерева
     final context = _ABPruningBypassContext(
@@ -376,8 +389,48 @@ class AlphaBetaPruningController extends AiControllerBase {
 
   }
 
+  double _calculateFitness(List<Unit> units) {
+
+    var sfr = 0.0;
+
+    int aiUnitsCount = 0;
+    int aiUnitsDead = 0;
+
+    int enemyUnitsCount = 0;
+    int enemyUnitsDead = 0;
+
+    int enemyUnitsHpSum = 0;
+    int enemyUnitsMaxHpSum = 0;
+
+    int aiUnitsHpSum = 0;
+    int aiUnitsMaxHpSum = 0;
+
+    double aiTeamEval = 0.0;
+    double enemyTeamEval = 0.0;
+
+    var index=0;
+    for (var u in units) {
+      if (checkIsTopTeam(index)) {
+        // Свои
+        final currentUnitEval = evaluationController.getUnitEvaluation(u);
+        aiTeamEval += currentUnitEval.getEval();
+
+      } else {
+        // Враги
+        final currentUnitEval = evaluationController.getUnitEvaluation(u);
+        enemyTeamEval += currentUnitEval.getEval();
+      }
+      index++;
+    }
+
+    sfr += aiTeamEval;
+    sfr -= enemyTeamEval;
+
+    return sfr;
+  }
+
   /// Чем больше раздамажены враги, тем большее значение вернёт функция
-  double _calculateFitness(List<Unit> units, {bool forTopTeam = true}) {
+  /*double _calculateFitness(List<Unit> units, {bool forTopTeam = true}) {
     // Подсчёт приспособленности
     // для начала это будет суммарное оставшееся ХП + число раундов
     //final aisUnitsHp = <int>[];
@@ -441,9 +494,8 @@ class AlphaBetaPruningController extends AiControllerBase {
     //sfr += (aisUnitsHp.sum / aisUnitsMaxHp.sum)*0.25;
     sfr += (aiUnitsHpSum / aiUnitsMaxHpSum)*0.25;
 
-
     return sfr;
-  }
+  }*/
 
   @override
   void init(List<Unit> units, {required AiAlgorithm algorithm}) {

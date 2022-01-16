@@ -120,7 +120,7 @@ class Unit {
         petrified: petrified,
         initLower: initLower,
         damageBusted: damageBusted,
-      transformed: transformed,
+        transformed: transformed,
     );
   }
 
@@ -272,7 +272,7 @@ class Unit {
       initLower: false,
       damageBusted: false,
       revived: revived ?? this.revived,
-        transformed: false,
+      transformed: false,
     );
   }
 
@@ -292,7 +292,7 @@ class Unit {
         unitAttack2: null,
         armor: 0,
         attacks: [],
-        attacksMap: {}
+        attacksMap: {},
 
     );
   }

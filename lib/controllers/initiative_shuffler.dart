@@ -13,19 +13,41 @@ class InitiativeShuffler {
   InitiativeShuffler({required this.randomExponentialDistribution});
 
   /// Применить разброс инициативы, перемешать и отсортировать список юнитов
-  void shuffleAndSort(List<Unit> units) {
+  void shuffleAndSort(List<Unit> units, {
+    required bool rollMaxIniForTop,
+    required bool rollMaxIniForBot,
+}) {
 
     units.shuffle();
 
     final Map<String, int> _context = {};
 
+    var index = 0;
     for (var element in units) {
-      _context[element.unitWarId] = element.unitAttack.initiative +
-          randomExponentialDistribution.getNextInt(9);
+      if (index >= 0 && index <= 5) {
+        // Топ команда
+        if (rollMaxIniForTop) {
+          _context[element.unitWarId] = element.unitAttack.initiative + 9;
+        } else {
+          _context[element.unitWarId] = element.unitAttack.initiative +
+              randomExponentialDistribution.getNextInt(9);
+        }
+
+      } else if (index >= 6 && index <= 11) {
+        // Бот
+        if (rollMaxIniForBot) {
+          _context[element.unitWarId] = element.unitAttack.initiative + 9;
+        } else {
+          _context[element.unitWarId] = element.unitAttack.initiative +
+              randomExponentialDistribution.getNextInt(9);
+        }
+
+      } else {
+        throw Exception();
+      }
+      index++;
     }
 
-    /*units.sort((a, b) =>
-        b.unitAttack.initiative.compareTo(a.unitAttack.initiative));*/
     units.sort((a, b) =>
         _context[b.unitWarId]!.compareTo(_context[a.unitWarId]!));
 

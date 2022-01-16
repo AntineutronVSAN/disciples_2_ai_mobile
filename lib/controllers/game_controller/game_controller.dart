@@ -14,6 +14,11 @@ class GameController {
   AttackController attackController;
   InitiativeShuffler initiativeShuffler;
 
+  /// Если true, все случайные параметры для верхней команды будут максимальными
+  bool rollMaxRandomParamsTopTeam = false;
+  /// Если true, все случайные параметры для нижней команды будут максимальными
+  bool rollMaxRandomParamsBotTeam = false;
+
   GameController(
       {required this.attackController, required this.initiativeShuffler});
 
@@ -82,6 +87,10 @@ class GameController {
 
 
     snapshot.unitPosition = unitPosition.map((key, value) => MapEntry(key, value));
+
+    snapshot.rollMaxRandomParamsBotTeam = rollMaxRandomParamsBotTeam;
+    snapshot.rollMaxRandomParamsTopTeam = rollMaxRandomParamsTopTeam;
+
     return snapshot;
   }
 
@@ -347,6 +356,8 @@ class GameController {
       ),
       updateStateContext: action.context,
       onAddUnit2Queue: _onUnitAdded2Queue,
+      rollMaxForBot: rollMaxRandomParamsBotTeam,
+      rollMaxForTop: rollMaxRandomParamsTopTeam,
     );
 
     if (!responseAction.success) {
@@ -441,21 +452,12 @@ class GameController {
   }
 
   void _sortUnitsByInitiative() {
-    // todo Механики игры используют не строгую сортировку!
-    // todo У второй атаки тоже есть инициатива. Не пон7ятно какую юзать
-    /*unitsRef.sort((a, b) =>
-        b.unitAttack.initiative.compareTo(a.unitAttack.initiative));*/
-    initiativeShuffler.shuffleAndSort(unitsRef);
+    initiativeShuffler.shuffleAndSort(
+      unitsRef,
+      rollMaxIniForBot: rollMaxRandomParamsBotTeam,
+      rollMaxIniForTop: rollMaxRandomParamsTopTeam,
+    );
     unitsQueue = Queue<Unit>.from(unitsRef);
-  }
-
-  List<bool> _cellHasUnit() {
-    return units.map((e) {
-      if (e.isDead || e.isEmpty()) {
-        return false;
-      }
-      return true;
-    }).toList();
   }
 }
 
