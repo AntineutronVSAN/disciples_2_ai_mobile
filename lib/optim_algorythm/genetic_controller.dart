@@ -112,13 +112,14 @@ class GeneticController {
     final firstUnits = request.units;
     final aiController = AiController();
     final individController = AiController();
+    final repo = GameRepository(
+        gtransfProvider: GtransfProvider(),
+        tglobalProvider: TglobalProvider(),
+        gattacksProvider: GattacksProvider(),
+        gunitsProvider: GunitsProvider());
     final gameController = GameController(
       attackController: AttackController(
-        gameRepository: GameRepository(
-            gtransfProvider: GtransfProvider(),
-            tglobalProvider: TglobalProvider(),
-            gattacksProvider: GattacksProvider(),
-            gunitsProvider: GunitsProvider()),
+        gameRepository: repo,
         powerController: PowerController(
           randomExponentialDistribution: RandomExponentialDistribution(),
         ),
@@ -128,7 +129,7 @@ class GeneticController {
         attackDurationController: AttackDurationController(),
       ),
       initiativeShuffler: InitiativeShuffler(
-          randomExponentialDistribution: RandomExponentialDistribution()),
+          randomExponentialDistribution: RandomExponentialDistribution()), gameRepository: repo,
     );
     final neuralIndividIsTopTeam = request.individualIsTopTeam;
 

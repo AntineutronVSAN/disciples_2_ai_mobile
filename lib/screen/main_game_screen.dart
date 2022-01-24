@@ -50,11 +50,11 @@ class MainGameScreen extends StatelessWidget {
               ),
               initiativeShuffler: InitiativeShuffler(
                   randomExponentialDistribution:
-                  RandomExponentialDistribution()),
+                  RandomExponentialDistribution()), gameRepository: repo,
             ),
             //aiController: AiController()),
             aiController:
-            AlphaBetaPruningController(treeDepth: 10, isTopTeam: true)),
+            AlphaBetaPruningController(treeDepth: 7, isTopTeam: true)),
         child: BlocBuilder<GameBloc, GameState>(
           builder: (context, state) {
             return MainGameScreenBody();
@@ -172,7 +172,7 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
           duration: const Duration(milliseconds: 200),
         ),
         Text(
-          ((currentPositionRating - 0.5) * 10.0).toStringAsFixed(1),
+          currentPositionRating.toStringAsFixed(1),
           style: const TextStyle(
               fontSize: 25,
               color: Colors.blue,

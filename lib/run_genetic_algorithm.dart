@@ -102,14 +102,16 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
       output: actionsCount,
       version: 1);
 
+  final repo = GameRepository(
+      gtransfProvider: GtransfProvider(),
+      tglobalProvider: TglobalProvider(),
+      gattacksProvider: GattacksProvider(),
+      gunitsProvider: GunitsProvider());
+
   final gc = GeneticController(
     gameController: GameController(
       attackController: AttackController(
-        gameRepository: GameRepository(
-            gtransfProvider: GtransfProvider(),
-            tglobalProvider: TglobalProvider(),
-            gattacksProvider: GattacksProvider(),
-            gunitsProvider: GunitsProvider()),
+        gameRepository: repo,
         powerController: PowerController(
           randomExponentialDistribution: RandomExponentialDistribution(),
         ),
@@ -119,7 +121,7 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
         attackDurationController: AttackDurationController(),
       ),
       initiativeShuffler: InitiativeShuffler(
-          randomExponentialDistribution: RandomExponentialDistribution()),
+          randomExponentialDistribution: RandomExponentialDistribution()), gameRepository: repo,
     ),
     aiController: AiController(),
     updateStateContext: null,

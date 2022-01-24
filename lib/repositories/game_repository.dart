@@ -45,8 +45,8 @@ class GameRepository {
     final transfUnitIds = gtransfProvider.objects.where((element) => element.attack_id == attckId).toList();
     assert(transfUnitIds.length == 2);
 
-    final firstUnit = getCopyUnitById(transfUnitIds[0].transf_id);
-    final secondUnit = getCopyUnitById(transfUnitIds[1].transf_id);
+    final firstUnit = getCopyUnitById(transfUnitIds[0].transf_id).deepCopy();
+    final secondUnit = getCopyUnitById(transfUnitIds[1].transf_id).deepCopy();
 
     if (isBig) {
       //todo
@@ -74,11 +74,23 @@ class GameRepository {
       //final attackType = attackTypeFromSource(attack.source)!;
       //final attackType2 = attackTypeFromSource(attack2?.source);
 
-      /*print('${newGameUnitText.text} '
+      print('${newGameUnitText.text} '
           '---- ${attack.atck_class} '
           '---- ${attack.alt_attack}'
           '---- ${attack2?.atck_class} '
-          '---- ${attack2?.infinite}');*/
+          '---- ${attack2?.infinite}');
+
+      /*print('${newGameUnitText.text} '
+          '---- ${unit.level} '
+          '---- ${unit.dyn_upg1}'
+          '---- ${unit.prev_id} '
+          '---- ${unit.upgrade_b}');*/
+
+      /*print('${newGameUnitText.text} '
+          '---- ${unit.dyn_upg1} '
+          '---- ${unit.dyn_upg2}'
+          '---- ${unit.prev_id} '
+          '---- ${unit.upgrade_b}');*/
 
       final unitAttack1 = UnitAttack(
         attackId: attack.att_id,
@@ -145,7 +157,7 @@ class GameRepository {
 
     evals.sort((a,b) => a.end.compareTo(b.end));
     for(var i in evals) {
-      print('Юнит - ${i.first}. Ценность - ${i.end}');
+      //print('Юнит - ${i.first}. Ценность - ${i.end}');
     }
 
   }

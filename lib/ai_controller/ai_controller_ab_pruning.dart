@@ -88,7 +88,16 @@ class AlphaBetaPruningController extends AiControllerBase {
     final currentSnapshot = gameController!.getSnapshot();
     // После создания снапшота, у соперника (команда bot) ролл случайных параметров
     // выкручивается на максимум
-    currentSnapshot.rollMaxRandomParamsBotTeam = true;
+
+    currentSnapshot.rollConfig.bottomTeamMaxIni = true;
+    currentSnapshot.rollConfig.bottomTeamMaxPower = true;
+    currentSnapshot.rollConfig.bottomTeamMaxDamage = true;
+
+    currentSnapshot.rollConfig.topTeamMaxIni = false;
+    currentSnapshot.rollConfig.topTeamMaxPower = true;
+    currentSnapshot.rollConfig.topTeamMaxDamage = false;
+
+    //currentSnapshot.rollMaxRandomParamsBotTeam = true;
 
     // Контекст обхода дерева
     final context = _ABPruningBypassContext(
@@ -101,7 +110,7 @@ class AlphaBetaPruningController extends AiControllerBase {
       // На всякий пожарный делается копия действия
       final a = action.deepCopy();
       final g = currentSnapshot.getSnapshot();
-      final r = g.makeAction(a);
+      final r = await g.makeAction(a);
       if (r.success) {
         currentPossibleActions.add(a);
       }
@@ -139,7 +148,7 @@ class AlphaBetaPruningController extends AiControllerBase {
           continue;
         }
 
-        final res = _bypass(
+        final res = await _bypass(
           context: context,
           action: cpa,
           snapshot: currentSnapshot,
@@ -203,17 +212,17 @@ class AlphaBetaPruningController extends AiControllerBase {
     )];
   }
 
-  _ABPruningReturnValue _bypass({
+  Future<_ABPruningReturnValue> _bypass({
     required _ABPruningBypassContext context,
     required RequestAction action,
-    required SyncGameController snapshot,
+    required GameController snapshot,
     required int activeCellIndex,
     required double alpha,
     required double beta,
 
     /// Является ли вызывающая нода функцией MAX
     required bool isMax,
-  }) {
+  }) async {
     //context.addRec();
     context.currentTreeDepth++;
     nodesCount++;
@@ -223,7 +232,7 @@ class AlphaBetaPruningController extends AiControllerBase {
     //bypassStopWatch.reset();
 
     //bypassStopWatch.start();
-    final res = currentSnapshot.makeAction(action);
+    final res = await currentSnapshot.makeAction(action);
     //timeAction += bypassStopWatch.elapsedMilliseconds;
     //bypassStopWatch.reset();
 
@@ -271,7 +280,7 @@ class AlphaBetaPruningController extends AiControllerBase {
       //bypassStopWatch.reset();
 
       //bypassStopWatch.start();
-      final r = g.makeAction(a);
+      final r = await g.makeAction(a);
       //timeAction += bypassStopWatch.elapsedMilliseconds;
       //bypassStopWatch.reset();
 
@@ -303,7 +312,7 @@ class AlphaBetaPruningController extends AiControllerBase {
       var maxEval = -double.infinity;
       assert(currentPossibleActions.isNotEmpty);
       for (var cpa in currentPossibleActions) {
-        final res = _bypass(
+        final res = await _bypass(
             context: context,
             action: cpa,
             snapshot: currentSnapshot,
@@ -343,7 +352,7 @@ class AlphaBetaPruningController extends AiControllerBase {
       var minEval = double.infinity;
       assert(currentPossibleActions.isNotEmpty);
       for (var cpa in currentPossibleActions) {
-        final res = _bypass(
+        final res = await _bypass(
             context: context,
             action: cpa,
             snapshot: currentSnapshot,

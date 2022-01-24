@@ -1,8 +1,12 @@
 import 'dart:collection';
+import 'package:d2_ai_v2/controllers/attack_controller/postprocessing_part/postprocessing_part.dart';
+import 'package:d2_ai_v2/controllers/attack_controller/preprocessing_part/preprocessing_part.dart';
 import 'package:d2_ai_v2/controllers/attack_controller/sync_attack_controller.dart';
+import 'package:d2_ai_v2/controllers/game_controller/roll_config.dart';
 import 'package:d2_ai_v2/controllers/game_controller/sync_game_controller.dart';
 import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
+import 'package:d2_ai_v2/repositories/game_repository.dart';
 import 'package:d2_ai_v2/update_state_context/update_state_context_base.dart';
 
 import '../attack_controller/attack_controller.dart';
@@ -13,22 +17,31 @@ import 'actions.dart';
 class GameController {
   AttackController attackController;
   InitiativeShuffler initiativeShuffler;
+  GameRepository gameRepository;
 
-  /// Если true, все случайные параметры для верхней команды будут максимальными
-  bool rollMaxRandomParamsTopTeam = false;
-  /// Если true, все случайные параметры для нижней команды будут максимальными
-  bool rollMaxRandomParamsBotTeam = false;
+  RollConfig rollConfig = RollConfig(
+      topTeamMaxPower: false,
+      bottomTeamMaxPower: false,
+      topTeamMaxIni: false,
+      bottomTeamMaxIni: false,
+      topTeamMaxDamage: false,
+      bottomTeamMaxDamage: false,
+  );
+
 
   GameController(
-      {required this.attackController, required this.initiativeShuffler});
+      {required this.attackController, required this.initiativeShuffler,
+      required this.gameRepository});
 
   GameController copyWith({
     attackController,
-    initiativeShuffler
+    initiativeShuffler,
+    gameRepository,
   }) {
     return GameController(
     attackController: attackController ?? this.attackController,
     initiativeShuffler: initiativeShuffler ?? this.initiativeShuffler,
+    gameRepository: gameRepository ?? this.gameRepository,
   );
 }
 
@@ -52,14 +65,18 @@ class GameController {
   int currentRound = 0;
 
   /// Получить копию текущего контроллера игры. Важно учесть, что
-  /// копия имеет ссылки на контролеры оригинала и копия является синхронной
-  SyncGameController getSnapshot() {
-    SyncGameController snapshot = SyncGameController(
-        attackController: SyncAttackController(
+  /// копия имеет ссылки на контролеры оригинала
+  /// И копия не обновляет UI
+  GameController getSnapshot() {
+    GameController snapshot = GameController(
+      attackController: attackController.deepCopy(),
+        /*attackController: AttackController(
             attackDurationController: attackController.attackDurationController,
             powerController: attackController.powerController,
-            damageScatter: attackController.damageScatter),
-        initiativeShuffler: initiativeShuffler);
+            damageScatter: attackController.damageScatter,
+          gameRepository: gameRepository
+        )*/
+        initiativeShuffler: initiativeShuffler, gameRepository: gameRepository);
 
     snapshot.inited = inited;
     snapshot.currentRound = currentRound;
@@ -88,8 +105,9 @@ class GameController {
 
     snapshot.unitPosition = unitPosition.map((key, value) => MapEntry(key, value));
 
-    snapshot.rollMaxRandomParamsBotTeam = rollMaxRandomParamsBotTeam;
-    snapshot.rollMaxRandomParamsTopTeam = rollMaxRandomParamsTopTeam;
+    //snapshot.rollConfig = rollMaxRandomParamsBotTeam;
+    //snapshot.rollMaxRandomParamsTopTeam = rollMaxRandomParamsTopTeam;
+    snapshot.rollConfig = rollConfig.deepCopy();
 
     return snapshot;
   }
@@ -356,8 +374,7 @@ class GameController {
       ),
       updateStateContext: action.context,
       onAddUnit2Queue: _onUnitAdded2Queue,
-      rollMaxForBot: rollMaxRandomParamsBotTeam,
-      rollMaxForTop: rollMaxRandomParamsTopTeam,
+      rollConfig: rollConfig,
     );
 
     if (!responseAction.success) {
@@ -454,8 +471,7 @@ class GameController {
   void _sortUnitsByInitiative() {
     initiativeShuffler.shuffleAndSort(
       unitsRef,
-      rollMaxIniForBot: rollMaxRandomParamsBotTeam,
-      rollMaxIniForTop: rollMaxRandomParamsTopTeam,
+      rollConfig: rollConfig,
     );
     unitsQueue = Queue<Unit>.from(unitsRef);
   }

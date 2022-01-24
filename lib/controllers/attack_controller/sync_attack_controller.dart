@@ -1,3 +1,4 @@
+/*
 import 'package:d2_ai_v2/controllers/game_controller/actions.dart';
 import 'package:d2_ai_v2/controllers/power_controller.dart';
 import 'package:d2_ai_v2/models/attack.dart';
@@ -683,12 +684,14 @@ class SyncAttackController {
           units[target] =
               units[target].copyWith(paralyzed: true, uiInfo: 'Паралич');
         } else {
-          /*final oldUnitsAttackDuration =
+          */
+/*final oldUnitsAttackDuration =
               targetUnit.attacksMap[attack.attackClass]!.currentDuration;
           if (currentAttackDuration > oldUnitsAttackDuration) {
             units[target].attacksMap[attack.attackClass] =
                 attack.copyWith(currentDuration: currentAttackDuration);
-          }*/
+          }*//*
+
         }
 
         break;
@@ -800,7 +803,8 @@ class SyncAttackController {
           );
         } else {
           // todo Принимаем, что дебафф не обновляется
-          /*final oldDebuffLevel =
+          */
+/*final oldDebuffLevel =
               units[target].attacksMap[attack.attackClass]!.level;
           if (oldDebuffLevel > attackLevel) {
             final oldDamageCoeff = oldDebuffLevel == 1 ? 0.5 : 0.33;
@@ -831,7 +835,8 @@ class SyncAttackController {
                   uiInfo: 'Ослабление обновлено', damageLower: true);
 
             }
-          }*/
+          }*//*
+
         }
 
         break;
@@ -1335,11 +1340,13 @@ class SyncAttackController {
         return ResponseAction.error('Хил не может лечить мёртвого');
       }
     }
-    /*if (targetUnit.isDead
+    */
+/*if (targetUnit.isDead
         && !(currentUnit.unitAttack2?.attackClass == AttackClass.L_REVIVE)
         && targetUnit.revived) {
       return ResponseAction.error('Хил не может лечить мёртвого либо юнит уже воскрешался');
-    }*/
+    }*//*
+
     if (targetUnit.isEmpty()) {
       return ResponseAction.error('Хил не может лечить пустого');
     }
@@ -1348,9 +1355,11 @@ class SyncAttackController {
     }
     // todo Тут надо подумать, как сделать. Защититься после первой атаки
     // todo невозможно, и ход завершить не удаётся
-    /*if (targetUnit.currentHp == targetUnit.maxHp) {
+    */
+/*if (targetUnit.currentHp == targetUnit.maxHp) {
       return ResponseAction.error('Хил не может лечить. Юнит фуловый');
-    }*/
+    }*//*
+
 
     switch (currentUnitAttack.targetsCount) {
       case TargetsCount.one:
@@ -1923,7 +1932,8 @@ class SyncAttackController {
     }
   }
 
-  /*ResponseAction _handleOneTargetCure(AttackContext context)  {
+  */
+/*ResponseAction _handleOneTargetCure(AttackContext context)  {
     final currentUnit = context.units[context.current];
     final targetUnit = context.units[context.target];
     final currentUnitIsTopTeam = checkIsTopTeam(context.current);
@@ -1947,7 +1957,8 @@ class SyncAttackController {
         currentUnit.unitAttack2, context.target, context.units,
         current: context.current);
     return ResponseAction.success();
-  }*/
+  }*//*
+
 
   ResponseAction _handleAllTargetCure(AttackContext context) {
     final currentUnit = context.units[context.current];
@@ -2638,3 +2649,4 @@ class SyncAttackController {
 // L_DRAIN_OVERFLOW END
 
 }
+*/

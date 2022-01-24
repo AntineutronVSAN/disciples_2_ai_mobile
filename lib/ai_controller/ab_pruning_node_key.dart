@@ -35,7 +35,7 @@ String getABPruningNodeKey({
 }
 
 String getABPruningNodeKeySync({
-  required SyncGameController controller,
+  required GameController controller,
   required RequestAction action,
 }) {
 
