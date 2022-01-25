@@ -18,6 +18,7 @@ class GameRepository {
   final TglobalProvider tglobalProvider;
   final GattacksProvider gattacksProvider;
   final GtransfProvider gtransfProvider;
+  final GDynUpgrProvider gDynUpgrProvider;
 
   /// Мапа всех игровых юнитов с ID
   final Map<String, Gunits> _allGameUnits = {};
@@ -33,6 +34,7 @@ class GameRepository {
     required this.tglobalProvider,
     required this.gattacksProvider,
     required this.gtransfProvider,
+    required this.gDynUpgrProvider,
   });
 
   List<Unit> getAllUnits() {
@@ -43,10 +45,10 @@ class GameRepository {
   Unit getTransformUnitByAttackId(String attckId, {bool isBig=false}) {
 
     final transfUnitIds = gtransfProvider.objects.where((element) => element.attack_id == attckId).toList();
-    assert(transfUnitIds.length == 2);
+    assert(transfUnitIds.length <= 2);
 
     final firstUnit = getCopyUnitById(transfUnitIds[0].transf_id).deepCopy();
-    final secondUnit = getCopyUnitById(transfUnitIds[1].transf_id).deepCopy();
+    //final secondUnit = getCopyUnitById(transfUnitIds[1].transf_id).deepCopy();
 
     if (isBig) {
       //todo
@@ -74,11 +76,16 @@ class GameRepository {
       //final attackType = attackTypeFromSource(attack.source)!;
       //final attackType2 = attackTypeFromSource(attack2?.source);
 
-      print('${newGameUnitText.text} '
+      final unitDynUpgrade = unit.dyn_upg1;
+
+      final dynUpgradeParams = gDynUpgrProvider.objects.firstWhere(
+              (element) => element.upgrade_id == unitDynUpgrade);
+
+      /*print('${newGameUnitText.text} '
           '---- ${attack.atck_class} '
           '---- ${attack.alt_attack}'
           '---- ${attack2?.atck_class} '
-          '---- ${attack2?.infinite}');
+          '---- ${attack2?.infinite}');*/
 
       /*print('${newGameUnitText.text} '
           '---- ${unit.level} '
@@ -86,11 +93,14 @@ class GameRepository {
           '---- ${unit.prev_id} '
           '---- ${unit.upgrade_b}');*/
 
-      /*print('${newGameUnitText.text} '
+      print('${newGameUnitText.text} '
           '---- ${unit.dyn_upg1} '
-          '---- ${unit.dyn_upg2}'
+          '---- ${unit.dyn_upg_lv} '
+          '---- ${unit.level} '
           '---- ${unit.prev_id} '
-          '---- ${unit.upgrade_b}');*/
+          '---- ${unit.upgrade_b} '
+          '---- ${dynUpgradeParams.negotiate} ')
+      ;
 
       final unitAttack1 = UnitAttack(
         attackId: attack.att_id,
@@ -142,11 +152,22 @@ class GameRepository {
         armor: unit.armor ?? 0,
         attacks: newListAtck,
         attacksMap: newMapAtck,
+
+        level: unit.level,
+        upgradeArmor: dynUpgradeParams.armor ?? 0,
+        upgradeDamage: dynUpgradeParams.damage ?? 0,
+        upgradeHeal: dynUpgradeParams.heal ?? 0,
+        upgradeInitiative: dynUpgradeParams.initiative ?? 0,
+        upgradePower: dynUpgradeParams.power ?? 0,
+        upgradeHp: dynUpgradeParams.hit_point,
+
       );
 
 
-      final unitEval = evalController.getUnitEvaluation(newUnit);
-      evals.add(PairValues<String, double>(first: newUnit.unitName, end: unitEval.getEval()));
+      final eval = GameEvaluation();
+
+      evalController.getUnitEvaluation(newUnit, eval);
+      evals.add(PairValues<String, double>(first: newUnit.unitName, end: eval.getEval()));
 
       // todo Пока не поддерживаются двуклеточники
       if ((unit.size_small ?? false) || true) {
@@ -157,7 +178,7 @@ class GameRepository {
 
     evals.sort((a,b) => a.end.compareTo(b.end));
     for(var i in evals) {
-      //print('Юнит - ${i.first}. Ценность - ${i.end}');
+      print('Юнит - ${i.first}. Ценность - ${i.end}');
     }
 
   }

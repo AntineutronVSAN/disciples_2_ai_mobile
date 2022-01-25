@@ -417,18 +417,27 @@ class AlphaBetaPruningController extends AiControllerBase {
     double aiTeamEval = 0.0;
     double enemyTeamEval = 0.0;
 
+    List<GameEvaluation> evaluations = [];
+
     var index=0;
     for (var u in units) {
+
+      final newEval = GameEvaluation();
+
       if (checkIsTopTeam(index)) {
         // Свои
-        final currentUnitEval = evaluationController.getUnitEvaluation(u);
-        aiTeamEval += currentUnitEval.getEval();
-
+        //final currentUnitEval = evaluationController.getUnitEvaluation(u);
+        //aiTeamEval += currentUnitEval.getEval();
+        evaluationController.getUnitEvaluation(u, newEval);
+        aiTeamEval += newEval.getEval();
       } else {
         // Враги
-        final currentUnitEval = evaluationController.getUnitEvaluation(u);
-        enemyTeamEval += currentUnitEval.getEval();
+        //final currentUnitEval = evaluationController.getUnitEvaluation(u);
+        //enemyTeamEval += currentUnitEval.getEval();
+        evaluationController.getUnitEvaluation(u, newEval);
+        enemyTeamEval += newEval.getEval();
       }
+      evaluations.add(newEval);
       index++;
     }
 

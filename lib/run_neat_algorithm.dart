@@ -17,6 +17,7 @@ void main() async {
       gattacksProvider: GattacksProvider(),
       gunitsProvider: GunitsProvider(),
       gtransfProvider: GtransfProvider(),
+      gDynUpgrProvider: GDynUpgrProvider(),
       tglobalProvider: TglobalProvider());
   a.init();
 }

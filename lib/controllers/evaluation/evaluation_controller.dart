@@ -16,8 +16,15 @@ import 'package:d2_ai_v2/models/unit.dart';
 /// Класс предназначен для оценки игровой позиции
 class EvaluationController {
 
+  /// Коэффициент ценности атаки
   static const unitAttacksCoeff = 1.0;
+  /// Коэффициент ценности параметров юнита
   static const unitParamsCoeff = 1.0;
+
+  /// Коэффициент ценности юнита и его атаки в контексте своей команды
+  static const unitTeamEval = 1.0;
+  /// Коэффициент ценности юнита и его атаки в контексте чужой команды
+  static const unitEnemyTeamEval = 1.0;
 
   static const double targetsCountOneCoeff = 1.0;
   static const double targetsCountAnyCoeff = 2.0;
@@ -28,16 +35,20 @@ class EvaluationController {
   /* END */
 
   /// Получить ценность юнита с учётом атак
-  UnitEvaluation getUnitEvaluation(Unit u) {
+  void getUnitEvaluation(Unit u, GameEvaluation eval) {
     //print('----------------- Ценность юнита ${u.unitName} --------------------');
     double value = 0.0;
     // Мертвый/пустой юнит не имеет ценности
     if (u.isDead || u.isEmpty()) {
-      return UnitEvaluation.empty();
+      eval.onlyUnitEval = 0.0;
+      eval.attacksEval = 0.0;
+      return;
     }
     // Юнит, который не может атаковать ценности не имеет
     if (u.retreat) {
-      return UnitEvaluation.empty();
+      eval.onlyUnitEval = 0.0;
+      eval.attacksEval = 0.0;
+      return;
     }
 
     var canMove = true;
@@ -58,11 +69,31 @@ class EvaluationController {
 
     //print('Оценка атаки с коэффициентами $unitAtcksEval');
     //print('Оценка юнита ${u.unitName} результат - $value');
-    return UnitEvaluation(
+
+    eval.attacksEval = canMove ? unitAtcksEval : 0.0;
+    eval.onlyUnitEval = onlyUnitEval * (u.currentHp / u.maxHp);
+
+    return;
+
+    /*return UnitEvaluation(
         attacksEval: canMove ? unitAtcksEval : 0.0,
         onlyUnitEval: onlyUnitEval * (u.currentHp / u.maxHp)
-    );
+    );*/
   }
+
+  /* TEAM EVAL START */
+  /// Коэффициент для оценки юнита в контексте своей команды
+  double _unitEvalCoeffTeam(Unit u, List<Unit> units, GameEvaluation eval) {
+    var result = 1.0;
+    return result;
+  }
+
+  /// Коэффициент для оценки юнита в контексте чужой команды
+  double _unitEvalEnemyTeam(Unit u, List<Unit> units, GameEvaluation eval) {
+    var result = 1.0;
+    return result;
+  }
+  /* TEAM EVAL END */
 
   double _onlyUnitEval(Unit u) {
     double value = 0.0;
@@ -157,6 +188,8 @@ class EvaluationController {
 
 
   /// Ценность комбинации атак
+  /// Для рассчёта ценности используется матрица коэффициентов
+
   double getAttackCombinationEvaluation(UnitAttack a1, UnitAttack? a2) {
     final a1Eval = getAttackEvaluation(a1);
     //print('Оенка атаки 1 - $a1Eval');
@@ -527,18 +560,16 @@ class EvaluationController {
 
 }
 
-class UnitEvaluation {
-  final double onlyUnitEval;
-  final double attacksEval;
-
-  UnitEvaluation({required this.attacksEval, required this.onlyUnitEval});
-
-  factory UnitEvaluation.empty() {
-    return UnitEvaluation(attacksEval: 0.0, onlyUnitEval: 0.0);
-  }
+class GameEvaluation {
+  double onlyUnitEval = 0.0;
+  double attacksEval = 0.0;
 
   double getEval() {
     return onlyUnitEval + attacksEval;
   }
 
 }
+
+
+
+

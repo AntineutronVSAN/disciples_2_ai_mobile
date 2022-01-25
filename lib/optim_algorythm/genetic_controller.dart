@@ -116,6 +116,7 @@ class GeneticController {
         gtransfProvider: GtransfProvider(),
         tglobalProvider: TglobalProvider(),
         gattacksProvider: GattacksProvider(),
+        gDynUpgrProvider: GDynUpgrProvider(),
         gunitsProvider: GunitsProvider());
     final gameController = GameController(
       attackController: AttackController(

@@ -87,6 +87,9 @@ class GameController {
     snapshot.unitsRef = [];
     for(var i in unitsRef) {
       final u = snapshot.units.where((element) => element.unitWarId == i.unitWarId).toList();
+      if (u.length != 1) {
+        print(u);
+      }
       assert(u.length == 1);
       snapshot.unitsRef.add(u[0]);
     }

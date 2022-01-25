@@ -3,6 +3,7 @@ import 'package:d2_ai_v2/ai_controller/ai_controller_base.dart';
 import 'package:d2_ai_v2/bloc/states.dart';
 import 'package:d2_ai_v2/controllers/game_controller/actions.dart';
 import 'package:d2_ai_v2/controllers/game_controller/game_controller.dart';
+import 'package:d2_ai_v2/controllers/unit_upgrade_controller/unit_upgrade_controller.dart';
 import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/optim_algorythm/factories/neat_factory.dart';
@@ -25,6 +26,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   final GameRepository repository;
   final GameController controller;
   final AiControllerBase aiController;
+
+  // TODO Ему сдесь не место
+  final UnitUpgradeController unitUpgradeController = UnitUpgradeController();
 
   final List<Unit> _allUnits = [];
 
@@ -123,8 +127,14 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     assert(unitsNames.length == 12);
     var index = 0;
     for (var name in unitsNames) {
-      _units[index] = repository.getCopyUnitByName(name);
-      //_units[index] = repository.getRandomUnit();
+      //_units[index] = repository.getCopyUnitByName(name);
+      if ((index+1) % 2 == 0) {
+        _units[index] = repository.getRandomUnit();
+      }
+
+      // TODO Тестирую уровни
+      unitUpgradeController.setLevel(12, index, _units);
+
       index++;
     }
 

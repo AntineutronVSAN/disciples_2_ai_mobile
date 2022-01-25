@@ -43,6 +43,16 @@ Unit _$UnitFromJson(Map json) => Unit(
       petrified: json['petrified'] as bool? ?? false,
       initLower: json['initLower'] as bool? ?? false,
       damageBusted: json['damageBusted'] as bool? ?? false,
+      transformed: json['transformed'] as bool? ?? false,
+      level: json['level'] as int,
+      upgradeArmor: json['upgradeArmor'] as int,
+      upgradeDamage: json['upgradeDamage'] as int,
+      upgradeHeal: json['upgradeHeal'] as int,
+      upgradeInitiative: json['upgradeInitiative'] as int,
+      upgradePower: json['upgradePower'] as int,
+      upgradeHp: json['upgradeHp'] as int,
+      nextID: json['nextID'] as String?,
+      prevID: json['prevID'] as String?,
     );
 
 Map<String, dynamic> _$UnitToJson(Unit instance) => <String, dynamic>{
@@ -74,6 +84,16 @@ Map<String, dynamic> _$UnitToJson(Unit instance) => <String, dynamic>{
       'initLower': instance.initLower,
       'revived': instance.revived,
       'damageBusted': instance.damageBusted,
+      'transformed': instance.transformed,
+      'level': instance.level,
+      'upgradeDamage': instance.upgradeDamage,
+      'upgradeArmor': instance.upgradeArmor,
+      'upgradeInitiative': instance.upgradeInitiative,
+      'upgradeHeal': instance.upgradeHeal,
+      'upgradePower': instance.upgradePower,
+      'upgradeHp': instance.upgradeHp,
+      'nextID': instance.nextID,
+      'prevID': instance.prevID,
     };
 
 const _$AttackClassEnumMap = {

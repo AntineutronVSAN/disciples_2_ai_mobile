@@ -75,6 +75,10 @@ class UnitAttack {
     attackId,
     currentDuration,
     level,
+
+    firstDamage,
+    firstInitiative,
+
   }) {
     return UnitAttack(
       power: power ?? this.power,
@@ -86,9 +90,11 @@ class UnitAttack {
       infinite: infinite ?? this.infinite,
       attackId: attackId ?? this.attackId,
       currentDuration: currentDuration ?? this.currentDuration,
-      firstDamage: firstDamage,
+
       level: level ?? this.level,
-      firstInitiative: firstInitiative,
+
+      firstDamage: firstDamage ?? this.firstDamage,
+      firstInitiative: firstInitiative ?? this.firstInitiative,
     );
   }
 

@@ -182,26 +182,21 @@ class AttackController {
       case AttackClass.L_CURE:
         return await _handleCure(context);
       case AttackClass.L_SUMMON:
-        // TODO: Handle this case.
-        break;
+        return ResponseAction.error('NO');
       case AttackClass.L_DRAIN_LEVEL:
-        // TODO: Handle this case.
-        break;
+        return ResponseAction.error('NO');
       case AttackClass.L_GIVE_ATTACK:
         return _handleGiveAttack(context);
       case AttackClass.L_DOPPELGANGER:
-        // TODO: Handle this case.
-        break;
+        return ResponseAction.error('NO');
       case AttackClass.L_TRANSFORM_SELF:
-        // TODO: Handle this case.
-        break;
+        return ResponseAction.error('NO');
       case AttackClass.L_TRANSFORM_OTHER:
         return await _handleTransformOther(context);
       case AttackClass.L_BLISTER:
         return await _handleBlister(context);
       case AttackClass.L_BESTOW_WARDS:
-        // TODO: Handle this case.
-        break;
+        return ResponseAction.error('NO');
       case AttackClass.L_SHATTER:
         return _handleShatter(context);
     }

@@ -56,6 +56,24 @@ class Unit {
   /// Юнит превращён в другого
   final bool transformed;
 
+
+  /* UPGRADE START */
+  final int level;
+
+  final int upgradeDamage;
+  final int upgradeArmor;
+  final int upgradeInitiative;
+  final int upgradeHeal;
+  final int upgradePower;
+  final int upgradeHp;
+
+  final String? nextID;
+  final String? prevID;
+
+  /* UPGRADE END */
+
+
+
   Unit({
     required this.isDead,
     required this.isMoving,
@@ -85,6 +103,17 @@ class Unit {
     this.initLower = false,
     this.damageBusted = false,
     this.transformed = false,
+
+    required this.level,
+    required this.upgradeArmor,
+    required this.upgradeDamage,
+    required this.upgradeHeal,
+    required this.upgradeInitiative,
+    required this.upgradePower,
+    required this.upgradeHp,
+
+    this.nextID,
+    this.prevID,
   });
 
   factory Unit.fromJson(Map<String, dynamic> json) => _$UnitFromJson(json);
@@ -121,6 +150,17 @@ class Unit {
         initLower: initLower,
         damageBusted: damageBusted,
         transformed: transformed,
+
+        level: level,
+        upgradeArmor: upgradeArmor,
+        upgradeDamage: upgradeDamage,
+        upgradeHeal: upgradeHeal,
+        upgradeInitiative: upgradeInitiative,
+        upgradePower: upgradePower,
+      upgradeHp: upgradeHp,
+
+      nextID: nextID,
+      prevID: prevID,
     );
   }
 
@@ -155,6 +195,17 @@ class Unit {
     initLower,
     damageBusted,
     transformed,
+
+    level,
+    upgradeArmor,
+    upgradeDamage,
+    upgradeHeal,
+    upgradeInitiative,
+    upgradePower,
+    upgradeHp,
+
+    nextID,
+    prevID,
   }) {
     return Unit(
       isMoving: isMoving ?? this.isMoving,
@@ -186,44 +237,19 @@ class Unit {
       initLower: initLower ?? this.initLower,
       damageBusted: damageBusted ?? this.damageBusted,
       transformed: transformed ?? this.transformed,
+
+      level: level ?? this.level,
+      upgradeArmor: upgradeArmor ?? this.upgradeArmor,
+      upgradeDamage: upgradeDamage ?? this.upgradeDamage,
+      upgradeHeal: upgradeHeal ?? this.upgradeHeal,
+      upgradeInitiative: upgradeInitiative ?? this.upgradeInitiative,
+      upgradePower: upgradePower ?? this.upgradePower,
+      upgradeHp: upgradeHp ?? this.upgradeHp,
+
+      nextID: nextID ?? this.nextID,
+      prevID: prevID ?? this.prevID,
     );
   }
-
-  /// Превратить текущего юнита в target
-  /// Вернёт копию
-  /*Unit transformTo(Unit target) {
-    return target.copyWith(
-      isMoving: isMoving,
-      isDead: isDead,
-      isProtected: isProtected,
-      isWaiting: isWaiting,
-      maxHp: maxHp,
-      currentHp: currentHp,
-      //unitName: unitName,
-      //unitGameID: unitGameID,
-      unitWarId: unitWarId,
-      //isDoubleAttack: isDoubleAttack,
-      currentAttack: currentAttack,
-      //unitAttack: unitAttack,
-      //unitAttack2: unitAttack2,
-      attacks: attacks,
-      attacksMap: attacksMap,
-      uiInfo: (uiInfo is String) ? uiInfo : ((uiInfo != null) ? uiInfo
-          .toString() : ""),
-      retreat: retreat,
-      armor: armor,
-      paralyzed: paralyzed,
-      poisoned: poisoned,
-      blistered: blistered,
-      frostbited: frostbited,
-      damageLower: damageLower,
-      revived: revived,
-      petrified: petrified,
-      initLower: initLower,
-      damageBusted: damageBusted,
-      transformed: transformed,
-    );
-  }*/
 
   Unit copyWithDead({
     maxHp,
@@ -273,6 +299,17 @@ class Unit {
       damageBusted: false,
       revived: revived ?? this.revived,
       transformed: false,
+
+      level: level,
+      upgradeArmor: upgradeArmor,
+      upgradeDamage: upgradeDamage,
+      upgradeHeal: upgradeHeal,
+      upgradeInitiative: upgradeInitiative,
+      upgradePower: upgradePower,
+      upgradeHp: upgradeHp,
+
+      nextID: nextID,
+      prevID: prevID,
     );
   }
 
@@ -293,6 +330,15 @@ class Unit {
         armor: 0,
         attacks: [],
         attacksMap: {},
+        level: 0,
+        upgradeArmor: 0,
+        upgradeDamage: 0,
+        upgradeHeal: 0,
+        upgradeInitiative: 0,
+        upgradePower: 0,
+      upgradeHp: 0,
+      nextID: null,
+      prevID: null,
 
     );
   }

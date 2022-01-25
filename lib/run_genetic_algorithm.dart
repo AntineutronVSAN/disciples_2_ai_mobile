@@ -45,7 +45,8 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
     gattacksProvider: GattacksProvider(),
     gunitsProvider: GunitsProvider(),
     tglobalProvider: TglobalProvider(),
-    gtransfProvider: GtransfProvider()
+    gtransfProvider: GtransfProvider(),
+    gDynUpgrProvider: GDynUpgrProvider(),
   );
   repository.init();
   // Создание юнитов
@@ -106,6 +107,7 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
       gtransfProvider: GtransfProvider(),
       tglobalProvider: TglobalProvider(),
       gattacksProvider: GattacksProvider(),
+      gDynUpgrProvider: GDynUpgrProvider(),
       gunitsProvider: GunitsProvider());
 
   final gc = GeneticController(

@@ -29,6 +29,7 @@ class MainGameScreen extends StatelessWidget {
         gtransfProvider: GtransfProvider(),
         tglobalProvider: TglobalProvider(),
         gattacksProvider: GattacksProvider(),
+        gDynUpgrProvider: GDynUpgrProvider(),
         gunitsProvider: GunitsProvider());
 
     return BlocProvider<GameBloc>(
@@ -54,7 +55,7 @@ class MainGameScreen extends StatelessWidget {
             ),
             //aiController: AiController()),
             aiController:
-            AlphaBetaPruningController(treeDepth: 7, isTopTeam: true)),
+            AlphaBetaPruningController(treeDepth: 9, isTopTeam: true)),
         child: BlocBuilder<GameBloc, GameState>(
           builder: (context, state) {
             return MainGameScreenBody();
@@ -113,28 +114,63 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      //_getTeamItems(topTeam: true),
                       _getTeamWidgets(context, true),
-                      const SizedBox(
-                        height: 40,
-                      ),
+                      _getActionsWidget(context),
                       _getTeamWidgets(context, false),
-
+                      //_getTeamItems(topTeam: false),
                     ],
                   ),
-                  if (bloc.state.warScreenState == WarScreenState.pve)
-                    Positioned.fill(
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child:  _getRatingWidget(bloc.state.positionRating),)
-                    )
+
                 ],
               ),
-              _getActionsWidget(context),
+
             ],
           ),
         ),
       ),
     );
+  }
+
+  Widget _getTeamItems({required bool topTeam}) {
+
+    return Padding(
+      padding: const EdgeInsets.all(15.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Draggable<int>(
+            feedback: Container(
+              width: 50,
+              height: 50,
+              color: Colors.green,
+            ),
+            data: 0,
+            child: Container(
+              width: 50,
+              height: 50,
+              color: Colors.green,
+            ),
+            childWhenDragging: SizedBox.shrink(),
+          ),
+          const SizedBox(width: 50,),
+          Draggable<int>(
+            feedback: Container(
+              width: 50,
+              height: 50,
+              color: Colors.green,
+            ),
+            data: 1,
+            child: Container(
+              width: 50,
+              height: 50,
+              color: Colors.green,
+            ),
+          ),
+        ],
+      ),
+    );
+
   }
 
   Widget _getRatingWidget(double currentPositionRating) {
