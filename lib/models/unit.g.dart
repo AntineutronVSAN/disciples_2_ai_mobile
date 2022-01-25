@@ -54,6 +54,20 @@ Unit _$UnitFromJson(Map json) => Unit(
       nextID: json['nextID'] as String?,
       prevID: json['prevID'] as String?,
       overLevel: json['overLevel'] as bool? ?? false,
+      classImmune: (json['classImmune'] as Map).map(
+        (k, e) => MapEntry(
+            int.parse(k as String), $enumDecode(_$ImunneCategoryEnumMap, e)),
+      ),
+      sourceImmune: (json['sourceImmune'] as Map).map(
+        (k, e) => MapEntry(
+            int.parse(k as String), $enumDecode(_$ImunneCategoryEnumMap, e)),
+      ),
+      hasClassImunne: (json['hasClassImunne'] as Map).map(
+        (k, e) => MapEntry(int.parse(k as String), e as bool),
+      ),
+      hasSourceImunne: (json['hasSourceImunne'] as Map).map(
+        (k, e) => MapEntry(int.parse(k as String), e as bool),
+      ),
     );
 
 Map<String, dynamic> _$UnitToJson(Unit instance) => <String, dynamic>{
@@ -96,6 +110,14 @@ Map<String, dynamic> _$UnitToJson(Unit instance) => <String, dynamic>{
       'nextID': instance.nextID,
       'prevID': instance.prevID,
       'overLevel': instance.overLevel,
+      'classImmune': instance.classImmune
+          .map((k, e) => MapEntry(k.toString(), _$ImunneCategoryEnumMap[e])),
+      'sourceImmune': instance.sourceImmune
+          .map((k, e) => MapEntry(k.toString(), _$ImunneCategoryEnumMap[e])),
+      'hasClassImunne':
+          instance.hasClassImunne.map((k, e) => MapEntry(k.toString(), e)),
+      'hasSourceImunne':
+          instance.hasSourceImunne.map((k, e) => MapEntry(k.toString(), e)),
     };
 
 const _$AttackClassEnumMap = {
@@ -122,4 +144,10 @@ const _$AttackClassEnumMap = {
   AttackClass.L_BLISTER: 'L_BLISTER',
   AttackClass.L_BESTOW_WARDS: 'L_BESTOW_WARDS',
   AttackClass.L_SHATTER: 'L_SHATTER',
+};
+
+const _$ImunneCategoryEnumMap = {
+  ImunneCategory.no: 'no',
+  ImunneCategory.once: 'once',
+  ImunneCategory.always: 'always',
 };

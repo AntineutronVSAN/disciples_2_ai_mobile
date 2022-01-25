@@ -17,7 +17,7 @@ class ImunneController {
     final curAtckClass = currentAttack.attackClass;
     final curAtckSource = currentAttack.source;
     final targetUnit = units[target];
-    
+
     //final hasClassImmune =
 
     return 0;
