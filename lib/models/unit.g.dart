@@ -53,6 +53,7 @@ Unit _$UnitFromJson(Map json) => Unit(
       upgradeHp: json['upgradeHp'] as int,
       nextID: json['nextID'] as String?,
       prevID: json['prevID'] as String?,
+      overLevel: json['overLevel'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$UnitToJson(Unit instance) => <String, dynamic>{
@@ -94,6 +95,7 @@ Map<String, dynamic> _$UnitToJson(Unit instance) => <String, dynamic>{
       'upgradeHp': instance.upgradeHp,
       'nextID': instance.nextID,
       'prevID': instance.prevID,
+      'overLevel': instance.overLevel,
     };
 
 const _$AttackClassEnumMap = {

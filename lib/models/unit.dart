@@ -70,8 +70,23 @@ class Unit {
   final String? nextID;
   final String? prevID;
 
+  final bool overLevel;
   /* UPGRADE END */
 
+  /* IMMUNE START */
+  /// Ключ - класс атаки (23), значение - категория
+  final Map<int, ImunneCategory> classImmune;
+  /// Ключ - источник атаки (7), значение - категория
+  final Map<int, ImunneCategory> sourceImmune;
+
+  /// Флаг определяет, есть ли в данный момент защита от
+  /// класса атаки (23). Ключ - класс
+  final Map<int, bool> hasClassImunne;
+  /// Флаг определяет, есть ли в данный момент защита от
+  /// источника атаки (7). Ключ - класс
+  final Map<int, bool> hasSourceImunne;
+
+  /* IMMUNE END */
 
 
   Unit({
@@ -114,6 +129,12 @@ class Unit {
 
     this.nextID,
     this.prevID,
+    this.overLevel = false,
+
+    required this.classImmune,
+    required this.sourceImmune,
+    required this.hasClassImunne,
+    required this.hasSourceImunne,
   });
 
   factory Unit.fromJson(Map<String, dynamic> json) => _$UnitFromJson(json);
@@ -158,9 +179,16 @@ class Unit {
         upgradeInitiative: upgradeInitiative,
         upgradePower: upgradePower,
       upgradeHp: upgradeHp,
+      overLevel: overLevel,
 
       nextID: nextID,
       prevID: prevID,
+
+      classImmune: classImmune.map((key, value) => MapEntry(key, value)),
+      sourceImmune: sourceImmune.map((key, value) => MapEntry(key, value)),
+      hasClassImunne: hasClassImunne.map((key, value) => MapEntry(key, value)),
+      hasSourceImunne: hasSourceImunne.map((key, value) => MapEntry(key, value)),
+
     );
   }
 
@@ -203,9 +231,15 @@ class Unit {
     upgradeInitiative,
     upgradePower,
     upgradeHp,
+    overLevel,
 
     nextID,
     prevID,
+
+    classImmune,
+    sourceImmune,
+    hasClassImunne,
+    hasSourceImunne,
   }) {
     return Unit(
       isMoving: isMoving ?? this.isMoving,
@@ -245,9 +279,15 @@ class Unit {
       upgradeInitiative: upgradeInitiative ?? this.upgradeInitiative,
       upgradePower: upgradePower ?? this.upgradePower,
       upgradeHp: upgradeHp ?? this.upgradeHp,
+      overLevel: overLevel ?? this.overLevel,
 
       nextID: nextID ?? this.nextID,
       prevID: prevID ?? this.prevID,
+
+      classImmune: classImmune ?? this.classImmune,
+      sourceImmune: sourceImmune ?? this.sourceImmune,
+      hasSourceImunne: hasSourceImunne ?? this.hasSourceImunne,
+      hasClassImunne: hasClassImunne ?? this.hasClassImunne,
     );
   }
 
@@ -307,9 +347,15 @@ class Unit {
       upgradeInitiative: upgradeInitiative,
       upgradePower: upgradePower,
       upgradeHp: upgradeHp,
+      overLevel: overLevel,
 
       nextID: nextID,
       prevID: prevID,
+
+      hasSourceImunne: hasSourceImunne,
+      hasClassImunne: hasClassImunne,
+      classImmune: classImmune,
+      sourceImmune: sourceImmune,
     );
   }
 
@@ -336,10 +382,14 @@ class Unit {
         upgradeHeal: 0,
         upgradeInitiative: 0,
         upgradePower: 0,
+      overLevel: false,
       upgradeHp: 0,
       nextID: null,
       prevID: null,
-
+      classImmune: {},
+      sourceImmune: {},
+      hasClassImunne: {},
+      hasSourceImunne: {},
     );
   }
 
@@ -396,6 +446,24 @@ AttackType? attackTypeFromSource(int? source) {
       return AttackType.earth;
     case 7:
       return AttackType.air;
+  }
+  throw Exception();
+}
+
+enum ImunneCategory {
+  no,
+  once,
+  always
+}
+
+ImunneCategory attackCategoryFromValue(int value) {
+  switch (value) {
+    case 0:
+      return ImunneCategory.no;
+    case 1:
+      return ImunneCategory.once;
+    case 2:
+      return ImunneCategory.always;
   }
   throw Exception();
 }

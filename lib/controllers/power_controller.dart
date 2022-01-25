@@ -22,6 +22,10 @@ class PowerController {
 
     final attackPower = attack.power;
 
+    if (attack.power >= 100) {
+      return true;
+    }
+
     assert(attackPower >= 0 && attackPower <= 100);
 
     final nextRandom = randomExponentialDistribution.getNextInt(100, lambda: 2.5);

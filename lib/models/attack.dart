@@ -22,6 +22,8 @@ class UnitAttack {
 
   final int level;
 
+  final int source;
+
   /// Така может повеситься на юнита. Это поле покажет, сколько ещё будет
   /// висеть атака на юните
   final int currentDuration;
@@ -37,10 +39,11 @@ class UnitAttack {
     required this.attackId,
     this.currentDuration = 0,
 
-    /// Первоначальный урон. Неизменяемый!
     required this.firstDamage,
     required this.level,
     required this.firstInitiative,
+
+    required this.source,
   });
 
   UnitAttack deepCopy() {
@@ -56,7 +59,9 @@ class UnitAttack {
       attackId: attackId,
       firstDamage: firstDamage,
       level: level,
-      firstInitiative: firstInitiative);
+      firstInitiative: firstInitiative,
+      source: source,
+    );
   }
 
   factory UnitAttack.fromJson(Map<String, dynamic> json) =>
@@ -79,6 +84,8 @@ class UnitAttack {
     firstDamage,
     firstInitiative,
 
+    source,
+
   }) {
     return UnitAttack(
       power: power ?? this.power,
@@ -95,6 +102,8 @@ class UnitAttack {
 
       firstDamage: firstDamage ?? this.firstDamage,
       firstInitiative: firstInitiative ?? this.firstInitiative,
+
+        source: source ?? this.source,
     );
   }
 
@@ -111,6 +120,7 @@ class UnitAttack {
       firstDamage: 0,
       level: 0,
       firstInitiative: 0,
+      source: -1,
     );
   }
 

@@ -45,6 +45,8 @@ class UnitUpgradeController {
       currentHp: newHp,
       armor: newArmor,
 
+      overLevel: true,
+
       unitAttack: attack.copyWith(
         firstDamage: newDamage,
         damage: newDamage,

@@ -99,6 +99,7 @@ class GameRepository {
           '---- ${unit.level} '
           '---- ${unit.prev_id} '
           '---- ${unit.upgrade_b} '
+          '---- ${attack.source} '
           '---- ${dynUpgradeParams.negotiate} ')
       ;
 
@@ -114,6 +115,7 @@ class GameRepository {
         infinite: attack.infinite ?? false,
         firstDamage: attack.qty_dam ?? 0,
         level: attack.level ?? 2,
+        source: attack.source,
       );
 
       UnitAttack? unitAttack2;
@@ -131,6 +133,7 @@ class GameRepository {
           infinite: attack2.infinite ?? false,
           firstDamage: attack2.qty_dam ?? 0,
           level: attack2.level ?? 2,
+          source: attack2.source,
         );
       }
       final newMapAtck = <AttackClass, UnitAttack>{};
