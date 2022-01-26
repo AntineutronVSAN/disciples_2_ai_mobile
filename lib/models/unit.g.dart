@@ -43,6 +43,31 @@ Unit _$UnitFromJson(Map json) => Unit(
       petrified: json['petrified'] as bool? ?? false,
       initLower: json['initLower'] as bool? ?? false,
       damageBusted: json['damageBusted'] as bool? ?? false,
+      transformed: json['transformed'] as bool? ?? false,
+      level: json['level'] as int,
+      upgradeArmor: json['upgradeArmor'] as int,
+      upgradeDamage: json['upgradeDamage'] as int,
+      upgradeHeal: json['upgradeHeal'] as int,
+      upgradeInitiative: json['upgradeInitiative'] as int,
+      upgradePower: json['upgradePower'] as int,
+      upgradeHp: json['upgradeHp'] as int,
+      nextID: json['nextID'] as String?,
+      prevID: json['prevID'] as String?,
+      overLevel: json['overLevel'] as bool? ?? false,
+      classImmune: (json['classImmune'] as Map).map(
+        (k, e) => MapEntry(
+            int.parse(k as String), $enumDecode(_$ImunneCategoryEnumMap, e)),
+      ),
+      sourceImmune: (json['sourceImmune'] as Map).map(
+        (k, e) => MapEntry(
+            int.parse(k as String), $enumDecode(_$ImunneCategoryEnumMap, e)),
+      ),
+      hasClassImunne: (json['hasClassImunne'] as Map).map(
+        (k, e) => MapEntry(int.parse(k as String), e as bool),
+      ),
+      hasSourceImunne: (json['hasSourceImunne'] as Map).map(
+        (k, e) => MapEntry(int.parse(k as String), e as bool),
+      ),
     );
 
 Map<String, dynamic> _$UnitToJson(Unit instance) => <String, dynamic>{
@@ -74,6 +99,25 @@ Map<String, dynamic> _$UnitToJson(Unit instance) => <String, dynamic>{
       'initLower': instance.initLower,
       'revived': instance.revived,
       'damageBusted': instance.damageBusted,
+      'transformed': instance.transformed,
+      'level': instance.level,
+      'upgradeDamage': instance.upgradeDamage,
+      'upgradeArmor': instance.upgradeArmor,
+      'upgradeInitiative': instance.upgradeInitiative,
+      'upgradeHeal': instance.upgradeHeal,
+      'upgradePower': instance.upgradePower,
+      'upgradeHp': instance.upgradeHp,
+      'nextID': instance.nextID,
+      'prevID': instance.prevID,
+      'overLevel': instance.overLevel,
+      'classImmune': instance.classImmune
+          .map((k, e) => MapEntry(k.toString(), _$ImunneCategoryEnumMap[e])),
+      'sourceImmune': instance.sourceImmune
+          .map((k, e) => MapEntry(k.toString(), _$ImunneCategoryEnumMap[e])),
+      'hasClassImunne':
+          instance.hasClassImunne.map((k, e) => MapEntry(k.toString(), e)),
+      'hasSourceImunne':
+          instance.hasSourceImunne.map((k, e) => MapEntry(k.toString(), e)),
     };
 
 const _$AttackClassEnumMap = {
@@ -100,4 +144,10 @@ const _$AttackClassEnumMap = {
   AttackClass.L_BLISTER: 'L_BLISTER',
   AttackClass.L_BESTOW_WARDS: 'L_BESTOW_WARDS',
   AttackClass.L_SHATTER: 'L_SHATTER',
+};
+
+const _$ImunneCategoryEnumMap = {
+  ImunneCategory.no: 'no',
+  ImunneCategory.once: 'once',
+  ImunneCategory.always: 'always',
 };

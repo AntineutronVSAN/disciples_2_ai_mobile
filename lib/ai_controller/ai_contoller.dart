@@ -77,23 +77,28 @@
 ]
 
 
+TODO:
+* Заменить точность и урон на математическое ожидание
+
 */
 
-import 'package:d2_ai_v2/controllers/game_controller.dart';
-import 'package:d2_ai_v2/dart_nural/linear_network.dart';
+import 'package:d2_ai_v2/controllers/game_controller/actions.dart';
+import 'package:d2_ai_v2/controllers/game_controller/game_controller.dart';
 import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
-import 'package:d2_ai_v2/optim_algorythm/genetic/genetic_checkpoint.dart';
-import 'package:d2_ai_v2/optim_algorythm/genetic/genetic_individ.dart';
+import 'package:d2_ai_v2/optim_algorythm/base.dart';
+import 'package:d2_ai_v2/optim_algorythm/individual_base.dart';
 import 'package:d2_ai_v2/providers/file_provider_base.dart';
 
+import 'ai_controller_base.dart';
 
-import '../const.dart';
 
+class AiController implements AiControllerBase {
 
-class AiController {
-
-  late SimpleLinearNeuralNetwork? linearNN;
+  /// В основе контроллера ИИ лежит алгоритм. Сущность алгоритма - интерфейс
+  /// Алгоритм может быть различным. В частность, нейронной сетью или алгоритмом
+  /// neat
+  late AiAlgorithm? algorithm;
 
   bool inited = false;
 
@@ -101,44 +106,47 @@ class AiController {
   /// Игровые механики изменяют этих юнитов
   late List<Unit> unitsRefs;
 
-  void initFromIndivid(List<Unit> units, GeneticIndivid ind) {
-    linearNN = ind.nn;
+
+  @override
+  void initFromIndivid(List<Unit> units, IndividualBase ind) {
+    algorithm = ind.getAlgorithm();
     unitsRefs = units;
     inited = true;
   }
 
-  Future<void> initFromFile(List<Unit> units, String filePath, FileProviderBase fileProvider) async {
 
+  @override
+  Future<void> initFromFile(
+      List<Unit> units,
+      String filePath,
+      FileProviderBase fileProvider,
+      IndividualFactoryBase factory,
+      {int individIndex=0}
+      ) async {
     //final fileProvider = FileProvider(); // todo
     await fileProvider.init();
-    final checkPoint = GeneticAlgorithmCheckpoint.fromJson(await fileProvider.getDataByFileName(filePath));
-
-    linearNN = checkPoint.individs[0].nn;
+    //final checkPoint = NeatCheckpoint.fromJson(await fileProvider.getDataByFileName(filePath));
+    final checkPoint = await factory.getCheckpoint(filePath, fileProvider);
+    algorithm = checkPoint.getIndividuals()[individIndex].getAlgorithm();
     unitsRefs = units;
     inited = true;
   }
 
-  void init(List<Unit> units, {SimpleLinearNeuralNetwork? nn}) {
-    if (nn == null) {
-      linearNN = SimpleLinearNeuralNetwork(
-          input: neuralNetworkInputVectorLength,
-          output: actionsCount,
-          hidden: neuralNetworkHiddenCount,
-          layers: neuralNetworkHiddenLayersCount
-      );
-    } else {
-      linearNN = nn;
-    }
+  @override
+  void init(List<Unit> units, {
+    required AiAlgorithm algorithm,
+  }) {
+    this.algorithm = algorithm;
     unitsRefs = units;
     inited = true;
   }
-
 
   /// Запросить действия у контроллера AI
   /// Вернёт список действий, отсортированный в порядке
   /// убывания увренности. Тоесть вызывающий метод, в случае неуспеха
   /// лучшего действия, должен применить следующее
-  List<RequestAction> getAction(int currentActiveUnitCellIndex) {
+  @override
+  Future<List<RequestAction>> getAction(int currentActiveUnitCellIndex, {GameController? gameController}) async {
     if (!inited) {
       throw Exception();
     }
@@ -148,7 +156,7 @@ class AiController {
     final gameVector = _units2Vector(currentActiveUnitCellIndex);
 
     // Отправляется вектор в нейронку
-    final outputVector = linearNN!.forward(gameVector);
+    final outputVector = algorithm!.forward(gameVector);
 
     List<_NeuralRequestAction> nnActions = [];
 

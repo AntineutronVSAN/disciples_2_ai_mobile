@@ -19,6 +19,7 @@ UnitAttack _$UnitAttackFromJson(Map json) => UnitAttack(
       firstDamage: json['firstDamage'] as int,
       level: json['level'] as int,
       firstInitiative: json['firstInitiative'] as int,
+      source: json['source'] as int,
     );
 
 Map<String, dynamic> _$UnitAttackToJson(UnitAttack instance) =>
@@ -34,6 +35,7 @@ Map<String, dynamic> _$UnitAttackToJson(UnitAttack instance) =>
       'infinite': instance.infinite,
       'attackId': instance.attackId,
       'level': instance.level,
+      'source': instance.source,
       'currentDuration': instance.currentDuration,
     };
 

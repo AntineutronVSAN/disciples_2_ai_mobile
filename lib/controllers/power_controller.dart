@@ -14,20 +14,26 @@ class PowerController {
 
   PowerController({required this.randomExponentialDistribution});
 
-  bool applyAttack(UnitAttack attack) {
+  bool applyAttack(UnitAttack attack, {required bool rollMaxPower}) {
+
+    if (rollMaxPower) {
+      return true;
+    }
 
     final attackPower = attack.power;
+
+    if (attack.power >= 100) {
+      return true;
+    }
 
     assert(attackPower >= 0 && attackPower <= 100);
 
     final nextRandom = randomExponentialDistribution.getNextInt(100, lambda: 2.5);
 
+    //return true; // todo Убрать
+
     return attackPower > nextRandom;
 
-    /*if (random.nextInt(100) < attackPower) {
-      return true;
-    }
-    return false;*/
   }
 
 }

@@ -1,0 +1,12 @@
+genetic_controller:
+  input: 37
+  output: 99
+  first_neural_network_hidden: [2, 3, 4]
+  second_neural_network_hidden: [32, 64]
+  generations: 10000
+  threads: 10
+  individs: 100
+  cells_count: 12
+
+cell:
+  cell_vector_length: 100

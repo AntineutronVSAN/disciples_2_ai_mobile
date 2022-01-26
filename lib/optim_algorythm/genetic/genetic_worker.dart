@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:isolate';
 import 'package:d2_ai_v2/models/unit.dart';
-import 'package:d2_ai_v2/optim_algorythm/genetic/genetic_individ.dart';
+import 'package:d2_ai_v2/optim_algorythm/genetic/individs/genetic_individ.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'genetic_worker.g.dart';
