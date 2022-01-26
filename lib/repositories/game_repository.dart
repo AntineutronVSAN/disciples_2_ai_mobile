@@ -33,6 +33,8 @@ class GameRepository {
 
   final EvaluationController evalController = EvaluationController(); // TODO DI
 
+  static Unit globalEmptyUnit = Unit.emptyFroRepo();
+
   GameRepository({
     required this.gunitsProvider,
     required this.tglobalProvider,
@@ -184,7 +186,7 @@ class GameRepository {
         unitAttack: unitAttack1,
         unitAttack2: unitAttack2,
         armor: unit.armor ?? 0,
-        attacks: newListAtck,
+        //attacks: newListAtck,
         attacksMap: newMapAtck,
 
         level: unit.level,
@@ -237,7 +239,7 @@ class GameRepository {
   Unit getCopyUnitByName(String name) {
     final hasUnit = _unitsNamesMap.containsKey(name);
     if (!hasUnit) {
-      return Unit.empty();
+      return GameRepository.globalEmptyUnit;
     }
     return _unitsNamesMap[name]!.copyWith(
       unitWarId: uuid.v1(),

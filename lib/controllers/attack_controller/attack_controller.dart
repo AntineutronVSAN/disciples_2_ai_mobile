@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:d2_ai_v2/bloc/states.dart';
 import 'package:d2_ai_v2/controllers/attack_controller/apply_attack_part/apply_attack_part.dart';
 import 'package:d2_ai_v2/controllers/game_controller/actions.dart';
@@ -28,6 +30,9 @@ class AttackController {
   /// Хеш, запоминающий оригинальных юнитов при превращении
   final Map<String, Unit> transformedUnitsCache = {};
 
+  UpdateStateContextBase? updateStateContext;
+  List<Unit>? units;
+
   AttackController({
     required this.powerController,
     required this.damageScatter,
@@ -52,12 +57,17 @@ class AttackController {
     return copy;
   }
 
-  UpdateStateContextBase? updateStateContext;
-  List<Unit>? units;
+  /// Может ли атаковать [target] юнита [target].
+  /// Метод быстрый, будет использоваться AB контроллером
+  bool canAttack(int current, int target, List<Unit> units) {
+    return true;
+  }
+
+
 
   /// Обновить сосстояние UI, если необходимо и если объект предоставлен
   //Future<void> onUpdate({int duration = 500}) async {
-  Future<void> onUpdate({int duration = 100}) async {
+  FutureOr<void> onUpdate({int duration = 100}) async {
     if (updateStateContext != null && units != null) {
       /*updateStateContext!
           .emit(updateStateContext!.state.copyWith(units: units));*/
@@ -642,6 +652,10 @@ class AttackController {
     if (targetUnit.isDead || targetUnit.isEmpty()) {
       return ResponseAction.error(
           'Невозможное действие над мёртвым/пустым юнитом');
+    }
+    if (targetUnit.retreat) {
+      return ResponseAction.error(
+          'Юнит уже отступает');
     }
     switch (currentUnitAttack.targetsCount) {
       case TargetsCount.one:
@@ -1798,6 +1812,8 @@ class AttackController {
         current: context.current);
     return ResponseAction.success();
   }
+  // L_TRANSFORM_OTHER END
 
-// L_TRANSFORM_OTHER END
+
+
 }
