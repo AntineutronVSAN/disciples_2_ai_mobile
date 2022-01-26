@@ -53,18 +53,18 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     required this.aiController,
   }) : super(initialState) {
     _units.addAll([
-      Unit.empty(),
-      Unit.empty(),
-      Unit.empty(),
-      Unit.empty(),
-      Unit.empty(),
-      Unit.empty(),
-      Unit.empty(),
-      Unit.empty(),
-      Unit.empty(),
-      Unit.empty(),
-      Unit.empty(),
-      Unit.empty(),
+      GameRepository.globalEmptyUnit,
+      GameRepository.globalEmptyUnit,
+      GameRepository.globalEmptyUnit,
+      GameRepository.globalEmptyUnit,
+      GameRepository.globalEmptyUnit,
+      GameRepository.globalEmptyUnit,
+      GameRepository.globalEmptyUnit,
+      GameRepository.globalEmptyUnit,
+      GameRepository.globalEmptyUnit,
+      GameRepository.globalEmptyUnit,
+      GameRepository.globalEmptyUnit,
+      GameRepository.globalEmptyUnit,
     ]);
     repository.init();
     _allUnits.addAll(repository.getAllUnits());
@@ -122,19 +122,21 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   Future<void> _onUnitsLoad(OnUnitsLoad event, Emitter emit) async {
 
-    final List<String> unitsNames = UnitsPack.packs[9];
+    final List<String> unitsNames = UnitsPack.packs[2];
 
     assert(unitsNames.length == 12);
     var index = 0;
     for (var name in unitsNames) {
-      //_units[index] = repository.getCopyUnitByName(name);
+
+
       //if ((index+1) % 2 == 0) {
       if ((2) % 2 == 0) {
         _units[index] = repository.getRandomUnit();
       }
-
       // TODO Тестирую уровни
       unitUpgradeController.setLevel(12, index, _units);
+
+      _units[index] = repository.getCopyUnitByName(name);
 
       index++;
     }
@@ -216,18 +218,18 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     _warUnitsCopies.clear();
     _units.clear();
     _units.addAll([
-      Unit.empty(),
-      Unit.empty(),
-      Unit.empty(),
-      Unit.empty(),
-      Unit.empty(),
-      Unit.empty(),
-      Unit.empty(),
-      Unit.empty(),
-      Unit.empty(),
-      Unit.empty(),
-      Unit.empty(),
-      Unit.empty(),
+      GameRepository.globalEmptyUnit,
+      GameRepository.globalEmptyUnit,
+      GameRepository.globalEmptyUnit,
+      GameRepository.globalEmptyUnit,
+      GameRepository.globalEmptyUnit,
+      GameRepository.globalEmptyUnit,
+      GameRepository.globalEmptyUnit,
+      GameRepository.globalEmptyUnit,
+      GameRepository.globalEmptyUnit,
+      GameRepository.globalEmptyUnit,
+      GameRepository.globalEmptyUnit,
+      GameRepository.globalEmptyUnit,
     ]);
 
     emit(state.copyWith(

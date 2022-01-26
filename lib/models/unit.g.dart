@@ -28,9 +28,6 @@ Unit _$UnitFromJson(Map json) => Unit(
       retreat: json['retreat'] as bool? ?? false,
       armor: json['armor'] as int,
       paralyzed: json['paralyzed'] as bool? ?? false,
-      attacks: (json['attacks'] as List<dynamic>)
-          .map((e) => UnitAttack.fromJson(Map<String, dynamic>.from(e as Map)))
-          .toList(),
       attacksMap: (json['attacksMap'] as Map).map(
         (k, e) => MapEntry($enumDecode(_$AttackClassEnumMap, k),
             UnitAttack.fromJson(Map<String, dynamic>.from(e as Map))),
@@ -84,7 +81,6 @@ Map<String, dynamic> _$UnitToJson(Unit instance) => <String, dynamic>{
       'currentAttack': instance.currentAttack,
       'unitAttack': instance.unitAttack.toJson(),
       'unitAttack2': instance.unitAttack2?.toJson(),
-      'attacks': instance.attacks.map((e) => e.toJson()).toList(),
       'attacksMap': instance.attacksMap
           .map((k, e) => MapEntry(_$AttackClassEnumMap[k], e.toJson())),
       'uiInfo': instance.uiInfo,

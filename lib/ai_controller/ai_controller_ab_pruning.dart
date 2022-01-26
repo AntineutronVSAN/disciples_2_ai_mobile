@@ -12,7 +12,8 @@ import 'package:d2_ai_v2/optim_algorythm/individual_base.dart';
 import 'package:d2_ai_v2/providers/file_provider_base.dart';
 import 'package:d2_ai_v2/utils/cell_utils.dart';
 
-// todo При просчёте вариантов считаем, что никто не мажет
+const double globalMaxValue = double.infinity;
+const double globalMinValue = -double.infinity;
 
 /// Класс реализующий алгоритм альфа-бета отсечения
 /// ИИ стремится максимльно раздамажить отряд
@@ -236,16 +237,16 @@ class AlphaBetaPruningController extends AiControllerBase {
     //timeAction += bypassStopWatch.elapsedMilliseconds;
     //bypassStopWatch.reset();
 
-    if (!res.success) {
+    /*if (!res.success) {
       throw Exception("Действие должно быть возможным. Неврные проверки на "
           "верхних уровнях, либо некорректная копия контроллера игры");
-    }
+    }*/
     //bypassStopWatch.start();
     final maxValue = _calculateFitness(currentSnapshot.units);
     //timeFitness += bypassStopWatch.elapsedMilliseconds;
     //bypassStopWatch.reset();
 
-    final minValue = maxValue;
+    //final minValue = maxValue; TODO
 
     int newActiveCellIndex = res.activeCell!;
 
@@ -253,11 +254,12 @@ class AlphaBetaPruningController extends AiControllerBase {
 
     if (res.endGame || context.currentTreeDepth > treeDepth) {
       context.currentTreeDepth--;
-      if (newIsMax) {
+      return _ABPruningReturnValue(value: maxValue);
+      /*if (newIsMax) {
         return _ABPruningReturnValue(value: maxValue);
       } else {
         return _ABPruningReturnValue(value: minValue);
-      }
+      }*/
     }
 
     bool currentUnitAllTargets = currentSnapshot
@@ -288,6 +290,7 @@ class AlphaBetaPruningController extends AiControllerBase {
         if (a.type == ActionType.click) {
           if (currentUnitAllTargets) {
             if (currentUnitClicked) {
+              //print('adfadf                         asdasd           ----asd');
               continue;
             } else {
               currentUnitClicked = true;
@@ -300,17 +303,18 @@ class AlphaBetaPruningController extends AiControllerBase {
     }
     if (currentPossibleActions.isEmpty) {
       context.currentTreeDepth--;
-      if (newIsMax) {
+      /*if (newIsMax) {
         return _ABPruningReturnValue(value: maxValue);
       } else {
         return _ABPruningReturnValue(value: minValue);
-      }
+      }*/
+      return _ABPruningReturnValue(value: maxValue);
     }
-    assert(currentPossibleActions.length < context.possibleActions.length);
+    //assert(currentPossibleActions.length < context.possibleActions.length);
 
     if (newIsMax) {
       var maxEval = -double.infinity;
-      assert(currentPossibleActions.isNotEmpty);
+      //assert(currentPossibleActions.isNotEmpty);
       for (var cpa in currentPossibleActions) {
         final res = await _bypass(
             context: context,
@@ -350,7 +354,7 @@ class AlphaBetaPruningController extends AiControllerBase {
 
     } else {
       var minEval = double.infinity;
-      assert(currentPossibleActions.isNotEmpty);
+      //assert(currentPossibleActions.isNotEmpty);
       for (var cpa in currentPossibleActions) {
         final res = await _bypass(
             context: context,

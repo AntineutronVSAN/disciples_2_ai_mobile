@@ -150,8 +150,8 @@ extension ApplyAttack on AttackController {
       case AttackClass.L_FEAR:
         if (!targetUnit.retreat) {
           units[target] = units[target].copyWith(retreat: true);
+          await onUpdate();
         }
-        await onUpdate();
         break;
       case AttackClass.L_BOOST_DAMAGE:
         final attackLevel = attack.level;

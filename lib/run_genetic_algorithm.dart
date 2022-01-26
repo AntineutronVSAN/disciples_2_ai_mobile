@@ -56,7 +56,7 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
   repository.init();
   // Создание юнитов
 
-  final List<Unit> units = List.generate(12, (index) => Unit.empty());
+  final List<Unit> units = List.generate(12, (index) => GameRepository.globalEmptyUnit);
 
   /*final List<String> unitNames = [
     'Рейнджер',

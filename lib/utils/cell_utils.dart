@@ -105,12 +105,28 @@ bool checkCanHeal({required Unit unit,
   }
 }*/
 
+const List<bool> topTeamChecker = [
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+];
+
 bool checkIsTopTeam(int index) {
-  if (index <= 5) {
+  return topTeamChecker[index];
+  /*if (index <= 5) {
     return true;
   } else if (index > 5 && index <= 11) {
     return false;
-  }
+  }*/
   throw Exception();
 }
 
@@ -211,8 +227,15 @@ bool findNearestTarget({
       ((rightIndex == target) && useRightIndex);
 }
 
+
+const List<int> cellIndexLineNumber = [
+  0,0,0,1,1,1,2,2,2,3,3,3
+];
+
 int getLineNumber(int index) {
-  if (index < 0) {
+  if (index < 0 || index > 11) return -1;
+  return cellIndexLineNumber[index];
+  /*if (index < 0) {
     return -1;
   }
   int currentLineNumber = 0;
@@ -231,6 +254,6 @@ int getLineNumber(int index) {
     if (currentLineNumber > 100) {
       throw Exception();
     }
-  }
+  }*/
 
 }

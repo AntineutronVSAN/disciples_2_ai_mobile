@@ -30,7 +30,7 @@ class Unit {
   final UnitAttack? unitAttack2;
 
   /// Что висит на юните
-  final List<UnitAttack> attacks;
+  //final List<UnitAttack> attacks;
   final Map<AttackClass, UnitAttack> attacksMap;
 
   /// Что времено отображается на ячейке юнита
@@ -109,7 +109,7 @@ class Unit {
     this.retreat = false,
     required this.armor,
     this.paralyzed = false,
-    required this.attacks,
+    //required this.attacks,
     required this.attacksMap,
     this.poisoned = false,
     this.blistered = false,
@@ -144,6 +144,12 @@ class Unit {
   Map<String, dynamic> toJson() => _$UnitToJson(this);
 
   Unit deepCopy() {
+
+    Map<AttackClass, UnitAttack> newAtcksMap = {};
+    for(var i in attacksMap.entries) {
+      newAtcksMap[i.key] = i.value.deepCopy();
+    }
+
     return Unit(isDead: isDead,
         isMoving: isMoving,
         isProtected: isProtected,
@@ -157,9 +163,9 @@ class Unit {
         unitAttack: unitAttack.deepCopy(),
         unitAttack2: unitAttack2?.deepCopy(),
         armor: armor,
-        attacks: attacks.map((e) => e.deepCopy()).toList(),
-        attacksMap: attacksMap.map((key, value) => MapEntry(key, value.deepCopy())),
-
+        //attacks: attacks.map((e) => e.deepCopy()).toList(),
+        //attacksMap: attacksMap.map((key, value) => MapEntry(key, value.deepCopy())),
+        attacksMap: newAtcksMap,
         currentAttack: currentAttack,
         uiInfo: uiInfo,
         retreat: retreat,
@@ -260,7 +266,7 @@ class Unit {
       currentAttack: currentAttack ?? this.currentAttack,
       unitAttack: unitAttack ?? this.unitAttack,
       unitAttack2: unitAttack2 ?? this.unitAttack2,
-      attacks: attacks ?? this.attacks,
+      //attacks: attacks ?? this.attacks,
       attacksMap: attacksMap ?? this.attacksMap,
       uiInfo: (uiInfo is String) ? uiInfo : ((uiInfo != null) ? uiInfo
           .toString() : ""),
@@ -311,7 +317,7 @@ class Unit {
     revived,
   }) {
     this.attacksMap.clear();
-    this.attacks.clear();
+    //this.attacks.clear();
     return Unit(
       isMoving: false,
       isDead: true,
@@ -329,7 +335,7 @@ class Unit {
         initiative: this.unitAttack.firstInitiative,
       ),
       unitAttack2: unitAttack2 ?? this.unitAttack2,
-      attacks: this.attacks,
+      //attacks: this.attacks,
       attacksMap: this.attacksMap,
       uiInfo: "Мёртв",
       retreat: false,
@@ -364,22 +370,22 @@ class Unit {
     );
   }
 
-  static Unit empty() {
+  static Unit emptyFroRepo() { // TODO rename
     return Unit(
         isMoving: false,
         isDead: false,
         maxHp: 0,
         currentHp: 0,
-        unitName: 'Empty',
-        unitGameID: "",
+        unitName: 'EMPTY',
+        unitGameID: "EMPTY",
         isProtected: false,
         isWaiting: false,
-        unitWarId: "",
+        unitWarId: "EMPTY",
         isDoubleAttack: false,
         unitAttack: UnitAttack.empty(),
         unitAttack2: null,
         armor: 0,
-        attacks: [],
+        //attacks: [],
         attacksMap: {},
         level: 0,
         upgradeArmor: 0,
@@ -399,7 +405,7 @@ class Unit {
   }
 
   bool isEmpty() {
-    return unitGameID == "";
+    return unitGameID == "EMPTY";
   }
   bool isNotEmpty() {
     return !isEmpty();
@@ -475,3 +481,4 @@ ImunneCategory immuneCategoryFromValue(int value) {
   }
   throw Exception("Низвестная категория защиты");
 }
+
