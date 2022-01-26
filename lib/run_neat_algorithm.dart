@@ -7,6 +7,8 @@ import 'package:d2_ai_v2/optim_algorythm/neat/trees/tree_v1.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
 import 'package:d2_ai_v2/utils/crc.dart';
 
+import 'models/g_immu/g_immu_provider.dart';
+import 'models/g_immu_c/g_immu_c_provider.dart';
 import 'optim_algorythm/neat/edges/edge_v1.dart';
 import 'optim_algorythm/neat/nodes/node_v1.dart';
 
@@ -14,6 +16,8 @@ void main() async {
   //await startNeatAlgorithm();
 
   final a = GameRepository(
+      gimmuCProvider: GimmuCProvider(),
+      gimmuProvider: GimmuProvider(),
       gattacksProvider: GattacksProvider(),
       gunitsProvider: GunitsProvider(),
       gtransfProvider: GtransfProvider(),

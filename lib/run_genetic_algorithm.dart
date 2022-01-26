@@ -13,8 +13,11 @@ import 'controllers/attack_controller/attack_controller.dart';
 import 'controllers/damage_scatter.dart';
 import 'controllers/duration_controller.dart';
 import 'controllers/game_controller/game_controller.dart';
+import 'controllers/imunne_controller.dart';
 import 'controllers/initiative_shuffler.dart';
 import 'controllers/power_controller.dart';
+import 'models/g_immu/g_immu_provider.dart';
+import 'models/g_immu_c/g_immu_c_provider.dart';
 import 'models/unit.dart';
 import 'optim_algorythm/genetic_controller.dart';
 
@@ -42,6 +45,8 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
   //fromCheckpoint = 'Gen-799';
 
   final GameRepository repository = GameRepository(
+    gimmuCProvider: GimmuCProvider(),
+    gimmuProvider: GimmuProvider(),
     gattacksProvider: GattacksProvider(),
     gunitsProvider: GunitsProvider(),
     tglobalProvider: TglobalProvider(),
@@ -104,6 +109,8 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
       version: 1);
 
   final repo = GameRepository(
+      gimmuCProvider: GimmuCProvider(),
+      gimmuProvider: GimmuProvider(),
       gtransfProvider: GtransfProvider(),
       tglobalProvider: TglobalProvider(),
       gattacksProvider: GattacksProvider(),
@@ -113,6 +120,7 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
   final gc = GeneticController(
     gameController: GameController(
       attackController: AttackController(
+        immuneController: ImmuneController(),
         gameRepository: repo,
         powerController: PowerController(
           randomExponentialDistribution: RandomExponentialDistribution(),

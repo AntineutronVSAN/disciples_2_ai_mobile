@@ -128,7 +128,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     var index = 0;
     for (var name in unitsNames) {
       //_units[index] = repository.getCopyUnitByName(name);
-      if ((index+1) % 2 == 0) {
+      //if ((index+1) % 2 == 0) {
+      if ((2) % 2 == 0) {
         _units[index] = repository.getRandomUnit();
       }
 

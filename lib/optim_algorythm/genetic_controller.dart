@@ -2,8 +2,11 @@ import 'dart:async';
 import 'dart:isolate';
 import 'dart:math';
 import 'package:d2_ai_v2/ai_controller/ai_controller_base.dart';
+import 'package:d2_ai_v2/controllers/imunne_controller.dart';
 import 'package:d2_ai_v2/dart_nural/networks/linear_network_v2.dart';
 import 'package:d2_ai_v2/dart_nural/neural_base.dart';
+import 'package:d2_ai_v2/models/g_immu/g_immu_provider.dart';
+import 'package:d2_ai_v2/models/g_immu_c/g_immu_c_provider.dart';
 import 'package:d2_ai_v2/models/providers.dart';
 import 'package:d2_ai_v2/optim_algorythm/base.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
@@ -113,6 +116,8 @@ class GeneticController {
     final aiController = AiController();
     final individController = AiController();
     final repo = GameRepository(
+        gimmuCProvider: GimmuCProvider(),
+        gimmuProvider: GimmuProvider(),
         gtransfProvider: GtransfProvider(),
         tglobalProvider: TglobalProvider(),
         gattacksProvider: GattacksProvider(),
@@ -120,6 +125,7 @@ class GeneticController {
         gunitsProvider: GunitsProvider());
     final gameController = GameController(
       attackController: AttackController(
+        immuneController: ImmuneController(),
         gameRepository: repo,
         powerController: PowerController(
           randomExponentialDistribution: RandomExponentialDistribution(),

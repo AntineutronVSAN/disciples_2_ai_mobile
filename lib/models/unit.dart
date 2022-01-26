@@ -447,7 +447,7 @@ AttackType? attackTypeFromSource(int? source) {
     case 7:
       return AttackType.air;
   }
-  throw Exception();
+  throw Exception("Низвестный источник атаки");
 }
 
 enum ImunneCategory {
@@ -456,14 +456,14 @@ enum ImunneCategory {
   always
 }
 
-ImunneCategory attackCategoryFromValue(int value) {
+ImunneCategory immuneCategoryFromValue(int value) {
   switch (value) {
-    case 0:
-      return ImunneCategory.no;
     case 1:
-      return ImunneCategory.once;
+      return ImunneCategory.no;
     case 2:
+      return ImunneCategory.once;
+    case 3:
       return ImunneCategory.always;
   }
-  throw Exception();
+  throw Exception("Низвестная категория защиты");
 }

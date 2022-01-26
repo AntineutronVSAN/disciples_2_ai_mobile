@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:collection/src/iterable_extensions.dart';
 import 'package:d2_ai_v2/controllers/evaluation/evaluation_controller.dart';
 import 'package:d2_ai_v2/models/attack.dart';
+import 'package:d2_ai_v2/models/g_immu/g_immu_provider.dart';
+import 'package:d2_ai_v2/models/g_immu_c/g_immu_c_provider.dart';
 import 'package:d2_ai_v2/models/game_models.dart';
 import 'package:d2_ai_v2/models/providers.dart';
 import 'package:d2_ai_v2/utils/random_utils.dart';
@@ -19,6 +21,8 @@ class GameRepository {
   final GattacksProvider gattacksProvider;
   final GtransfProvider gtransfProvider;
   final GDynUpgrProvider gDynUpgrProvider;
+  final GimmuCProvider gimmuCProvider;
+  final GimmuProvider gimmuProvider;
 
   /// Мапа всех игровых юнитов с ID
   final Map<String, Gunits> _allGameUnits = {};
@@ -35,6 +39,8 @@ class GameRepository {
     required this.gattacksProvider,
     required this.gtransfProvider,
     required this.gDynUpgrProvider,
+    required this.gimmuProvider,
+    required this.gimmuCProvider,
   });
 
   List<Unit> getAllUnits() {
@@ -139,6 +145,31 @@ class GameRepository {
       final newMapAtck = <AttackClass, UnitAttack>{};
       final newListAtck = <UnitAttack>[];
 
+      final classImmuneMap = <int, ImunneCategory>{};
+      final sourceImmuneMap = <int, ImunneCategory>{};
+      final hasClassImmune = <int, bool>{};
+      final hasSourceImmune = <int, bool>{};
+
+      final unitClassImmu = gimmuCProvider.objects.where((element) =>
+        element.unit_id == unit.unit_id);
+      final unitSourceImmu = gimmuProvider.objects.where((element) =>
+        element.unit_id == unit.unit_id);
+
+      for(var i in unitClassImmu) {
+        final immuC = i.immunity;
+        final cat = i.immunecat;
+        classImmuneMap[immuC] = immuneCategoryFromValue(cat);
+        hasClassImmune[immuC] = true;
+      }
+
+      for(var i in unitSourceImmu) {
+        final immuC = i.immunity;
+        final cat = i.immunecat;
+        sourceImmuneMap[immuC] = immuneCategoryFromValue(cat);
+        hasSourceImmune[immuC] = true;
+      }
+
+
       Unit newUnit = Unit(
         isMoving: false,
         unitGameID: unit.unit_id,
@@ -163,6 +194,11 @@ class GameRepository {
         upgradeInitiative: dynUpgradeParams.initiative ?? 0,
         upgradePower: dynUpgradeParams.power ?? 0,
         upgradeHp: dynUpgradeParams.hit_point,
+
+        sourceImmune: sourceImmuneMap,
+        hasClassImunne: hasClassImmune,
+        hasSourceImunne: hasSourceImmune,
+        classImmune: classImmuneMap,
 
       );
 

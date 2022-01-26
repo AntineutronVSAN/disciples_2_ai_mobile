@@ -331,6 +331,60 @@ AttackClass attackClassFromGameAttack(int cls) {
   throw Exception();
 }
 
+int gameAttackNumberFromClass(AttackClass atck) {
+  switch(atck) {
+
+    case AttackClass.L_DAMAGE:
+      return 1;
+    case AttackClass.L_DRAIN:
+      return 2;
+    case AttackClass.L_PARALYZE:
+      return 3;
+    case AttackClass.L_HEAL:
+      return 6;
+    case AttackClass.L_FEAR:
+      return 7;
+    case AttackClass.L_BOOST_DAMAGE:
+      return 8;
+    case AttackClass.L_PETRIFY:
+      return 9;
+    case AttackClass.L_LOWER_DAMAGE:
+      return 10;
+    case AttackClass.L_LOWER_INITIATIVE:
+      return 11;
+    case AttackClass.L_POISON:
+      return 12;
+    case AttackClass.L_FROSTBITE:
+      return 13;
+    case AttackClass.L_REVIVE:
+      return 14;
+    case AttackClass.L_DRAIN_OVERFLOW:
+      return 15;
+    case AttackClass.L_CURE:
+      return 16;
+    case AttackClass.L_SUMMON:
+      return 17;
+    case AttackClass.L_DRAIN_LEVEL:
+      return 18;
+    case AttackClass.L_GIVE_ATTACK:
+      return 19;
+    case AttackClass.L_DOPPELGANGER:
+      return 20;
+    case AttackClass.L_TRANSFORM_SELF:
+      return 21;
+    case AttackClass.L_TRANSFORM_OTHER:
+      return 22;
+    case AttackClass.L_BLISTER:
+      return 23;
+    case AttackClass.L_BESTOW_WARDS:
+      return 24;
+    case AttackClass.L_SHATTER:
+      return 25;
+  }
+
+  throw Exception();
+}
+
 
 enum AttackClass {
   /// Простой урон
@@ -410,57 +464,3 @@ enum AttackClass {
   /// Разбить броню
   L_SHATTER,
 }
-
-
-
-
-// Копипастим, когда что-то нужно проверить по классу атаки
-/*switch (attackClass) {
-      case AttackClass.L_DAMAGE:
-        return false;
-      case AttackClass.L_DRAIN:
-        return false;
-      case AttackClass.L_PARALYZE:
-        return false;
-      case AttackClass.L_HEAL:
-        return false;
-      case AttackClass.L_FEAR:
-        return false;
-      case AttackClass.L_BOOST_DAMAGE:
-        return false;
-      case AttackClass.L_PETRIFY:
-        return false;
-      case AttackClass.L_LOWER_DAMAGE:
-        return false;
-      case AttackClass.L_LOWER_INITIATIVE:
-        return false;
-      case AttackClass.L_POISON:
-        return false;
-      case AttackClass.L_FROSTBITE:
-        return false;
-      case AttackClass.L_REVIVE:
-        return false;
-      case AttackClass.L_DRAIN_OVERFLOW:
-        return false;
-      case AttackClass.L_CURE:
-        return false;
-      case AttackClass.L_SUMMON:
-        return false;
-      case AttackClass.L_DRAIN_LEVEL:
-        return false;
-      case AttackClass.L_GIVE_ATTACK:
-        return false;
-      case AttackClass.L_DOPPELGANGER:
-        return false;
-      case AttackClass.L_TRANSFORM_SELF:
-        return false;
-      case AttackClass.L_TRANSFORM_OTHER:
-        return false;
-      case AttackClass.L_BLISTER:
-        return false;
-      case AttackClass.L_BESTOW_WARDS:
-        return false;
-      case AttackClass.L_SHATTER:
-        return false;
-    }
-*/

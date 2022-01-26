@@ -11,6 +11,7 @@ import 'package:d2_ai_v2/utils/cell_utils.dart';
 
 import '../damage_scatter.dart';
 import '../duration_controller.dart';
+import '../imunne_controller.dart';
 import 'attack_context.dart';
 
 class AttackController {
@@ -18,6 +19,7 @@ class AttackController {
   final DamageScatter damageScatter;
   final GameRepository gameRepository;
   final AttackDurationController attackDurationController;
+  final ImmuneController immuneController;
 
   Function(Unit unit)? onUnitAdd2Queue;
 
@@ -31,6 +33,7 @@ class AttackController {
     required this.damageScatter,
     required this.attackDurationController,
     required this.gameRepository,
+    required this.immuneController,
   });
 
   AttackController deepCopy() {
@@ -38,7 +41,9 @@ class AttackController {
         powerController: powerController,
         damageScatter: damageScatter,
         attackDurationController: attackDurationController,
-        gameRepository: gameRepository);
+        gameRepository: gameRepository,
+        immuneController: immuneController,
+    );
 
     for(var i in transformedUnitsCache.entries) {
       copy.transformedUnitsCache[i.key] = i.value.deepCopy();
@@ -218,6 +223,20 @@ class AttackController {
     final rollMaxPower = checkIsTopTeam(current) && rollConfig!.topTeamMaxPower ||
         !checkIsTopTeam(current) && rollConfig!.bottomTeamMaxPower;
 
+    // Проверка стойкостей
+    final result = immuneController.canApplyAttack(
+        units: units, target: target, currentAttack: attack);
+    if (result == 1) {
+      units[target] = units[target].copyWith(uiInfo: 'Щит');
+      await onUpdate();
+      return ResponseAction.success();
+    } else if (result == 2) {
+      units[target] = units[target].copyWith(uiInfo: 'Иммунитет');
+      await onUpdate();
+      return ResponseAction.success();
+    }
+
+
     if (powerController.applyAttack(attack,
         rollMaxPower: rollMaxPower)) {
       final responseAttack1 =
@@ -229,6 +248,20 @@ class AttackController {
       }
 
       if (attack2 != null) {
+
+        // Проверка стойкостей
+        final result = immuneController.canApplyAttack(
+            units: units, target: target, currentAttack: attack2);
+        if (result == 1) {
+          units[target] = units[target].copyWith(uiInfo: 'Щит');
+          await onUpdate();
+          return ResponseAction.success();
+        } else if (result == 2) {
+          units[target] = units[target].copyWith(uiInfo: 'Иммунитет');
+          await onUpdate();
+          return ResponseAction.success();
+        }
+
         if (powerController.applyAttack(attack2,
             rollMaxPower: rollMaxPower)) {
           final responseAttack2 = await applyAttackToUnit(

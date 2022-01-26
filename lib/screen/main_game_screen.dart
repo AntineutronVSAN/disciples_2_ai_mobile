@@ -8,8 +8,11 @@ import 'package:d2_ai_v2/controllers/attack_controller/attack_controller.dart';
 import 'package:d2_ai_v2/controllers/damage_scatter.dart';
 import 'package:d2_ai_v2/controllers/duration_controller.dart';
 import 'package:d2_ai_v2/controllers/game_controller/game_controller.dart';
+import 'package:d2_ai_v2/controllers/imunne_controller.dart';
 import 'package:d2_ai_v2/controllers/initiative_shuffler.dart';
 import 'package:d2_ai_v2/controllers/power_controller.dart';
+import 'package:d2_ai_v2/models/g_immu/g_immu_provider.dart';
+import 'package:d2_ai_v2/models/g_immu_c/g_immu_c_provider.dart';
 import 'package:d2_ai_v2/models/providers.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
 import 'package:d2_ai_v2/utils/math_utils.dart';
@@ -26,6 +29,8 @@ class MainGameScreen extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final repo = GameRepository(
+        gimmuCProvider: GimmuCProvider(),
+        gimmuProvider: GimmuProvider(),
         gtransfProvider: GtransfProvider(),
         tglobalProvider: TglobalProvider(),
         gattacksProvider: GattacksProvider(),
@@ -38,6 +43,7 @@ class MainGameScreen extends StatelessWidget {
             repository: repo,
             controller: GameController(
               attackController: AttackController(
+                immuneController: ImmuneController(),
                 gameRepository: repo,
                 powerController: PowerController(
                   randomExponentialDistribution:
@@ -55,7 +61,7 @@ class MainGameScreen extends StatelessWidget {
             ),
             //aiController: AiController()),
             aiController:
-            AlphaBetaPruningController(treeDepth: 9, isTopTeam: true)),
+            AlphaBetaPruningController(treeDepth: 5, isTopTeam: true)),
         child: BlocBuilder<GameBloc, GameState>(
           builder: (context, state) {
             return MainGameScreenBody();
