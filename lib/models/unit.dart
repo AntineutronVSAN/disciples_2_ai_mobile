@@ -1,6 +1,8 @@
 import 'package:d2_ai_v2/models/attack.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../observatory.dart';
+
 part 'unit.g.dart';
 
 @JsonSerializable()
@@ -241,6 +243,9 @@ class Unit {
     hasClassImunne,
     hasSourceImunne,
   }) {
+
+    //PerfomanceObservatory.addUnitCopyCount();
+
     return Unit(
       isMoving: isMoving ?? this.isMoving,
       isDead: isDead ?? this.isDead,
@@ -395,6 +400,9 @@ class Unit {
 
   bool isEmpty() {
     return unitGameID == "";
+  }
+  bool isNotEmpty() {
+    return !isEmpty();
   }
 }
 

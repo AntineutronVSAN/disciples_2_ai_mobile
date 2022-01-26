@@ -83,27 +83,46 @@ class GameController {
     snapshot.gameStarted = gameStarted;
     snapshot.currentActiveCellIndex = currentActiveCellIndex;
 
-    snapshot.units = units.map((e) => e.deepCopy()).toList();
+    //snapshot.units = units.map((e) => e.deepCopy()).toList(); TODO OPT
+    snapshot.units = List.generate(12, (index) => Unit.empty());
+    int index=0;
+    for(var i in units) {
+      if (i.isNotEmpty()) {
+        snapshot.units[index] = i.deepCopy();
+      }
+      index++;
+    }
+
     snapshot.unitsRef = [];
     for(var i in unitsRef) {
-      final u = snapshot.units.where((element) => element.unitWarId == i.unitWarId).toList();
-      if (u.length != 1) {
-        print(u);
+      //final u = snapshot.units.where((element) => element.unitWarId == i.unitWarId).toList();
+      List<Unit> u = [];
+      for (var j in snapshot.units) {
+        if (j.unitWarId == i.unitWarId) {
+          u.add(j);
+        }
       }
-      assert(u.length == 1);
+
       snapshot.unitsRef.add(u[0]);
     }
-    assert(unitsRef.length == snapshot.unitsRef.length);
+    //assert(unitsRef.length == snapshot.unitsRef.length);
 
     final newQueue = Queue<Unit>();
     for(var i in unitsQueue!) {
-      final u = snapshot.units.where((element) => element.unitWarId == i.unitWarId).toList();
-      assert(u.length == 1);
+      //final u = snapshot.units.where((element) => element.unitWarId == i.unitWarId).toList();
+      //assert(u.length == 1);
+      List<Unit> u = [];
+      for(var j in snapshot.units) {
+        if (j.unitWarId == i.unitWarId) {
+          u.add(j);
+        }
+      }
+
       newQueue.add(u[0]);
     }
     snapshot.unitsQueue = newQueue;
-    assert(units.length == snapshot.units.length);
-    assert(unitsQueue!.length == snapshot.unitsQueue!.length);
+    //assert(units.length == snapshot.units.length);
+    //assert(unitsQueue!.length == snapshot.unitsQueue!.length);
 
 
     snapshot.unitPosition = unitPosition.map((key, value) => MapEntry(key, value));
@@ -338,7 +357,22 @@ class GameController {
 
       if (units[currentActiveUnitIndex].retreat) {
         //print('Юнит отступил');
-        units[currentActiveUnitIndex] = Unit.empty();
+        final emptyUnit = Unit.empty();
+        final retreatedUnitWarId = units[currentActiveUnitIndex].unitWarId;
+        int? retreatedUnitRefIndex;
+        int index = 0;
+        for(var i in unitsRef) {
+          if (i.unitWarId == retreatedUnitWarId) {
+            retreatedUnitRefIndex = index;
+            break;
+          }
+          index++;
+        }
+        assert(retreatedUnitRefIndex != null);
+
+        units[currentActiveUnitIndex] = emptyUnit;
+        unitsRef[retreatedUnitRefIndex!] = emptyUnit;
+
         continue;
       }
 
@@ -437,7 +471,7 @@ class GameController {
   }
 
   Future<ResponseAction> _handleProtect(RequestAction action) async {
-    final currentUnit = units[currentActiveCellIndex!];
+    //final currentUnit = units[currentActiveCellIndex!];
 
     // todo Нв второй атаке, когда все фуловые, невозможнол ничего сделать
     // todo пока костыль, вторая атака не учитывается. Нужно учитывать!

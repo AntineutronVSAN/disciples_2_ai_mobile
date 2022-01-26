@@ -61,7 +61,7 @@ class MainGameScreen extends StatelessWidget {
             ),
             //aiController: AiController()),
             aiController:
-            AlphaBetaPruningController(treeDepth: 5, isTopTeam: true)),
+            AlphaBetaPruningController(treeDepth: 9, isTopTeam: true)),
         child: BlocBuilder<GameBloc, GameState>(
           builder: (context, state) {
             return MainGameScreenBody();
