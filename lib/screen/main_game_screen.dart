@@ -1,5 +1,6 @@
 
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:d2_ai_v2/ai_controller/ai_controller_ab_pruning.dart';
 import 'package:d2_ai_v2/bloc/bloc.dart';
 import 'package:d2_ai_v2/bloc/events.dart';
@@ -61,7 +62,7 @@ class MainGameScreen extends StatelessWidget {
             ),
             //aiController: AiController()),
             aiController:
-            AlphaBetaPruningController(treeDepth: 9, isTopTeam: true)),
+            AlphaBetaPruningController(treeDepth: 11, isTopTeam: true)),
         child: BlocBuilder<GameBloc, GameState>(
           builder: (context, state) {
             return MainGameScreenBody();
@@ -127,7 +128,11 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
                       //_getTeamItems(topTeam: false),
                     ],
                   ),
-
+                  Positioned.fill(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: _getRatingWidget(bloc.state.positionRating))
+                  ),
                 ],
               ),
 
@@ -392,6 +397,8 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
           Color.alphaBlend(unitHpColor.withOpacity(0.5), Colors.blue[900]!);
     }
 
+    const double cellPadding = 3.0;
+
     return GestureDetector(
       onTap: () => _onCellTap(context, state, cellNumber, bloc),
       onLongPress: () => bloc.add(OnCellLongTapEvent(cellNumber: cellNumber)),
@@ -401,7 +408,7 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
             opacity: unit.isDead ? 0.1 : 1.0,
             duration: const Duration(milliseconds: 600),
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(cellPadding),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
@@ -422,7 +429,7 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
               child: Opacity(
                 opacity: 0.7,
                 child: AnimatedContainer(
-                  margin: const EdgeInsets.all(8.0),
+                  margin: const EdgeInsets.all(cellPadding),
                   width: unit.isMoving ? 120.0 : 100.0,
                   height: scaleFactor * (unit.isMoving ? 120.0 : 100.0),
                   decoration: BoxDecoration(
@@ -440,10 +447,10 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
                 padding: const EdgeInsets.symmetric(horizontal: 15.0),
                 child: Align(
                   alignment: Alignment.topCenter,
-                  child: Text(
+                  child: AutoSizeText(
                     unit.unitName,
                     style: const TextStyle(color: Colors.black, fontSize: 12),
-                    maxLines: 3,
+                    maxLines: 2,
                   ),
                 ),
               )),
@@ -535,7 +542,7 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  AutoSizeText(
                     'HP ' +
                         unit.currentHp.toString() +
                         ' / ' +
@@ -546,8 +553,8 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
                         fontWeight: FontWeight.bold),
                   ),
                   if (unit.unitAttack.damage > 0)
-                    RichText(
-                        text: TextSpan(children: [
+                    AutoSizeText.rich(
+                        TextSpan(children: [
                           if (unit.unitAttack.damage > 0)
                             TextSpan(
                                 text: 'DMG ${unit.unitAttack.firstDamage}',
@@ -567,8 +574,8 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
                                 style: GameStyles.getUnitShortDescriptionStyle()),
                         ])),
                   if (unit.unitAttack.firstInitiative > 0)
-                    RichText(
-                        text: TextSpan(children: [
+                    AutoSizeText.rich(
+                        TextSpan(children: [
                           if (unit.unitAttack.firstInitiative > 0)
                             TextSpan(
                                 text: 'INI ${unit.unitAttack.firstInitiative}',
@@ -592,7 +599,7 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 100),
                 child: Center(
-                  child: Text(
+                  child: AutoSizeText(
                     unit.uiInfo,
                     textAlign: TextAlign.center,
                     style: const TextStyle(

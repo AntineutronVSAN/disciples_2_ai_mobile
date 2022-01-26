@@ -57,14 +57,6 @@ class AttackController {
     return copy;
   }
 
-  /// Может ли атаковать [target] юнита [target].
-  /// Метод быстрый, будет использоваться AB контроллером
-  bool canAttack(int current, int target, List<Unit> units) {
-    return true;
-  }
-
-
-
   /// Обновить сосстояние UI, если необходимо и если объект предоставлен
   //Future<void> onUpdate({int duration = 500}) async {
   FutureOr<void> onUpdate({int duration = 100}) async {
@@ -1816,4 +1808,105 @@ class AttackController {
 
 
 
+  /// На какую команду может кликать юнит
+  /// true - Может кликать на верхнюю команду
+  static bool unitCanClickTop({
+    required List<Unit> units,
+    required int current,
+    required int target,
+  }) {
+
+    final currentUnit = units[current];
+    final targetUnit = units[target];
+
+    if (targetUnit.isEmpty()) {
+      // TODO Призыв
+      return false;
+    }
+
+    bool currentIsTopTeam = checkIsTopTeam(current);
+    bool targetIsTopTeam = checkIsTopTeam(target);
+
+    bool result;
+
+    switch(currentUnit.unitAttack.attackClass) {
+
+      case AttackClass.L_DAMAGE:
+        result = currentIsTopTeam != targetIsTopTeam;
+        break;
+      case AttackClass.L_DRAIN:
+        result = currentIsTopTeam != targetIsTopTeam;
+        break;
+      case AttackClass.L_PARALYZE:
+        result = currentIsTopTeam != targetIsTopTeam;
+        break;
+      case AttackClass.L_HEAL:
+        result = currentIsTopTeam == targetIsTopTeam;
+        break;
+      case AttackClass.L_FEAR:
+        result = currentIsTopTeam != targetIsTopTeam;
+        break;
+      case AttackClass.L_BOOST_DAMAGE:
+        result = currentIsTopTeam == targetIsTopTeam && current != target;
+        break;
+      case AttackClass.L_PETRIFY:
+        result = currentIsTopTeam != targetIsTopTeam;
+        break;
+      case AttackClass.L_LOWER_DAMAGE:
+        result = currentIsTopTeam != targetIsTopTeam;
+        break;
+      case AttackClass.L_LOWER_INITIATIVE:
+        result = currentIsTopTeam != targetIsTopTeam;
+        break;
+      case AttackClass.L_POISON:
+        result = currentIsTopTeam != targetIsTopTeam;
+        break;
+      case AttackClass.L_FROSTBITE:
+        result = currentIsTopTeam != targetIsTopTeam;
+        break;
+      case AttackClass.L_REVIVE:
+        result = currentIsTopTeam == targetIsTopTeam;
+        break;
+      case AttackClass.L_DRAIN_OVERFLOW:
+        result = currentIsTopTeam != targetIsTopTeam;
+        break;
+      case AttackClass.L_CURE:
+        result = currentIsTopTeam == targetIsTopTeam;
+        break;
+      case AttackClass.L_SUMMON:
+        return false;
+        throw Exception();
+      case AttackClass.L_DRAIN_LEVEL:
+        return false;
+        throw Exception();
+      case AttackClass.L_GIVE_ATTACK:
+        result = currentIsTopTeam == targetIsTopTeam && current != target;
+        break;
+      case AttackClass.L_DOPPELGANGER:
+        return false;
+        throw Exception();
+        break;
+      case AttackClass.L_TRANSFORM_SELF:
+        return false;
+        throw Exception();
+        break;
+      case AttackClass.L_TRANSFORM_OTHER:
+        result = currentIsTopTeam != targetIsTopTeam;
+        break;
+      case AttackClass.L_BLISTER:
+        result = currentIsTopTeam != targetIsTopTeam;
+        break;
+      case AttackClass.L_BESTOW_WARDS:
+        return false;
+        throw Exception();
+        break;
+      case AttackClass.L_SHATTER:
+        result = currentIsTopTeam != targetIsTopTeam;
+        break;
+    }
+
+    return result;
+  }
 }
+
+

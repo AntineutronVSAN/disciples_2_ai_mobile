@@ -1,6 +1,10 @@
 
 import 'package:d2_ai_v2/update_state_context/update_state_context_base.dart';
 
+
+/// Объект запроса действия к игровому контроллеру
+/// Не допускается добавление ссылочных полей! Т.к. может сломаться
+/// АБ алгоритм
 class RequestAction {
   final int? currentCellIndex;
   final int? targetCellIndex;

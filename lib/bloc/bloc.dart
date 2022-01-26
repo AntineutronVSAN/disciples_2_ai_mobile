@@ -122,21 +122,54 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   Future<void> _onUnitsLoad(OnUnitsLoad event, Emitter emit) async {
 
-    final List<String> unitsNames = UnitsPack.packs[2];
+    final List<String> unitsNames = UnitsPack.packs[1];
+    //final List<String> unitsNames = UnitsPack.tournaments[9];
 
+    /*final unitsTests = <Unit>[
+      repository.getRandomUnit(options: RandomUnitOptions(backLine: true, frontLine: false)),
+      repository.getRandomUnit(options: RandomUnitOptions(backLine: true, frontLine: false)),
+      repository.getRandomUnit(options: RandomUnitOptions(backLine: true, frontLine: false)),
+      repository.getRandomUnit(options: RandomUnitOptions(backLine: false, frontLine: true)),
+      repository.getRandomUnit(options: RandomUnitOptions(backLine: false, frontLine: true)),
+      repository.getRandomUnit(options: RandomUnitOptions(backLine: false, frontLine: true)),
+    ];
+
+    final warUnits = <Unit>[
+      unitsTests[0].deepCopy()..copyWith(unitWarId: '1'),
+      unitsTests[1].deepCopy()..copyWith(unitWarId: '2'),
+      unitsTests[2].deepCopy()..copyWith(unitWarId: '3'),
+
+      unitsTests[3].deepCopy()..copyWith(unitWarId: '4'),
+      unitsTests[4].deepCopy()..copyWith(unitWarId: '5'),
+      unitsTests[5].deepCopy()..copyWith(unitWarId: '6'),
+
+      unitsTests[3].deepCopy()..copyWith(unitWarId: '7'),
+      unitsTests[4].deepCopy()..copyWith(unitWarId: '8'),
+      unitsTests[5].deepCopy()..copyWith(unitWarId: '9'),
+
+      unitsTests[0].deepCopy()..copyWith(unitWarId: '10'),
+      unitsTests[1].deepCopy()..copyWith(unitWarId: '11'),
+      unitsTests[2].deepCopy()..copyWith(unitWarId: '12'),
+    ];
+    var index = 0;
+    for(var i in warUnits) {
+      _units[index] = i;
+      unitUpgradeController.setLevel(9, index, _units);
+
+      index++;
+    }*/
     assert(unitsNames.length == 12);
     var index = 0;
     for (var name in unitsNames) {
-
 
       //if ((index+1) % 2 == 0) {
       if ((2) % 2 == 0) {
         _units[index] = repository.getRandomUnit();
       }
       // TODO Тестирую уровни
-      unitUpgradeController.setLevel(12, index, _units);
+      unitUpgradeController.setLevel(9, index, _units);
 
-      _units[index] = repository.getCopyUnitByName(name);
+      //_units[index] = repository.getCopyUnitByName(name);
 
       index++;
     }

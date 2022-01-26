@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:collection/src/iterable_extensions.dart';
 import 'package:d2_ai_v2/ai_controller/ai_controller_base.dart';
+import 'package:d2_ai_v2/controllers/attack_controller/attack_controller.dart';
 import 'package:d2_ai_v2/controllers/evaluation/evaluation_controller.dart';
 import 'package:d2_ai_v2/controllers/game_controller/actions.dart';
 import 'package:d2_ai_v2/controllers/game_controller/game_controller.dart';
@@ -12,24 +13,27 @@ import 'package:d2_ai_v2/optim_algorythm/individual_base.dart';
 import 'package:d2_ai_v2/providers/file_provider_base.dart';
 import 'package:d2_ai_v2/utils/cell_utils.dart';
 
+import 'ab_prunning_actions_order_controller.dart';
+
 const double globalMaxValue = double.infinity;
 const double globalMinValue = -double.infinity;
 
 /// Класс реализующий алгоритм альфа-бета отсечения
-/// ИИ стремится максимльно раздамажить отряд
-/// Противник стремится также раздамажить отряд
 class AlphaBetaPruningController extends AiControllerBase {
+
   /// Глубина рассчёта в ходах (не в раундах)
   int treeDepth;
 
   /// ИИ играет за верхнюю команду?
   final bool isTopTeam;
 
+  final actionsOrderController = ActionsOrderController(); // TODO DI
+
   AlphaBetaPruningController(
       {required this.treeDepth, required this.isTopTeam});
 
   /// Кеш нод
-  final Map<String, _ABPruningReturnValue> _nodesCache = {};
+  //final Map<String, _ABPruningReturnValue> _nodesCache = {};
 
   /// Сколько нод проанализировано
   int nodesCount = 0;
@@ -48,7 +52,12 @@ class AlphaBetaPruningController extends AiControllerBase {
   /// Контроллер для оценки позиции
   EvaluationController evaluationController = EvaluationController(); // tood DI
 
-
+  /// Порог значения для выбора действия защиты или атаки
+  /// Например, если [protectClickMinValue] = 1
+  /// СФО при защите = 5.1
+  /// СФО при атаке =  5.01
+  /// Выберется действие атаки, т.к. 5.1 - 5.01 < [protectClickMinValue]
+  static const double protectClickMinValue = 1.0;
 
 
   @override
@@ -56,7 +65,7 @@ class AlphaBetaPruningController extends AiControllerBase {
       {GameController? gameController}) async {
     assert(gameController != null);
     nodesCount = 0;
-    _nodesCache.clear();
+    //_nodesCache.clear();
 
     timeCopyAction = 0;
     timeCopyController = 0;
@@ -69,21 +78,23 @@ class AlphaBetaPruningController extends AiControllerBase {
     // todo Подумать как улучшить функцию оценки
 
     // Список всех возможных действий
-    List<RequestAction> allPossibleActions = [
+    final allPossibleActions = actionsOrderController.getAllPossibleActions();
+    /*List<RequestAction> allPossibleActions = [
+      ...List.generate(12, (index) {
+        return RequestAction(
+            type: ActionType.click,
+            targetCellIndex: index,
+            currentCellIndex: null);
 
+      }),
       RequestAction(
           type: ActionType.protect,
           targetCellIndex: null,
           currentCellIndex: null),
       RequestAction(
           type: ActionType.wait, targetCellIndex: null, currentCellIndex: null),
-      ...List.generate(12, (index) {
-        return RequestAction(
-            type: ActionType.click,
-            targetCellIndex: index,
-            currentCellIndex: null);
-      }),
-    ];
+    ];*/
+
 
     // Текущий снапшот контроллера
     final currentSnapshot = gameController!.getSnapshot();
@@ -107,7 +118,14 @@ class AlphaBetaPruningController extends AiControllerBase {
     // Первым дело нужно получить список возможных действий от копии контроллера
     List<RequestAction> currentPossibleActions = [];
 
-    for (var action in allPossibleActions) {
+
+    final orderedPossibleActions = actionsOrderController.getOrderActions(
+        possibleActions: context.possibleActions,
+        units: currentSnapshot.units,
+        current: currentSnapshot.currentActiveCellIndex!);
+
+    //for (var action in allPossibleActions) {
+    for (var action in orderedPossibleActions) {
       // На всякий пожарный делается копия действия
       final a = action.deepCopy();
       final g = currentSnapshot.getSnapshot();
@@ -146,6 +164,7 @@ class AlphaBetaPruningController extends AiControllerBase {
         if (currentUnitAllTargets &&
             currentUnitClicked &&
             cpa.type == ActionType.click) {
+          index++;
           continue;
         }
 
@@ -176,6 +195,14 @@ class AlphaBetaPruningController extends AiControllerBase {
 
         _results.actions.add(cpa.deepCopy());
         _results.results.add(res.value);
+
+        if (cpa.type == ActionType.click) {
+          if (currentUnitAllTargets) {
+            if (!currentUnitClicked) {
+              currentUnitClicked = true;
+            }
+          }
+        }
 
         index++;
       }
@@ -224,29 +251,20 @@ class AlphaBetaPruningController extends AiControllerBase {
     /// Является ли вызывающая нода функцией MAX
     required bool isMax,
   }) async {
-    //context.addRec();
+
     context.currentTreeDepth++;
     nodesCount++;
-    //bypassStopWatch.start();
+
     final currentSnapshot = snapshot.getSnapshot();
-    //timeCopyController += bypassStopWatch.elapsedMilliseconds;
-    //bypassStopWatch.reset();
 
-    //bypassStopWatch.start();
     final res = await currentSnapshot.makeAction(action);
-    //timeAction += bypassStopWatch.elapsedMilliseconds;
-    //bypassStopWatch.reset();
 
-    /*if (!res.success) {
+    if (!res.success) {
       throw Exception("Действие должно быть возможным. Неврные проверки на "
           "верхних уровнях, либо некорректная копия контроллера игры");
-    }*/
-    //bypassStopWatch.start();
-    final maxValue = _calculateFitness(currentSnapshot.units);
-    //timeFitness += bypassStopWatch.elapsedMilliseconds;
-    //bypassStopWatch.reset();
+    }
 
-    //final minValue = maxValue; TODO
+    final maxValue = _calculateFitness(currentSnapshot.units);
 
     int newActiveCellIndex = res.activeCell!;
 
@@ -255,11 +273,6 @@ class AlphaBetaPruningController extends AiControllerBase {
     if (res.endGame || context.currentTreeDepth > treeDepth) {
       context.currentTreeDepth--;
       return _ABPruningReturnValue(value: maxValue);
-      /*if (newIsMax) {
-        return _ABPruningReturnValue(value: maxValue);
-      } else {
-        return _ABPruningReturnValue(value: minValue);
-      }*/
     }
 
     bool currentUnitAllTargets = currentSnapshot
@@ -269,28 +282,40 @@ class AlphaBetaPruningController extends AiControllerBase {
     bool currentUnitClicked = false;
 
     List<RequestAction> currentPossibleActions = [];
-    for (var defaultAction in context.possibleActions) {
-      //bypassStopWatch.start();
-      //final a = defaultAction.deepCopy();
-      final a = defaultAction;
-      //timeCopyAction += bypassStopWatch.elapsedMilliseconds;
-      //bypassStopWatch.reset();
 
-      //bypassStopWatch.start();
+    final orderedPossibleActions = actionsOrderController.getOrderActions(
+        possibleActions: context.possibleActions,
+        units: currentSnapshot.units,
+        current: newActiveCellIndex);
+
+    //for (var a in context.possibleActions) {
+    for (var a in orderedPossibleActions) {
+
+      final actionIsClick = a.type == ActionType.click;
+      bool canMakeAction = true;
+      // Перед тем, как скопировать контроллер и совершить над ним действие
+      // (в идеале вообще не копировать его) через контроллер атак проверим
+      // можно ли совершить данное действие
+      if (actionIsClick) {
+        canMakeAction = AttackController.unitCanClickTop(
+            target: a.targetCellIndex!,
+            current: newActiveCellIndex,
+            units: currentSnapshot.units);
+      }
+
+      if (!canMakeAction) {
+        //print('UNPOSSIBLE ACTION current $newActiveCellIndex target ${a.targetCellIndex!}');
+        continue;
+      }
+
       final g = currentSnapshot.getSnapshot();
-      //timeCopyController += bypassStopWatch.elapsedMilliseconds;
-      //bypassStopWatch.reset();
 
-      //bypassStopWatch.start();
       final r = await g.makeAction(a);
-      //timeAction += bypassStopWatch.elapsedMilliseconds;
-      //bypassStopWatch.reset();
 
       if (r.success) {
-        if (a.type == ActionType.click) {
+        if (actionIsClick) {
           if (currentUnitAllTargets) {
             if (currentUnitClicked) {
-              //print('adfadf                         asdasd           ----asd');
               continue;
             } else {
               currentUnitClicked = true;
@@ -303,14 +328,8 @@ class AlphaBetaPruningController extends AiControllerBase {
     }
     if (currentPossibleActions.isEmpty) {
       context.currentTreeDepth--;
-      /*if (newIsMax) {
-        return _ABPruningReturnValue(value: maxValue);
-      } else {
-        return _ABPruningReturnValue(value: minValue);
-      }*/
       return _ABPruningReturnValue(value: maxValue);
     }
-    //assert(currentPossibleActions.length < context.possibleActions.length);
 
     if (newIsMax) {
       var maxEval = -double.infinity;
@@ -324,28 +343,10 @@ class AlphaBetaPruningController extends AiControllerBase {
             alpha: alpha,
             beta: beta,
             isMax: newIsMax);
-        /*final nodeString = getABPruningNodeKeySync(controller: currentSnapshot, action: cpa);
-        final cacheHasNode = _nodesCache.containsKey(nodeString);
-        _ABPruningReturnValue res;
-        if (cacheHasNode) {
-          res = _nodesCache[nodeString]!;
-        } else {
-          res = _bypass(
-              context: context,
-              action: cpa,
-              snapshot: currentSnapshot,
-              activeCellIndex: newActiveCellIndex,
-              alpha: alpha,
-              beta: beta,
-              isMax: newIsMax
-          );
-          _nodesCache[nodeString] = res;
-        }*/
 
         maxEval = max(res.value, maxEval);
         alpha = max(alpha, res.value);
         if (beta <= alpha) {
-          //print('Обрезка');
           break;
         }
       }
@@ -354,7 +355,6 @@ class AlphaBetaPruningController extends AiControllerBase {
 
     } else {
       var minEval = double.infinity;
-      //assert(currentPossibleActions.isNotEmpty);
       for (var cpa in currentPossibleActions) {
         final res = await _bypass(
             context: context,
@@ -364,32 +364,6 @@ class AlphaBetaPruningController extends AiControllerBase {
             alpha: alpha,
             beta: beta,
             isMax: newIsMax);
-        /*final nodeString = getABPruningNodeKeySync(controller: currentSnapshot, action: cpa);
-        final cacheHasNode = _nodesCache.containsKey(nodeString);
-        _ABPruningReturnValue res;
-        if (cacheHasNode) {
-          res = _nodesCache[nodeString]!;
-        } else {
-          res = _bypass(
-              context: context,
-              action: cpa,
-              snapshot: currentSnapshot,
-              activeCellIndex: newActiveCellIndex,
-              alpha: alpha,
-              beta: beta,
-              isMax: newIsMax
-          );
-          _nodesCache[nodeString] = res;
-        }*/
-        /*final res = _bypass(
-          context: context,
-          action: cpa,
-          snapshot: currentSnapshot,
-          activeCellIndex: newActiveCellIndex,
-          alpha: alpha,
-          beta: beta,
-          isMax: newIsMax,
-        );*/
         minEval = min(res.value, minEval);
         beta = min(beta, res.value);
         if (beta <= alpha) {
@@ -438,6 +412,9 @@ class AlphaBetaPruningController extends AiControllerBase {
 
     return sfr;
   }
+
+
+
 
   @override
   void init(List<Unit> units, {required AiAlgorithm algorithm}) {

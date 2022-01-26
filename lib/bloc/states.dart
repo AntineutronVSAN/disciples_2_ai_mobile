@@ -22,7 +22,7 @@ abstract class GameState {
     required this.allUnits,
     this.currentGeneration = 0,
     this.populationFitness = 0.0,
-    this.positionRating = 0.5,
+    this.positionRating = 0.0,
     this.topTeamItems,
     this.bottomTeamItems,
   });

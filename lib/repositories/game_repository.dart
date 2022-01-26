@@ -30,8 +30,11 @@ class GameRepository {
   final List<Unit> _units = [];
 
   final Map<String, Unit> _unitsNamesMap = {};
+  final Map<String, Unit> _unitsIdMap = {};
 
   final EvaluationController evalController = EvaluationController(); // TODO DI
+
+  final Map<String, List<Unit>> _transfUnitCache = {};
 
   static Unit globalEmptyUnit = Unit.emptyFroRepo();
 
@@ -52,7 +55,22 @@ class GameRepository {
   /// Получить юнита, в которого превращает атака [attckId]
   Unit getTransformUnitByAttackId(String attckId, {bool isBig=false}) {
 
+    final hasCache = _transfUnitCache.containsKey(attckId);
+
+    if (hasCache) {
+      return _transfUnitCache[attckId]![0].deepCopy();
+    }
+
     final transfUnitIds = gtransfProvider.objects.where((element) => element.attack_id == attckId).toList();
+    assert(transfUnitIds.length <= 2);
+
+    final firstUnit = getCopyUnitById(transfUnitIds[0].transf_id).deepCopy();
+
+    _transfUnitCache[attckId] = [firstUnit];
+
+    return firstUnit;
+
+    /*final transfUnitIds = gtransfProvider.objects.where((element) => element.attack_id == attckId).toList();
     assert(transfUnitIds.length <= 2);
 
     final firstUnit = getCopyUnitById(transfUnitIds[0].transf_id).deepCopy();
@@ -61,7 +79,7 @@ class GameRepository {
     if (isBig) {
       //todo
     }
-    return firstUnit;
+    return firstUnit;*/
   }
 
   void init() {
@@ -214,6 +232,7 @@ class GameRepository {
       if ((unit.size_small ?? false) || true) {
         _units.add(newUnit);
         _unitsNamesMap[newUnit.unitName] = newUnit;
+        _unitsIdMap[newUnit.unitGameID] = newUnit;
       }
     }
 
@@ -225,15 +244,16 @@ class GameRepository {
   }
 
   Unit getRandomUnit({RandomUnitOptions? options}) {
-    final randomIndex = Random().nextInt(_unitsNamesMap.keys.length);
-    final randomName = _unitsNamesMap.keys.toList()[randomIndex];
-    return _unitsNamesMap[randomName]!.copyWith(
-      unitWarId: uuid.v1(),
-      attacksMap: <AttackClass, UnitAttack>{},
-      attacks: <UnitAttack>[],
-      unitAttack: _unitsNamesMap[randomName]!.unitAttack.copyWith(),
-      unitAttack2: _unitsNamesMap[randomName]!.unitAttack2?.copyWith(),
-    );
+      final randomIndex = Random().nextInt(_unitsNamesMap.keys.length);
+      final randomName = _unitsNamesMap.keys.toList()[randomIndex];
+      return _unitsNamesMap[randomName]!.copyWith(
+        unitWarId: uuid.v1(),
+        attacksMap: <AttackClass, UnitAttack>{},
+        attacks: <UnitAttack>[],
+        unitAttack: _unitsNamesMap[randomName]!.unitAttack.copyWith(),
+        unitAttack2: _unitsNamesMap[randomName]!.unitAttack2?.copyWith(),
+      );
+
   }
 
   Unit getCopyUnitByName(String name) {
@@ -250,6 +270,8 @@ class GameRepository {
     );
   }
 
+  /// Получить копию юнита по [id]
+  /// TODO метод дико тормознутый
   Unit getCopyUnitById(String id) {
     Unit? newUnit;
     bool unitFound = false;
@@ -282,5 +304,8 @@ class GameRepository {
 }
 
 class RandomUnitOptions {
+  final bool frontLine;
+  final bool backLine;
 
+  RandomUnitOptions({required this.backLine, required this.frontLine});
 }
