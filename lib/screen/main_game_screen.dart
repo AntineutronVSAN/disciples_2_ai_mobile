@@ -18,6 +18,7 @@ import 'package:d2_ai_v2/models/providers.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
 import 'package:d2_ai_v2/utils/math_utils.dart';
 import 'package:d2_ai_v2/utils/svg_picture.dart';
+import 'package:d2_ai_v2/widgets/clicable_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -162,7 +163,7 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
               height: 50,
               color: Colors.green,
             ),
-            childWhenDragging: SizedBox.shrink(),
+            childWhenDragging: const SizedBox.shrink(),
           ),
           const SizedBox(width: 50,),
           Draggable<int>(
@@ -703,33 +704,34 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
         ? Padding(
         padding: const EdgeInsets.symmetric(vertical: 10.0),
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          InkWell(
-              onTap: () {
-                bloc.add(OnUnitProtectClick());
-              },
-              child: const SvgIcon(
-                asset: "ic_unit_protect.svg",
-                color: Colors.lightBlue,
-                size: 40.0,
-              )),
-          InkWell(
-              onTap: () {
-                bloc.add(OnUnitWaitClick());
-              },
-              child: const SvgIcon(
-                asset: "ic_unit_wait.svg",
-                color: Colors.lightBlue,
-                size: 40.0,
-              )),
-          InkWell(
-              onTap: () {
-                bloc.add(OnRetreat());
-              },
-              child: const SvgIcon(
-                asset: "ic_unit_retreat.svg",
-                color: Colors.lightBlue,
-                size: 40.0,
-              )),
+
+          ClickableSvg(
+            asset: "ic_unit_protect.svg",
+            size: 40.0,
+            onTap: () {
+              bloc.add(OnUnitProtectClick());
+            },
+            color: Colors.lightBlue,
+            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+          ),
+          ClickableSvg(
+            asset: "ic_unit_wait.svg",
+            size: 40.0,
+            onTap: () {
+              bloc.add(OnUnitWaitClick());
+            },
+            color: Colors.lightBlue,
+            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+          ),
+          ClickableSvg(
+            asset: "ic_unit_retreat.svg",
+            size: 40.0,
+            onTap: () {
+              bloc.add(OnRetreat());
+            },
+            color: Colors.lightBlue,
+            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+          ),
         ]))
         : const SizedBox.shrink();
   }

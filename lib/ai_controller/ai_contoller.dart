@@ -89,6 +89,7 @@ import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/optim_algorythm/base.dart';
 import 'package:d2_ai_v2/optim_algorythm/individual_base.dart';
 import 'package:d2_ai_v2/providers/file_provider_base.dart';
+import 'package:d2_ai_v2/update_state_context/update_state_context_base.dart';
 
 import 'ai_controller_base.dart';
 
@@ -146,7 +147,8 @@ class AiController implements AiControllerBase {
   /// убывания увренности. Тоесть вызывающий метод, в случае неуспеха
   /// лучшего действия, должен применить следующее
   @override
-  Future<List<RequestAction>> getAction(int currentActiveUnitCellIndex, {GameController? gameController}) async {
+  Future<List<RequestAction>> getAction(
+      int currentActiveUnitCellIndex, {GameController? gameController, UpdateStateContextBase? updateStateContext}) async {
     if (!inited) {
       throw Exception();
     }

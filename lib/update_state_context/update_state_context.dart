@@ -13,11 +13,12 @@ class UpdateStateContext implements UpdateStateContextBase {
   UpdateStateContext({required this.emit, required this.state});
 
   @override
-  Future<void> update({int? currentGeneration, double? populationFitness, List<Unit>? units}) async {
+  Future<void> update({int? currentGeneration, double? populationFitness, List<Unit>? units, double? posRating}) async {
     emit(state.copyWith(
       currentGeneration: currentGeneration ?? state.currentGeneration,
       populationFitness: populationFitness ?? state.populationFitness,
       units: units ?? state.units,
+        positionRating: posRating ?? state.positionRating,
     ));
   }
 

@@ -1,4 +1,4 @@
-import 'package:d2_ai_v2/ai_controller/ai_contoller.dart';
+
 import 'package:d2_ai_v2/ai_controller/ai_controller_base.dart';
 import 'package:d2_ai_v2/bloc/states.dart';
 import 'package:d2_ai_v2/controllers/game_controller/actions.dart';
@@ -6,14 +6,11 @@ import 'package:d2_ai_v2/controllers/game_controller/game_controller.dart';
 import 'package:d2_ai_v2/controllers/unit_upgrade_controller/unit_upgrade_controller.dart';
 import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
-import 'package:d2_ai_v2/optim_algorythm/factories/neat_factory.dart';
-import 'package:d2_ai_v2/providers/file_provider.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
 import 'package:d2_ai_v2/update_state_context/update_state_context.dart';
 import 'package:d2_ai_v2/utils/cell_utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
-import '../const.dart';
 import '../units_pack.dart';
 import 'events.dart';
 
@@ -122,42 +119,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   Future<void> _onUnitsLoad(OnUnitsLoad event, Emitter emit) async {
 
-    final List<String> unitsNames = UnitsPack.packs[1];
+    final List<String> unitsNames = UnitsPack.packs[2];
     //final List<String> unitsNames = UnitsPack.tournaments[9];
 
-    /*final unitsTests = <Unit>[
-      repository.getRandomUnit(options: RandomUnitOptions(backLine: true, frontLine: false)),
-      repository.getRandomUnit(options: RandomUnitOptions(backLine: true, frontLine: false)),
-      repository.getRandomUnit(options: RandomUnitOptions(backLine: true, frontLine: false)),
-      repository.getRandomUnit(options: RandomUnitOptions(backLine: false, frontLine: true)),
-      repository.getRandomUnit(options: RandomUnitOptions(backLine: false, frontLine: true)),
-      repository.getRandomUnit(options: RandomUnitOptions(backLine: false, frontLine: true)),
-    ];
-
-    final warUnits = <Unit>[
-      unitsTests[0].deepCopy()..copyWith(unitWarId: '1'),
-      unitsTests[1].deepCopy()..copyWith(unitWarId: '2'),
-      unitsTests[2].deepCopy()..copyWith(unitWarId: '3'),
-
-      unitsTests[3].deepCopy()..copyWith(unitWarId: '4'),
-      unitsTests[4].deepCopy()..copyWith(unitWarId: '5'),
-      unitsTests[5].deepCopy()..copyWith(unitWarId: '6'),
-
-      unitsTests[3].deepCopy()..copyWith(unitWarId: '7'),
-      unitsTests[4].deepCopy()..copyWith(unitWarId: '8'),
-      unitsTests[5].deepCopy()..copyWith(unitWarId: '9'),
-
-      unitsTests[0].deepCopy()..copyWith(unitWarId: '10'),
-      unitsTests[1].deepCopy()..copyWith(unitWarId: '11'),
-      unitsTests[2].deepCopy()..copyWith(unitWarId: '12'),
-    ];
-    var index = 0;
-    for(var i in warUnits) {
-      _units[index] = i;
-      unitUpgradeController.setLevel(9, index, _units);
-
-      index++;
-    }*/
     assert(unitsNames.length == 12);
     var index = 0;
     for (var name in unitsNames) {
@@ -169,7 +133,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       // TODO Тестирую уровни
       unitUpgradeController.setLevel(9, index, _units);
 
-      //_units[index] = repository.getCopyUnitByName(name);
+      _units[index] = repository.getCopyUnitByName(name);
 
       index++;
     }
@@ -359,11 +323,15 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     emit(state.copyWith(
       warScreenState: WarScreenState.pve,
       units: _warUnitsCopies,
-      positionRating: 0.5,
+      positionRating: 0.0,
     ));
 
     if (checkIsTopTeam(currentActiveCell!)) {
       await _handleAiMove(response, emit);
+      emit(state.copyWith(
+        warScreenState: WarScreenState.pve,
+        units: _warUnitsCopies,
+      ));
     }
   }
 
@@ -373,7 +341,14 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       return;
     }
     print('-------- Ходит AI');
-    final requests = await aiController.getAction(action.activeCell!, gameController: controller);
+    final requests = await aiController.getAction(
+        action.activeCell!,
+        gameController: controller,
+      updateStateContext: UpdateStateContext(
+        emit: emit,
+        state: state,
+      )
+    );
     var success = false;
     emit(state.copyWith(
       units: _warUnitsCopies,
@@ -381,7 +356,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     await Future.delayed(const Duration(milliseconds: 500));
     for (var r in requests) {
       r = r.copyWith(
-          context: UpdateStateContext(
+        context: UpdateStateContext(
         emit: emit,
         state: state,
       ));
@@ -411,6 +386,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
             '$impossibleAiActions');
       }
     }
+    emit(state.copyWith(
+      units: _warUnitsCopies,
+    ));
     assert(success);
   }
 

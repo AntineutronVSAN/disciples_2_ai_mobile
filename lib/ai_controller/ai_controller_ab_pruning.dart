@@ -11,8 +11,10 @@ import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/optim_algorythm/base.dart';
 import 'package:d2_ai_v2/optim_algorythm/individual_base.dart';
 import 'package:d2_ai_v2/providers/file_provider_base.dart';
+import 'package:d2_ai_v2/update_state_context/update_state_context_base.dart';
 import 'package:d2_ai_v2/utils/cell_utils.dart';
 
+import 'ab_pruning_isolate.dart';
 import 'ab_prunning_actions_order_controller.dart';
 
 const double globalMaxValue = double.infinity;
@@ -20,6 +22,55 @@ const double globalMinValue = -double.infinity;
 
 /// Класс реализующий алгоритм альфа-бета отсечения
 class AlphaBetaPruningController extends AiControllerBase {
+  final ABPruningIsolate abPruningIsolate = ABPruningIsolate();
+
+  /// Глубина рассчёта в ходах (не в раундах)
+  int treeDepth;
+
+  /// ИИ играет за верхнюю команду?
+  final bool isTopTeam;
+
+  AlphaBetaPruningController(
+      {required this.treeDepth, required this.isTopTeam});
+
+  @override
+  Future<List<RequestAction>> getAction(int currentActiveUnitCellIndex,
+      {GameController? gameController,
+      UpdateStateContextBase? updateStateContext}) async {
+    final result = await abPruningIsolate.abPruningBackground(
+        controllerSnapshot: gameController!.getSnapshot(),
+        treeDepth: treeDepth,
+        onPosEval: (val) async {
+          if (updateStateContext != null) {
+            await updateStateContext.update(posRating: val);
+          }
+        });
+
+    return result.resultActions;
+  }
+
+  @override
+  void init(List<Unit> units, {required AiAlgorithm algorithm}) {
+    // TODO: implement init
+  }
+
+  @override
+  Future<void> initFromFile(List<Unit> units, String filePath,
+      FileProviderBase fileProvider, IndividualFactoryBase factory,
+      {int individIndex = 0}) {
+    // TODO: implement initFromFile
+    throw UnimplementedError();
+  }
+
+  @override
+  void initFromIndivid(List<Unit> units, IndividualBase ind) {
+    // TODO: implement initFromIndivid
+  }
+}
+
+/*
+
+class AlphaBetaPruningControllerDeprecated extends AiControllerBase {
 
   /// Глубина рассчёта в ходах (не в раундах)
   int treeDepth;
@@ -29,7 +80,7 @@ class AlphaBetaPruningController extends AiControllerBase {
 
   final actionsOrderController = ActionsOrderController(); // TODO DI
 
-  AlphaBetaPruningController(
+  AlphaBetaPruningControllerDeprecated(
       {required this.treeDepth, required this.isTopTeam});
 
   /// Кеш нод
@@ -79,22 +130,6 @@ class AlphaBetaPruningController extends AiControllerBase {
 
     // Список всех возможных действий
     final allPossibleActions = actionsOrderController.getAllPossibleActions();
-    /*List<RequestAction> allPossibleActions = [
-      ...List.generate(12, (index) {
-        return RequestAction(
-            type: ActionType.click,
-            targetCellIndex: index,
-            currentCellIndex: null);
-
-      }),
-      RequestAction(
-          type: ActionType.protect,
-          targetCellIndex: null,
-          currentCellIndex: null),
-      RequestAction(
-          type: ActionType.wait, targetCellIndex: null, currentCellIndex: null),
-    ];*/
-
 
     // Текущий снапшот контроллера
     final currentSnapshot = gameController!.getSnapshot();
@@ -180,13 +215,7 @@ class AlphaBetaPruningController extends AiControllerBase {
         );
         print('Ход $index. Тип действия ${currentPossibleActions[index].type}, '
             'таргет ${currentPossibleActions[index].targetCellIndex}. Результат ${res.value}');
-        assert(context.currentTreeDepth == 0);
-        /*if (res.value >= maxEval) {
-          if (currentUnitAllTargets) {
-            currentUnitClicked = true;
-          }
-          bestResultActionIndex = index;
-        }*/
+
         maxEval = max(res.value, maxEval);
         alpha = max(alpha, res.value);
         if (beta <= alpha) {
@@ -229,11 +258,6 @@ class AlphaBetaPruningController extends AiControllerBase {
     final duration = s.elapsedMilliseconds;
     print('Проанализировано $nodesCount узлов за $duration млс. ${nodesCount ~/ (duration / 1000.0)} узлов в секунду');
     s.stop();
-
-    /*print('Суммарное время копирования действий $timeCopyAction');
-    print('Суммарное время действий $timeAction');
-    print('Суммарное время копирования котнроллера $timeCopyController');
-    print('Суммарное время рассчёта fitness $timeFitness');*/
 
     return [_results.actions[bestActionIndex].copyWith(
       positionRating: _results.results[bestActionIndex],
@@ -478,14 +502,4 @@ class _ResultActions {
   final List<RequestAction> actions = [];
 }
 
-
-
-
-
-
-
-
-
-
-
-
+*/
