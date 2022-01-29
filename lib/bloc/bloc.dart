@@ -8,6 +8,7 @@ import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
 import 'package:d2_ai_v2/update_state_context/update_state_context.dart';
+import 'package:d2_ai_v2/update_state_context/update_state_context_base.dart';
 import 'package:d2_ai_v2/utils/cell_utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
@@ -119,6 +120,55 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   Future<void> _onUnitsLoad(OnUnitsLoad event, Emitter emit) async {
 
+    final topTeam = [
+      repository.getRandomUnit(options: RandomUnitOptions(
+          backLine: true,
+          frontLine: false)),
+      repository.getRandomUnit(options: RandomUnitOptions(
+          backLine: true,
+          frontLine: false)),
+      repository.getRandomUnit(options: RandomUnitOptions(
+          backLine: true,
+          frontLine: false)),
+
+      repository.getRandomUnit(options: RandomUnitOptions(
+          backLine: false,
+          frontLine: true)),
+      repository.getRandomUnit(options: RandomUnitOptions(
+          backLine: false,
+          frontLine: true)),
+      repository.getRandomUnit(options: RandomUnitOptions(
+          backLine: false,
+          frontLine: true)),
+    ];
+
+
+    final symmetricUnits = [
+      topTeam[0],
+      topTeam[1],
+      topTeam[2],
+      topTeam[3],
+      topTeam[4],
+      topTeam[5],
+
+      repository.getCopyUnitByName(topTeam[3].unitName),
+      repository.getCopyUnitByName(topTeam[4].unitName),
+      repository.getCopyUnitByName(topTeam[5].unitName),
+      repository.getCopyUnitByName(topTeam[0].unitName),
+      repository.getCopyUnitByName(topTeam[1].unitName),
+      repository.getCopyUnitByName(topTeam[2].unitName),
+
+
+    ];
+
+    var index=0;
+    for(var i in symmetricUnits) {
+      _units[index] = i.deepCopy();
+      index++;
+    }
+
+    /*
+
     final List<String> unitsNames = UnitsPack.packs[2];
     //final List<String> unitsNames = UnitsPack.tournaments[9];
 
@@ -133,10 +183,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       // TODO Тестирую уровни
       unitUpgradeController.setLevel(9, index, _units);
 
-      _units[index] = repository.getCopyUnitByName(name);
+      //_units[index] = repository.getCopyUnitByName(name);
 
       index++;
     }
+
+    */
 
     emit(state.copyWith(units: _units));
   }
@@ -164,7 +216,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         currentCellIndex: null,
         targetCellIndex: null);
     final response = await controller.makeAction(action);
-    if (!handleResponse(response)) {
+    if (!handleResponse(response, emit: emit)) {
       return;
     }
     emit(state.copyWith(
@@ -180,7 +232,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     final action = RequestAction(
         type: ActionType.wait, currentCellIndex: null, targetCellIndex: null);
     final response = await controller.makeAction(action);
-    if (!handleResponse(response)) {
+    if (!handleResponse(response, emit: emit)) {
       return;
     }
     emit(state.copyWith(
@@ -198,7 +250,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         currentCellIndex: null,
         targetCellIndex: null);
     final response = await controller.makeAction(action);
-    if (!handleResponse(response)) {
+    if (!handleResponse(response, emit: emit)) {
       return;
     }
     emit(state.copyWith(
@@ -249,12 +301,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     }
 
     var response = controller.init(_warUnitsCopies);
-    if (!handleResponse(response)) {
+    if (!handleResponse(response, emit: emit)) {
       _warUnitsCopies.clear();
       return;
     }
     response = controller.startGame();
-    if (!handleResponse(response)) {
+    if (!handleResponse(response, emit: emit)) {
       _warUnitsCopies.clear();
       return;
     }
@@ -269,11 +321,16 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     ));
   }
 
-  bool handleResponse(ResponseAction responseAction) {
+  bool handleResponse(ResponseAction responseAction, {required Emitter emit}) {
     print(responseAction.message);
     if (responseAction.endGame) {
       print('КОНЕЦ ИГРЫ');
+      //context.update(ASD);
+      emit(state.copyWith(errorMessage: 'Конец игры'));
       return false;
+    }
+    if (!responseAction.success) {
+      emit(state.copyWith(errorMessage: responseAction.message));
     }
     return responseAction.success;
   }
@@ -287,12 +344,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       _warUnitsCopies.add(element.copyWith());
     }
     var response = controller.init(_warUnitsCopies);
-    if (!handleResponse(response)) {
+    if (!handleResponse(response, emit: emit)) {
       _warUnitsCopies.clear();
       return;
     }
     response = controller.startGame();
-    if (!handleResponse(response)) {
+    if (!handleResponse(response, emit: emit)) {
       _warUnitsCopies.clear();
       return;
     }
@@ -341,6 +398,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       return;
     }
     print('-------- Ходит AI');
+    emit(state.copyWith(
+      aiMoving: true,
+    ));
     final requests = await aiController.getAction(
         action.activeCell!,
         gameController: controller,
@@ -388,6 +448,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     }
     emit(state.copyWith(
       units: _warUnitsCopies,
+      aiMoving: false,
     ));
     assert(success);
   }
@@ -446,7 +507,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     //final List<int> lastUnitsHp = _warUnitsCopies.map((e) => e.currentHp).toList();
 
     final actionResponse = await controller.makeAction(action);
-    if (!handleResponse(actionResponse)) {
+    if (!handleResponse(actionResponse, emit: emit)) {
       return;
     }
 

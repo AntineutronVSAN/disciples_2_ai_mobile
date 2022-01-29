@@ -9,6 +9,7 @@ abstract class UpdateStateContextBase {
     double? populationFitness,
     List<Unit>? units,
     double? posRating,
+    int? nodesPerSecond,
   });
 
   WarScreenState getWarScreenState();

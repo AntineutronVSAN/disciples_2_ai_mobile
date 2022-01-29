@@ -244,6 +244,7 @@ class GameRepository {
   }
 
   Unit getRandomUnit({RandomUnitOptions? options}) {
+    if (options == null) {
       final randomIndex = Random().nextInt(_unitsNamesMap.keys.length);
       final randomName = _unitsNamesMap.keys.toList()[randomIndex];
       return _unitsNamesMap[randomName]!.copyWith(
@@ -253,6 +254,51 @@ class GameRepository {
         unitAttack: _unitsNamesMap[randomName]!.unitAttack.copyWith(),
         unitAttack2: _unitsNamesMap[randomName]!.unitAttack2?.copyWith(),
       );
+    } else {
+
+      if (options.backLine) {
+
+        final isRange = Random().nextInt(100) > 50;
+
+        if (isRange) {
+          final units = _units.where((element) => element.unitAttack.targetsCount == TargetsCount.any).toList();
+          final index = Random().nextInt(units.length);
+          return units[index].copyWith(
+            unitWarId: uuid.v1(),
+            attacksMap: <AttackClass, UnitAttack>{},
+            attacks: <UnitAttack>[],
+            unitAttack: units[index].unitAttack.copyWith(),
+            unitAttack2: units[index].unitAttack2?.copyWith(),
+          );
+        } else {
+          final units = _units.where((element) => element.unitAttack.targetsCount == TargetsCount.all).toList();
+          final index = Random().nextInt(units.length);
+          return units[index].copyWith(
+            unitWarId: uuid.v1(),
+            attacksMap: <AttackClass, UnitAttack>{},
+            attacks: <UnitAttack>[],
+            unitAttack: units[index].unitAttack.copyWith(),
+            unitAttack2: units[index].unitAttack2?.copyWith(),
+          );
+        }
+
+
+      }
+      if (options.frontLine) {
+        final units = _units.where((element) => element.unitAttack.targetsCount == TargetsCount.one).toList();
+        final index = Random().nextInt(units.length);
+        return units[index].copyWith(
+          unitWarId: uuid.v1(),
+          attacksMap: <AttackClass, UnitAttack>{},
+          attacks: <UnitAttack>[],
+          unitAttack: units[index].unitAttack.copyWith(),
+          unitAttack2: units[index].unitAttack2?.copyWith(),
+        );
+      }
+
+      throw Exception();
+    }
+
 
   }
 

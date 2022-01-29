@@ -24,6 +24,7 @@ class ABPruningIsolate {
     required GameController controllerSnapshot,
     required int treeDepth,
     required Function(double) onPosEval,
+    required Function(int) onNodesPerSecond,
   }) async {
 
     nodesCount = 0;
@@ -59,6 +60,11 @@ class ABPruningIsolate {
     while (response == null) {
       await Future.delayed(const Duration(microseconds: 1000));
     }
+
+    if (response!.nodesPerSecond != null) {
+      onNodesPerSecond(response!.nodesPerSecond!);
+    }
+
     p.close();
     newIsolator.kill(priority: Isolate.immediate);
     //newIsolator.kill();
@@ -258,6 +264,7 @@ class ABPruningIsolate {
     )];*/
 
     return ABPruningBackgroundResponse(
+      nodesPerSecond: nodesCount ~/ (duration / 1000.0),
       isResult: true,
       currentPosRating: 0.0,
       calculationMls: duration,
@@ -461,12 +468,15 @@ class ABPruningBackgroundResponse {
 
   final List<RequestAction> resultActions;
 
+  final int? nodesPerSecond;
+
   ABPruningBackgroundResponse({
     required this.calculationMls,
     required this.nodesCount,
     required this.resultActions,
     required this.isResult,
     required this.currentPosRating,
+    this.nodesPerSecond,
   });
 
 }

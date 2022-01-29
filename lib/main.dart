@@ -8,7 +8,7 @@ import 'package:d2_ai_v2/controllers/power_controller.dart';
 import 'package:d2_ai_v2/models/providers.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
 import 'package:d2_ai_v2/run_genetic_algorithm.dart';
-import 'package:d2_ai_v2/screen/main_game_screen.dart';
+import 'package:d2_ai_v2/screen/main_screen/main_game_screen.dart';
 import 'package:d2_ai_v2/styles.dart';
 import 'package:d2_ai_v2/utils/math_utils.dart';
 import 'package:d2_ai_v2/utils/svg_picture.dart';

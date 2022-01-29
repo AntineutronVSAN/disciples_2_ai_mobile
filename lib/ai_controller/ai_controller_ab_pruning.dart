@@ -44,6 +44,11 @@ class AlphaBetaPruningController extends AiControllerBase {
           if (updateStateContext != null) {
             await updateStateContext.update(posRating: val);
           }
+        },
+        onNodesPerSecond: (val) async {
+          if (updateStateContext != null) {
+            await updateStateContext.update(nodesPerSecond: val);
+          }
         });
 
     return result.resultActions;

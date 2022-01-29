@@ -681,8 +681,12 @@ extension ApplyAttack on AttackController {
           break;
         }
 
-        final currentAttackShakeValue = attack.damage;
+        var currentAttackShakeValue = attack.damage;
         assert(currentAttackShakeValue > 0);
+
+        if (currentAttackShakeValue > 10) {
+          currentAttackShakeValue = 10;
+        }
 
         var newUnitArmor = targetUnitArmor - currentAttackShakeValue;
         if (newUnitArmor < 0) {
