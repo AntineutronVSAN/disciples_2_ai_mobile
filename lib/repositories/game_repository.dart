@@ -49,7 +49,7 @@ class GameRepository {
   });
 
   List<Unit> getAllUnits() {
-    return List.generate(_units.length, (index) => _units[index].copyWith());
+    return List.generate(_units.length, (index) => _units[index].deepCopy());
   }
 
   /// Получить юнита, в которого превращает атака [attckId]
@@ -119,7 +119,7 @@ class GameRepository {
           '---- ${unit.prev_id} '
           '---- ${unit.upgrade_b}');*/
 
-      print('${newGameUnitText.text} '
+      /*print('${newGameUnitText.text} '
           '---- ${unit.dyn_upg1} '
           '---- ${unit.dyn_upg_lv} '
           '---- ${unit.level} '
@@ -127,7 +127,7 @@ class GameRepository {
           '---- ${unit.upgrade_b} '
           '---- ${attack.source} '
           '---- ${dynUpgradeParams.negotiate} ')
-      ;
+      ;*/
 
       final unitAttack1 = UnitAttack(
         attackId: attack.att_id,
@@ -238,7 +238,7 @@ class GameRepository {
 
     evals.sort((a,b) => a.end.compareTo(b.end));
     for(var i in evals) {
-      print('Юнит - ${i.first}. Ценность - ${i.end}');
+      //print('Юнит - ${i.first}. Ценность - ${i.end}');
     }
 
   }
@@ -247,6 +247,8 @@ class GameRepository {
     if (options == null) {
       final randomIndex = Random().nextInt(_unitsNamesMap.keys.length);
       final randomName = _unitsNamesMap.keys.toList()[randomIndex];
+
+      return _getCopyUnitWithNewParams(_unitsNamesMap[randomName]!);
       return _unitsNamesMap[randomName]!.copyWith(
         unitWarId: uuid.v1(),
         attacksMap: <AttackClass, UnitAttack>{},
@@ -263,23 +265,25 @@ class GameRepository {
         if (isRange) {
           final units = _units.where((element) => element.unitAttack.targetsCount == TargetsCount.any).toList();
           final index = Random().nextInt(units.length);
-          return units[index].copyWith(
+          return _getCopyUnitWithNewParams(units[index]);
+          /*return units[index].copyWith(
             unitWarId: uuid.v1(),
             attacksMap: <AttackClass, UnitAttack>{},
             attacks: <UnitAttack>[],
             unitAttack: units[index].unitAttack.copyWith(),
             unitAttack2: units[index].unitAttack2?.copyWith(),
-          );
+          );*/
         } else {
           final units = _units.where((element) => element.unitAttack.targetsCount == TargetsCount.all).toList();
           final index = Random().nextInt(units.length);
-          return units[index].copyWith(
+          return _getCopyUnitWithNewParams(units[index]);
+          /*return units[index].copyWith(
             unitWarId: uuid.v1(),
             attacksMap: <AttackClass, UnitAttack>{},
             attacks: <UnitAttack>[],
             unitAttack: units[index].unitAttack.copyWith(),
             unitAttack2: units[index].unitAttack2?.copyWith(),
-          );
+          );*/
         }
 
 
@@ -287,13 +291,15 @@ class GameRepository {
       if (options.frontLine) {
         final units = _units.where((element) => element.unitAttack.targetsCount == TargetsCount.one).toList();
         final index = Random().nextInt(units.length);
-        return units[index].copyWith(
+
+        return _getCopyUnitWithNewParams(units[index]);
+        /*return units[index].copyWith(
           unitWarId: uuid.v1(),
           attacksMap: <AttackClass, UnitAttack>{},
           attacks: <UnitAttack>[],
           unitAttack: units[index].unitAttack.copyWith(),
           unitAttack2: units[index].unitAttack2?.copyWith(),
-        );
+        );*/
       }
 
       throw Exception();
@@ -307,13 +313,14 @@ class GameRepository {
     if (!hasUnit) {
       return GameRepository.globalEmptyUnit;
     }
-    return _unitsNamesMap[name]!.copyWith(
+    return _getCopyUnitWithNewParams(_unitsNamesMap[name]!);
+    /*return _unitsNamesMap[name]!.copyWith(
       unitWarId: uuid.v1(),
       attacksMap: <AttackClass, UnitAttack>{},
       attacks: <UnitAttack>[],
       unitAttack: _unitsNamesMap[name]!.unitAttack.copyWith(),
       unitAttack2: _unitsNamesMap[name]!.unitAttack2?.copyWith(),
-    );
+    );*/
   }
 
   /// Получить копию юнита по [id]
@@ -323,13 +330,14 @@ class GameRepository {
     bool unitFound = false;
     for(var u in _units) {
       if (u.unitGameID == id) {
-        newUnit = u.copyWith(
+        newUnit = _getCopyUnitWithNewParams(u);
+        /*newUnit = u.copyWith(
           unitWarId: uuid.v1(),
           attacksMap: <AttackClass, UnitAttack>{},
           attacks: <UnitAttack>[],
           unitAttack: u.unitAttack.copyWith(),
           unitAttack2: u.unitAttack2?.copyWith(),
-        );
+        );*/
         unitFound = true;
         break;
       }
@@ -338,6 +346,29 @@ class GameRepository {
 
 
     return newUnit!;
+  }
+
+  Unit _getCopyUnitWithNewParams(Unit u) {
+
+    var newUnit = u.deepCopy();
+
+    newUnit = newUnit.copyWith(
+      unitWarId: uuid.v1(),
+      attacksMap: <AttackClass, UnitAttack>{},
+      attacks: <UnitAttack>[],
+      unitAttack: u.unitAttack.deepCopy(),
+      unitAttack2: u.unitAttack2?.deepCopy(),
+
+      //classImmune: <int, ImunneCategory>{},
+      //sourceImmune: <int, ImunneCategory>{},
+
+      //hasSourceImunne: <int, bool>{},
+      //hasClassImunne: <int, bool>{},
+
+    );
+
+    return newUnit;
+
   }
 
   List<String> getAllNames() {
