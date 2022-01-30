@@ -7,7 +7,6 @@ import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
 
 
-
 void main() {
   final GameRepository gameRepository = GameRepository(
       gunitsProvider: GunitsProvider(),
@@ -21,7 +20,7 @@ void main() {
   final Unit testUnit = gameRepository.getRandomUnit();
 
 
-  benchmark('Unit.copywith()', () {
+  benchmark('Unit.copywith(currentHp: 20)', () {
 
     for(var i=0; i<2000000; i++ ) {
       testUnit.copyWith(currentHp: 20);
@@ -32,6 +31,19 @@ void main() {
 
     for(var i=0; i<2000000; i++ ) {
       testUnit.deepCopy();
+    }
+  });
+
+  benchmark('Unit.copywith(isMoving: false)', () {
+
+    for(var i=0; i<2000000; i++ ) {
+      testUnit.copyWith(isMoving: false);
+    }
+  });
+  benchmark('Unit.isMoving = false)', () {
+
+    for(var i=0; i<2000000; i++ ) {
+      testUnit.isMoving = false;
     }
   });
 }

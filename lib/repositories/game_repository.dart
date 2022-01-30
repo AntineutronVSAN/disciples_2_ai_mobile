@@ -11,9 +11,11 @@ import 'package:d2_ai_v2/utils/random_utils.dart';
 import 'package:uuid/uuid.dart';
 import 'package:d2_ai_v2/models/unit.dart';
 
-class GameRepository {
+import 'game_repository_base.dart';
+
+class GameRepository implements GameRepositoryBase {
   // TODO Провайдеры из сгенерированного файла
-  final uuid = Uuid();
+  final uuid = const Uuid();
   final Random random = Random();
 
   final GunitsProvider gunitsProvider;
@@ -36,7 +38,7 @@ class GameRepository {
 
   final Map<String, List<Unit>> _transfUnitCache = {};
 
-  static Unit globalEmptyUnit = Unit.emptyFroRepo();
+
 
   GameRepository({
     required this.gunitsProvider,
@@ -48,11 +50,13 @@ class GameRepository {
     required this.gimmuCProvider,
   });
 
+  @override
   List<Unit> getAllUnits() {
     return List.generate(_units.length, (index) => _units[index].deepCopy());
   }
 
   /// Получить юнита, в которого превращает атака [attckId]
+  @override
   Unit getTransformUnitByAttackId(String attckId, {bool isBig=false}) {
 
     final hasCache = _transfUnitCache.containsKey(attckId);
@@ -82,6 +86,7 @@ class GameRepository {
     return firstUnit;*/
   }
 
+  @override
   void init() {
 
     final evals = <PairValues<String, double>>[];
@@ -243,6 +248,7 @@ class GameRepository {
 
   }
 
+  @override
   Unit getRandomUnit({RandomUnitOptions? options}) {
     if (options == null) {
       final randomIndex = Random().nextInt(_unitsNamesMap.keys.length);
@@ -308,10 +314,11 @@ class GameRepository {
 
   }
 
+  @override
   Unit getCopyUnitByName(String name) {
     final hasUnit = _unitsNamesMap.containsKey(name);
     if (!hasUnit) {
-      return GameRepository.globalEmptyUnit;
+      return GameRepositoryBase.globalEmptyUnit;
     }
     return _getCopyUnitWithNewParams(_unitsNamesMap[name]!);
     /*return _unitsNamesMap[name]!.copyWith(
@@ -325,6 +332,7 @@ class GameRepository {
 
   /// Получить копию юнита по [id]
   /// TODO метод дико тормознутый
+  @override
   Unit getCopyUnitById(String id) {
     Unit? newUnit;
     bool unitFound = false;
@@ -371,6 +379,7 @@ class GameRepository {
 
   }
 
+  @override
   List<String> getAllNames() {
     return gunitsProvider.objects.map((e) => e.name_txt).toList();
   }
@@ -380,9 +389,3 @@ class GameRepository {
   }
 }
 
-class RandomUnitOptions {
-  final bool frontLine;
-  final bool backLine;
-
-  RandomUnitOptions({required this.backLine, required this.frontLine});
-}

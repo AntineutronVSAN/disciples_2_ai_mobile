@@ -6,6 +6,7 @@ import 'package:d2_ai_v2/optim_algorythm/factories/neat_factory.dart';
 import 'package:d2_ai_v2/optim_algorythm/factories/networks_factory.dart';
 import 'package:d2_ai_v2/providers/dart_file_provider.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
+import 'package:d2_ai_v2/repositories/game_repository_base.dart';
 import 'package:d2_ai_v2/units_pack.dart';
 import 'package:d2_ai_v2/utils/math_utils.dart';
 import 'const.dart';
@@ -56,7 +57,7 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
   repository.init();
   // Создание юнитов
 
-  final List<Unit> units = List.generate(12, (index) => GameRepository.globalEmptyUnit);
+  final List<Unit> units = List.generate(12, (index) => GameRepositoryBase.globalEmptyUnit);
 
   /*final List<String> unitNames = [
     'Рейнджер',

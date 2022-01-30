@@ -7,7 +7,7 @@ import 'package:d2_ai_v2/controllers/game_controller/roll_config.dart';
 import 'package:d2_ai_v2/controllers/power_controller.dart';
 import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
-import 'package:d2_ai_v2/repositories/game_repository.dart';
+import 'package:d2_ai_v2/repositories/game_repository_base.dart';
 import 'package:d2_ai_v2/update_state_context/update_state_context_base.dart';
 import 'package:d2_ai_v2/utils/cell_utils.dart';
 
@@ -19,7 +19,7 @@ import 'attack_context.dart';
 class AttackController {
   final PowerController powerController;
   final DamageScatter damageScatter;
-  final GameRepository gameRepository;
+  final GameRepositoryBase gameRepository;
   final AttackDurationController attackDurationController;
   final ImmuneController immuneController;
 

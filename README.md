@@ -22,10 +22,18 @@ flutter pub run build_runner build --delete-conflicting-outputs
 dart run --pause-isolates-on-start --observe main.dart
 dart --pause-isolates-on-start --observe lib\run_genetic_algorithm.dart
 
-
-# Compile
+# Compile genetic algorithm
 dart compile exe lib\run_genetic_algorithm.dart
 
+# Benchmarking
+flutter pub run benchmark
+
+# Testing
+flutter test
+
+# Обязательно
+
+- Запускать юнит-тесты после изменений в AttackController
 
 # TODO
 - [ ] - Двуклетоные юниты
@@ -34,8 +42,8 @@ dart compile exe lib\run_genetic_algorithm.dart
 - [ ] - Превращение себя
 - [ ] - Использование предметов
 - [ ] - Даровать защиту
-- [ ] - Иммуны и защиты
-- [ ] - Для AB алгоритма сделать сопернику ролл макс урона и ини
-- [ ] - Для AB подумать, как можно учитывать точность (пока сделать точность для всех 100%)
+- [ x ] - Иммуны и защиты
+- [ x ] - Для AB алгоритма сделать сопернику ролл макс урона и ини
+- [ x ] - Для AB подумать, как можно учитывать точность (пока сделать точность для всех 100%)
 - [ ] - Для neat изменить мутации. Сделать мутации с участием входных/выходных узлов обязательной
-
+- [ ] - Лечение восстанавливает форму

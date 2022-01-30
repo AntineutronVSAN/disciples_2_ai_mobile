@@ -7,13 +7,13 @@ part 'unit.g.dart';
 
 @JsonSerializable()
 class Unit {
-  final bool isMoving;
-  final bool isDead;
-  final bool isProtected;
-  final bool isWaiting;
+  bool isMoving;
+  bool isDead;
+  bool isProtected;
+  bool isWaiting;
 
   final int maxHp;
-  final int currentHp;
+  int currentHp;
 
   final String unitName;
 
@@ -481,4 +481,3 @@ ImunneCategory immuneCategoryFromValue(int value) {
   }
   throw Exception("Низвестная категория защиты");
 }
-

@@ -7,6 +7,7 @@ import 'package:d2_ai_v2/controllers/unit_upgrade_controller/unit_upgrade_contro
 import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
+import 'package:d2_ai_v2/repositories/game_repository_base.dart';
 import 'package:d2_ai_v2/update_state_context/update_state_context.dart';
 import 'package:d2_ai_v2/update_state_context/update_state_context_base.dart';
 import 'package:d2_ai_v2/utils/cell_utils.dart';
@@ -21,7 +22,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   final rng = Random();
   final uuid = const Uuid();
 
-  final GameRepository repository;
+  final GameRepositoryBase repository;
   final GameController controller;
   final AiControllerBase aiController;
 
@@ -51,18 +52,18 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     required this.aiController,
   }) : super(initialState) {
     _units.addAll([
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
     ]);
     repository.init();
     _allUnits.addAll(repository.getAllUnits());
@@ -171,8 +172,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     //final List<String> unitsNames = UnitsPack.tournaments[9];
     index = 0;
     for(var name in unitsNames) {
-      _units[index] = repository.getCopyUnitByName(name);
-      //unitUpgradeController.setLevel(9, index, _units);
+      //_units[index] = repository.getCopyUnitByName(name);
+      unitUpgradeController.setLevel(3, index, _units);
       index++;
     }
 
@@ -276,18 +277,18 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     _warUnitsCopies.clear();
     _units.clear();
     _units.addAll([
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
     ]);
 
     emit(state.copyWith(

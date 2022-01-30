@@ -5,6 +5,7 @@ import 'package:d2_ai_v2/controllers/attack_controller/preprocessing_part/prepro
 import 'package:d2_ai_v2/controllers/game_controller/roll_config.dart';
 import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
+import 'package:d2_ai_v2/repositories/game_repository_base.dart';
 
 import '../attack_controller/attack_controller.dart';
 import '../initiative_shuffler.dart';
@@ -15,7 +16,7 @@ class GameController {
 
   AttackController attackController;
   InitiativeShuffler initiativeShuffler;
-  GameRepository gameRepository;
+  GameRepositoryBase gameRepository;
 
   RollConfig rollConfig = RollConfig(
       topTeamMaxPower: false,
@@ -84,18 +85,18 @@ class GameController {
     //snapshot.units = List.generate(12, (index) => Unit.empty());
 
     snapshot.units = [
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
     ];
     int index=0;
 
@@ -107,7 +108,7 @@ class GameController {
         snapshot.units[index] = currentSnapshotsUnit;
         unitsRefIdMap[i.unitWarId] = currentSnapshotsUnit;
       } else {
-        unitsRefIdMap[i.unitWarId] = GameRepository.globalEmptyUnit;
+        unitsRefIdMap[i.unitWarId] = GameRepositoryBase.globalEmptyUnit;
       }
       index++;
     }
@@ -392,7 +393,7 @@ class GameController {
 
       if (units[currentActiveUnitIndex].retreat) {
         //print('Юнит отступил');
-        final emptyUnit = GameRepository.globalEmptyUnit;
+        final emptyUnit = GameRepositoryBase.globalEmptyUnit;
         final retreatedUnitWarId = units[currentActiveUnitIndex].unitWarId;
         int? retreatedUnitRefIndex;
         int index = 0;
