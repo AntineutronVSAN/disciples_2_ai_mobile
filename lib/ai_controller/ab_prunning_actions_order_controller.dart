@@ -63,7 +63,7 @@ class ActionsOrderController {
     List<int> newIndexes;
 
     // По началу будет только проверка для лучников
-    switch(currentUnitAttack.targetsCount) {
+    switch(currentUnitAttack.attackConstParams.targetsCount) {
 
       case TargetsCount.one:
         if (currentIsTopTeam) {
@@ -109,7 +109,7 @@ class ActionsOrderController {
     final currentTopTeam = checkIsTopTeam(current);
     final currentUnit = units[current];
 
-    final currentUnitTargets = units[current].unitAttack.targetsCount;
+    final currentUnitTargets = units[current].unitAttack.attackConstParams.targetsCount;
 
     final targetsCountAny = currentUnitTargets == TargetsCount.any;
 

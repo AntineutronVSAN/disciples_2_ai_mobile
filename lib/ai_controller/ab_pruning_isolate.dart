@@ -176,7 +176,7 @@ class ABPruningIsolate {
     final isMin = !isMax;
 
     bool currentUnitAllTargets = currentSnapshot
-        .units[currentActiveUnitCellIndex].unitAttack.targetsCount ==
+        .units[currentActiveUnitCellIndex].unitAttack.attackConstParams.targetsCount ==
         TargetsCount.all;
     bool currentUnitClicked = false;
 
@@ -314,6 +314,7 @@ class ABPruningIsolate {
     bool currentUnitAllTargets = currentSnapshot
         .units[newActiveCellIndex]
         .unitAttack
+        .attackConstParams
         .targetsCount == TargetsCount.all;
     bool currentUnitClicked = false;
 

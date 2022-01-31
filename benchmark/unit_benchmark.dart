@@ -97,7 +97,7 @@ void main() {
 
   units[7].currentHp = 100000;
 
-  benchmark('attackController.applyAttack. Unit damager', () {
+  benchmark('!!!attackController.applyAttack. Unit damager', () {
     for(var i=0; i<2000; i++ ) {
 
     var attackResponse = attackController.applyAttack(
@@ -110,6 +110,20 @@ void main() {
     }
 
   });
+  /*benchmark('!!!attackController.applyAttack. Unit damager', () {
+    for(var i=0; i<2000; i++ ) {
+
+      var attackResponse = attackController.applyAttackFast(
+          4,
+          7,
+          units,
+          responseAction,
+          onAddUnit2Queue: (u) {},
+          rollConfig: rollConfig);
+    }
+
+  });*/
+
   benchmark('attackController.unitMovePreprocessing. Unit damager', () {
     for(var i=0; i<1000; i++ ) {
       var attackResponse = attackController.unitMovePreprocessing(7, units,

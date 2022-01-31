@@ -14,8 +14,8 @@ class ImmuneController {
     required int target,
     required UnitAttack currentAttack}) {
 
-    final curAtckClass = gameAttackNumberFromClass(currentAttack.attackClass);
-    final curAtckSource = currentAttack.source;
+    final curAtckClass = gameAttackNumberFromClass(currentAttack.attackConstParams.attackClass);
+    final curAtckSource = currentAttack.attackConstParams.source;
     final targetUnit = units[target];
 
     final classImunneCat = targetUnit.classImmune[curAtckClass] ?? ImunneCategory.no;

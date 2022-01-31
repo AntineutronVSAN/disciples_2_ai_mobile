@@ -29,14 +29,14 @@ class UnitUpgradeController {
     var newArmor = u.armor + (u.upgradeArmor*level);
     newArmor = newArmor > 90 ? 90 : newArmor;
 
-    var newInitiative = attack.firstInitiative + (u.upgradeInitiative*level);
+    var newInitiative = attack.attackConstParams.firstInitiative + (u.upgradeInitiative*level);
     newInitiative = newInitiative > 90 ? 90 : newInitiative;
 
-    final newHeal = attack.heal + (u.upgradeHeal*level);
+    final newHeal = attack.attackConstParams.heal + (u.upgradeHeal*level);
     var newPower = attack.power + (u.upgradePower*level);
     newPower = newPower > 100 ? 100 : newPower;
 
-    final newDamage = attack.firstDamage + (u.upgradeDamage*level);
+    final newDamage = attack.attackConstParams.firstDamage + (u.upgradeDamage*level);
 
     int attack2newDamage = 0;
     if ((u.unitAttack2?.damage ?? 0) > 0) {
@@ -52,18 +52,26 @@ class UnitUpgradeController {
       overLevel: true,
 
       unitAttack: attack.copyWith(
-        firstDamage: newDamage,
+        //firstDamage: newDamage,
         damage: newDamage,
 
-        firstInitiative: newInitiative,
+        //firstInitiative: newInitiative,
         initiative: newInitiative,
 
         power: newPower,
-        heal: newHeal,
+        //heal: newHeal,
+        attackConstParams: units[current].unitAttack.attackConstParams.copyWith(
+          firstDamage: newDamage,
+          firstInitiative: newInitiative,
+          heal: newHeal,
+        )
       ),
       unitAttack2: u.unitAttack2?.copyWith(
         damage: attack2newDamage,
-        firstDamage: attack2newDamage,
+        //firstDamage: attack2newDamage,
+        attackConstParams: u.unitAttack2?.attackConstParams.copyWith(
+          firstDamage: attack2newDamage,
+        )
       ),
     );
 

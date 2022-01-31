@@ -140,7 +140,7 @@ class EvaluationController {
   double getAttackEvaluation(UnitAttack a) {
     double value = 0.0;
 
-    switch(a.attackClass) {
+    switch(a.attackConstParams.attackClass) {
       case AttackClass.L_DAMAGE:
         value += _handleDamage(a) * 1.0 / 300.0;
         break;
@@ -266,7 +266,7 @@ class EvaluationController {
     var result = 0.0;
 
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
     final expectedValue = a.damage * (a.power / 100.0);
@@ -282,7 +282,7 @@ class EvaluationController {
   double _handleDrain(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
     final expectedValue = a.damage * (a.power / 100.0);
@@ -297,8 +297,8 @@ class EvaluationController {
   double _handleParalyze(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
-      a.infinite ? 1.5 : 1.0,
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
+      a.attackConstParams.infinite ? 1.5 : 1.0,
     ];
 
     final expectedValue = a.power / 100.0;
@@ -313,10 +313,10 @@ class EvaluationController {
   double _handleHeal(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
-    final val = a.heal;
+    final val = a.attackConstParams.heal;
     result += val;
 
     for(var i in coeffs) {
@@ -328,7 +328,7 @@ class EvaluationController {
   double _handleFear(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
     final expectedValue = a.power / 100.0;
@@ -343,10 +343,10 @@ class EvaluationController {
   double _handleBoostDamage(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
-    final val = a.level * 1.0;
+    final val = a.attackConstParams.level * 1.0;
     result += val;
 
     for(var i in coeffs) {
@@ -358,8 +358,8 @@ class EvaluationController {
   double _handlePetrify(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
-      a.infinite ? 1.5 : 1.0,
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
+      a.attackConstParams.infinite ? 1.5 : 1.0,
     ];
 
     final expectedValue = a.power / 100.0;
@@ -374,10 +374,10 @@ class EvaluationController {
   double _handleLowerDamage(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
-    result += a.level == 1 ? 1.0 : 0.77;
+    result += a.attackConstParams.level == 1 ? 1.0 : 0.77;
 
     for(var i in coeffs) {
       result *= i;
@@ -388,10 +388,10 @@ class EvaluationController {
   double _handleLowerInitiative(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
-    result += a.level == 1 ? 1.0 : 0.77;
+    result += a.attackConstParams.level == 1 ? 1.0 : 0.77;
 
     for(var i in coeffs) {
       result *= i;
@@ -402,8 +402,8 @@ class EvaluationController {
   double _handlePoison(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
-      a.infinite ? 1.2 : 1.0,
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
+      a.attackConstParams.infinite ? 1.2 : 1.0,
     ];
 
     result += a.power / 100.0 / 300.0;
@@ -417,8 +417,8 @@ class EvaluationController {
   double _handleFrostbite(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
-      a.infinite ? 1.2 : 1.0,
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
+      a.attackConstParams.infinite ? 1.2 : 1.0,
     ];
 
     result += a.power / 100.0 / 300.0;
@@ -432,7 +432,7 @@ class EvaluationController {
   double _handleRevive(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
     result += 1.0;
@@ -446,7 +446,7 @@ class EvaluationController {
   double _handleDrainOverflow(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
     final expectedValue = a.damage * (a.power / 100.0);
@@ -461,7 +461,7 @@ class EvaluationController {
   double _handleCure(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
     result += 1.0;
@@ -487,7 +487,7 @@ class EvaluationController {
   double _handleDrainLevel(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      //_targetsCountEvaluation(a.targetsCount),
+      //_targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
     for(var i in coeffs) {
@@ -500,7 +500,7 @@ class EvaluationController {
     var result = 0.0;
 
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
     result += 1.0;
@@ -538,7 +538,7 @@ class EvaluationController {
   double _handleTransformOther(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
     result += a.power / 100.0;
@@ -552,8 +552,8 @@ class EvaluationController {
   double _handleBlister(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
-      a.infinite ? 1.2 : 1.0,
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
+      a.attackConstParams.infinite ? 1.2 : 1.0,
     ];
 
     result += a.power / 100.0 / 300.0;
@@ -579,7 +579,7 @@ class EvaluationController {
   double _handleShatter(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
     result += a.damage * a.power / 100.0;

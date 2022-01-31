@@ -250,35 +250,35 @@ class UnitCellWidget extends StatelessWidget {
                         TextSpan(children: [
                           if (unit.unitAttack.damage > 0)
                             TextSpan(
-                                text: 'DMG ${unit.unitAttack.firstDamage}',
+                                text: 'DMG ${unit.unitAttack.attackConstParams.firstDamage}',
                                 style: GameStyles.getUnitShortDescriptionStyle()),
-                          if (unit.unitAttack.firstDamage -
+                          if (unit.unitAttack.attackConstParams.firstDamage -
                               unit.unitAttack.damage !=
                               0)
                             TextSpan(
                                 text:
-                                ' ${unit.unitAttack.firstDamage - unit.unitAttack.damage > 0 ? '- ' : '+ '} '
-                                    '${((unit.unitAttack.firstDamage - unit.unitAttack.damage).abs())}',
+                                ' ${unit.unitAttack.attackConstParams.firstDamage - unit.unitAttack.damage > 0 ? '- ' : '+ '} '
+                                    '${((unit.unitAttack.attackConstParams.firstDamage - unit.unitAttack.damage).abs())}',
                                 style: GameStyles
                                     .getUnitShortDescriptionDebuffStyle()),
                           if ((unit.unitAttack2?.damage ?? 0) > 0)
                             TextSpan(
-                                text: ' / ${(unit.unitAttack2?.firstDamage ?? '')}',
+                                text: ' / ${(unit.unitAttack2?.attackConstParams.firstDamage ?? '')}',
                                 style: GameStyles.getUnitShortDescriptionStyle()),
                         ])),
-                  if (unit.unitAttack.firstInitiative > 0)
+                  if (unit.unitAttack.attackConstParams.firstInitiative > 0)
                     AutoSizeText.rich(
                         TextSpan(children: [
-                          if (unit.unitAttack.firstInitiative > 0)
+                          if (unit.unitAttack.attackConstParams.firstInitiative > 0)
                             TextSpan(
-                                text: 'INI ${unit.unitAttack.firstInitiative}',
+                                text: 'INI ${unit.unitAttack.attackConstParams.firstInitiative}',
                                 style: GameStyles.getUnitShortDescriptionStyle()),
-                          if (unit.unitAttack.firstInitiative -
+                          if (unit.unitAttack.attackConstParams.firstInitiative -
                               unit.unitAttack.initiative !=
                               0)
                             TextSpan(
                                 text:
-                                ' - ${unit.unitAttack.firstInitiative - unit.unitAttack.initiative}',
+                                ' - ${unit.unitAttack.attackConstParams.firstInitiative - unit.unitAttack.initiative}',
                                 style: GameStyles
                                     .getUnitShortDescriptionDebuffStyle()),
                         ])),

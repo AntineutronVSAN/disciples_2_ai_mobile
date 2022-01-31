@@ -40,7 +40,7 @@ class UnitInformationScreenBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    final deltaIni = unit.unitAttack.initiative - unit.unitAttack.firstInitiative;
+    final deltaIni = unit.unitAttack.initiative - unit.unitAttack.attackConstParams.firstInitiative;
     final String sign = deltaIni < 0 ? '-' : '+';
 
     String immuneString = '';
@@ -92,7 +92,7 @@ class UnitInformationScreenBody extends StatelessWidget {
               content: 'Уровень: ${unit.level}',
             ),
             UnitsParamsSection(
-              content: 'Инициатива: ${unit.unitAttack.firstInitiative}',
+              content: 'Инициатива: ${unit.unitAttack.attackConstParams.firstInitiative}',
               debuffContent: deltaIni == 0 ? null : ' $sign $deltaIni',
             ),
             UnitsParamsSection(

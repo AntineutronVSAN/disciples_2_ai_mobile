@@ -38,8 +38,6 @@ class GameRepository implements GameRepositoryBase {
 
   final Map<String, List<Unit>> _transfUnitCache = {};
 
-
-
   GameRepository({
     required this.gunitsProvider,
     required this.tglobalProvider,
@@ -57,15 +55,16 @@ class GameRepository implements GameRepositoryBase {
 
   /// Получить юнита, в которого превращает атака [attckId]
   @override
-  Unit getTransformUnitByAttackId(String attckId, {bool isBig=false}) {
-
+  Unit getTransformUnitByAttackId(String attckId, {bool isBig = false}) {
     final hasCache = _transfUnitCache.containsKey(attckId);
 
     if (hasCache) {
       return _transfUnitCache[attckId]![0].deepCopy();
     }
 
-    final transfUnitIds = gtransfProvider.objects.where((element) => element.attack_id == attckId).toList();
+    final transfUnitIds = gtransfProvider.objects
+        .where((element) => element.attack_id == attckId)
+        .toList();
     assert(transfUnitIds.length <= 2);
 
     final firstUnit = getCopyUnitById(transfUnitIds[0].transf_id).deepCopy();
@@ -88,7 +87,6 @@ class GameRepository implements GameRepositoryBase {
 
   @override
   void init() {
-
     final evals = <PairValues<String, double>>[];
 
     // Достаются юниты
@@ -109,8 +107,8 @@ class GameRepository implements GameRepositoryBase {
 
       final unitDynUpgrade = unit.dyn_upg1;
 
-      final dynUpgradeParams = gDynUpgrProvider.objects.firstWhere(
-              (element) => element.upgrade_id == unitDynUpgrade);
+      final dynUpgradeParams = gDynUpgrProvider.objects
+          .firstWhere((element) => element.upgrade_id == unitDynUpgrade);
 
       /*print('${newGameUnitText.text} '
           '---- ${attack.atck_class} '
@@ -135,36 +133,56 @@ class GameRepository implements GameRepositoryBase {
       ;*/
 
       final unitAttack1 = UnitAttack(
-        attackId: attack.att_id,
-        power: attack.power,
-        heal: attack.qty_heal ?? 0,
-        damage: attack.qty_dam ?? 0,
-        initiative: attack.initiative,
-        firstInitiative: attack.initiative,
-        targetsCount: targetsCountFromReach(attack.reach),
-        attackClass: attackClassFromGameAttack(attack.atck_class),
-        infinite: attack.infinite ?? false,
-        firstDamage: attack.qty_dam ?? 0,
-        level: attack.level ?? 2,
-        source: attack.source,
+          //attackId: attack.att_id,
+          power: attack.power,
+          //heal: attack.qty_heal ?? 0,
+          damage: attack.qty_dam ?? 0,
+          initiative: attack.initiative,
+          //firstInitiative: attack.initiative,
+          //targetsCount: targetsCountFromReach(attack.reach),
+          //attackClass: attackClassFromGameAttack(attack.atck_class),
+          //infinite: attack.infinite ?? false,
+          //firstDamage: attack.qty_dam ?? 0,
+          //level: attack.level ?? 2,
+          //source: attack.source,
+          attackConstParams: AttackConstParams(
+              heal: attack.qty_heal ?? 0,
+              firstDamage: attack.qty_dam ?? 0,
+              firstInitiative: attack.initiative,
+              targetsCount: targetsCountFromReach(attack.reach),
+              attackClass: attackClassFromGameAttack(attack.atck_class),
+              infinite: attack.infinite ?? false,
+              attackId: attack.att_id,
+              level:attack.level ?? 2,
+              source: attack.source)
       );
 
       UnitAttack? unitAttack2;
 
       if (attack2 != null) {
         unitAttack2 = UnitAttack(
-          attackId: attack2.att_id,
+          //attackId: attack2.att_id,
           power: attack2.power,
-          heal: attack2.qty_heal ?? 0,
+          //heal: attack2.qty_heal ?? 0,
           damage: attack2.qty_dam ?? 0,
           initiative: attack2.initiative,
-          firstInitiative: attack2.initiative,
-          targetsCount: targetsCountFromReach(attack2.reach),
-          attackClass: attackClassFromGameAttack(attack2.atck_class),
-          infinite: attack2.infinite ?? false,
-          firstDamage: attack2.qty_dam ?? 0,
-          level: attack2.level ?? 2,
-          source: attack2.source,
+          //firstInitiative: attack2.initiative,
+          //targetsCount: targetsCountFromReach(attack2.reach),
+          //attackClass: attackClassFromGameAttack(attack2.atck_class),
+          //infinite: attack2.infinite ?? false,
+          //firstDamage: attack2.qty_dam ?? 0,
+          //level: attack2.level ?? 2,
+          //source: attack2.source,
+            attackConstParams: AttackConstParams(
+                heal: attack2.qty_heal ?? 0,
+                firstDamage: attack2.qty_dam ?? 0,
+                firstInitiative: attack2.initiative,
+                targetsCount: targetsCountFromReach(attack2.reach),
+                attackClass: attackClassFromGameAttack(attack2.atck_class),
+                infinite: attack2.infinite ?? false,
+                attackId: attack2.att_id,
+                level:attack2.level ?? 2,
+                source: attack2.source)
         );
       }
       final newMapAtck = <AttackClass, UnitAttack>{};
@@ -175,25 +193,24 @@ class GameRepository implements GameRepositoryBase {
       final hasClassImmune = <int, bool>{};
       final hasSourceImmune = <int, bool>{};
 
-      final unitClassImmu = gimmuCProvider.objects.where((element) =>
-        element.unit_id == unit.unit_id);
-      final unitSourceImmu = gimmuProvider.objects.where((element) =>
-        element.unit_id == unit.unit_id);
+      final unitClassImmu = gimmuCProvider.objects
+          .where((element) => element.unit_id == unit.unit_id);
+      final unitSourceImmu = gimmuProvider.objects
+          .where((element) => element.unit_id == unit.unit_id);
 
-      for(var i in unitClassImmu) {
+      for (var i in unitClassImmu) {
         final immuC = i.immunity;
         final cat = i.immunecat;
         classImmuneMap[immuC] = immuneCategoryFromValue(cat);
         hasClassImmune[immuC] = true;
       }
 
-      for(var i in unitSourceImmu) {
+      for (var i in unitSourceImmu) {
         final immuC = i.immunity;
         final cat = i.immunecat;
         sourceImmuneMap[immuC] = immuneCategoryFromValue(cat);
         hasSourceImmune[immuC] = true;
       }
-
 
       Unit newUnit = Unit(
         isMoving: false,
@@ -227,11 +244,11 @@ class GameRepository implements GameRepositoryBase {
         isBig: !(unit.size_small ?? false),
       );
 
-
       final eval = GameEvaluation();
 
       evalController.getUnitEvaluation(newUnit, eval);
-      evals.add(PairValues<String, double>(first: newUnit.unitName, end: eval.getEval()));
+      evals.add(PairValues<String, double>(
+          first: newUnit.unitName, end: eval.getEval()));
 
       // todo Пока не поддерживаются двуклеточники
       if ((unit.size_small ?? false) || true) {
@@ -241,11 +258,10 @@ class GameRepository implements GameRepositoryBase {
       }
     }
 
-    evals.sort((a,b) => a.end.compareTo(b.end));
-    for(var i in evals) {
+    evals.sort((a, b) => a.end.compareTo(b.end));
+    for (var i in evals) {
       //print('Юнит - ${i.first}. Ценность - ${i.end}');
     }
-
   }
 
   @override
@@ -263,13 +279,14 @@ class GameRepository implements GameRepositoryBase {
         unitAttack2: _unitsNamesMap[randomName]!.unitAttack2?.copyWith(),
       );
     } else {
-
       if (options.backLine) {
-
         final isRange = Random().nextInt(100) > 50;
 
         if (isRange) {
-          final units = _units.where((element) => element.unitAttack.targetsCount == TargetsCount.any).toList();
+          final units = _units
+              .where((element) =>
+                  element.unitAttack.attackConstParams.targetsCount == TargetsCount.any)
+              .toList();
           final index = Random().nextInt(units.length);
           return _getCopyUnitWithNewParams(units[index]);
           /*return units[index].copyWith(
@@ -280,7 +297,10 @@ class GameRepository implements GameRepositoryBase {
             unitAttack2: units[index].unitAttack2?.copyWith(),
           );*/
         } else {
-          final units = _units.where((element) => element.unitAttack.targetsCount == TargetsCount.all).toList();
+          final units = _units
+              .where((element) =>
+                  element.unitAttack.attackConstParams.targetsCount == TargetsCount.all)
+              .toList();
           final index = Random().nextInt(units.length);
           return _getCopyUnitWithNewParams(units[index]);
           /*return units[index].copyWith(
@@ -291,11 +311,12 @@ class GameRepository implements GameRepositoryBase {
             unitAttack2: units[index].unitAttack2?.copyWith(),
           );*/
         }
-
-
       }
       if (options.frontLine) {
-        final units = _units.where((element) => element.unitAttack.targetsCount == TargetsCount.one).toList();
+        final units = _units
+            .where((element) =>
+                element.unitAttack.attackConstParams.targetsCount == TargetsCount.one)
+            .toList();
         final index = Random().nextInt(units.length);
 
         return _getCopyUnitWithNewParams(units[index]);
@@ -310,8 +331,6 @@ class GameRepository implements GameRepositoryBase {
 
       throw Exception();
     }
-
-
   }
 
   @override
@@ -336,7 +355,7 @@ class GameRepository implements GameRepositoryBase {
   Unit getCopyUnitById(String id) {
     Unit? newUnit;
     bool unitFound = false;
-    for(var u in _units) {
+    for (var u in _units) {
       if (u.unitGameID == id) {
         newUnit = _getCopyUnitWithNewParams(u);
         /*newUnit = u.copyWith(
@@ -352,12 +371,10 @@ class GameRepository implements GameRepositoryBase {
     }
     assert(unitFound);
 
-
     return newUnit!;
   }
 
   Unit _getCopyUnitWithNewParams(Unit u) {
-
     var newUnit = u.deepCopy();
 
     newUnit = newUnit.copyWith(
@@ -372,11 +389,9 @@ class GameRepository implements GameRepositoryBase {
 
       //hasSourceImunne: <int, bool>{},
       //hasClassImunne: <int, bool>{},
-
     );
 
     return newUnit;
-
   }
 
   @override
@@ -388,4 +403,3 @@ class GameRepository implements GameRepositoryBase {
     return gunitsProvider.objects.map((e) => e.unit_id).toList();
   }
 }
-

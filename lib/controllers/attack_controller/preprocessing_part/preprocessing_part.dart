@@ -31,7 +31,7 @@ extension Preprocessing on AttackController {
       final atckId = atck.key;
       final atckValue = atck.value;
 
-      switch (atckValue.attackClass) {
+      switch (atckValue.attackConstParams.attackClass) {
         case AttackClass.L_DAMAGE:
           throw Exception();
         case AttackClass.L_DRAIN:
@@ -215,8 +215,8 @@ extension Preprocessing on AttackController {
             // Перед переприменением атак, бафы/дебафы сбрасываются
             units[index] = units[index].copyWith(
               unitAttack: units[index].unitAttack.copyWith(
-                initiative: units[index].unitAttack.firstInitiative,
-                damage: units[index].unitAttack.firstDamage,
+                initiative: units[index].unitAttack.attackConstParams.firstInitiative,
+                damage: units[index].unitAttack.attackConstParams.firstDamage,
               )
             );
             await onUpdate();

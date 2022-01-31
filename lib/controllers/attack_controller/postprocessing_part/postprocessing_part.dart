@@ -30,7 +30,7 @@ extension Postprocessing on AttackController {
       final atckId = atck.key;
       final atckValue = atck.value;
 
-      switch (atckValue.attackClass) {
+      switch (atckValue.attackConstParams.attackClass) {
         case AttackClass.L_DAMAGE:
           break;
         case AttackClass.L_DRAIN:
@@ -46,7 +46,7 @@ extension Postprocessing on AttackController {
             break;
           }
           if (atckValue.currentDuration == 1) {
-            final newDamageCoeff = atckValue.level * 0.25;
+            final newDamageCoeff = atckValue.attackConstParams.level * 0.25;
 
             atcksToRemove.add(atckId);
             units[index] = units[index].copyWith(
@@ -54,7 +54,7 @@ extension Postprocessing on AttackController {
               uiInfo: 'Усиление закончено',
               unitAttack: units[index].unitAttack.copyWith(
                   damage: units[index].unitAttack.damage -
-                      (units[index].unitAttack.firstDamage * newDamageCoeff)
+                      (units[index].unitAttack.attackConstParams.firstDamage * newDamageCoeff)
                           .toInt()),
             );
           } else {
@@ -73,14 +73,14 @@ extension Postprocessing on AttackController {
             break;
           }
           if (atckValue.currentDuration == 1) {
-            final newDamageCoeff = atckValue.level == 1 ? 0.5 : 0.33;
+            final newDamageCoeff = atckValue.attackConstParams.level == 1 ? 0.5 : 0.33;
             atcksToRemove.add(atckId);
             units[index] = units[index].copyWith(
               damageLower: false,
               uiInfo: 'Ослабление закончено',
               unitAttack: units[index].unitAttack.copyWith(
                 damage: units[index].unitAttack.damage +
-                    (units[index].unitAttack.firstDamage * newDamageCoeff)
+                    (units[index].unitAttack.attackConstParams.firstDamage * newDamageCoeff)
                         .toInt(),
               ),
             );
@@ -100,7 +100,7 @@ extension Postprocessing on AttackController {
               initLower: false,
               uiInfo: 'Замедление закончено',
               unitAttack: units[index].unitAttack.copyWith(
-                initiative: units[index].unitAttack.firstInitiative,
+                initiative: units[index].unitAttack.attackConstParams.firstInitiative,
               ),
             );
           } else {

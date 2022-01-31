@@ -26,7 +26,7 @@ class Unit {
   final String unitWarId;
 
   final bool isDoubleAttack;
-  final int currentAttack;
+  int currentAttack;
 
   final UnitAttack unitAttack;
   final UnitAttack? unitAttack2;
@@ -36,29 +36,29 @@ class Unit {
   final Map<AttackClass, UnitAttack> attacksMap;
 
   /// Что времено отображается на ячейке юнита
-  final String uiInfo;
+  String uiInfo;
 
   /// Отступает ли юнит с поля боя
-  final bool retreat;
+  bool retreat;
 
-  final int armor;
+  int armor;
 
-  final bool paralyzed;
-  final bool petrified;
+  bool paralyzed;
+  bool petrified;
 
-  final bool poisoned;
-  final bool blistered;
-  final bool frostbited;
+  bool poisoned;
+  bool blistered;
+  bool frostbited;
 
-  final bool damageLower;
-  final bool initLower;
+  bool damageLower;
+  bool initLower;
 
-  final bool revived;
+  bool revived;
 
-  final bool damageBusted;
+  bool damageBusted;
 
   /// Юнит превращён в другого
-  final bool transformed;
+  bool transformed;
 
 
   /* UPGRADE START */
@@ -341,8 +341,8 @@ class Unit {
       isDoubleAttack: isDoubleAttack ?? this.isDoubleAttack,
       currentAttack: 0,
       unitAttack: this.unitAttack.copyWith(
-        damage: this.unitAttack.firstDamage,
-        initiative: this.unitAttack.firstInitiative,
+        damage: this.unitAttack.attackConstParams.firstDamage,
+        initiative: this.unitAttack.attackConstParams.firstInitiative,
       ),
       unitAttack2: unitAttack2 ?? this.unitAttack2,
       //attacks: this.attacks,

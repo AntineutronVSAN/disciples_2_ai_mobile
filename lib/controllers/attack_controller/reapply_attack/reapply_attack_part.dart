@@ -30,14 +30,14 @@ extension ReapplyAttacks on AttackController {
     }
 
     // Проверки для того, что бы убедиться что юнит имеет максимальные параметры
-    assert(currentUnit.unitAttack.damage == currentUnit.unitAttack.firstDamage);
-    assert(currentUnit.unitAttack.initiative == currentUnit.unitAttack.firstInitiative, '${currentUnit.unitAttack.initiative} != ${currentUnit.unitAttack.firstInitiative}');
+    assert(currentUnit.unitAttack.damage == currentUnit.unitAttack.attackConstParams.firstDamage);
+    assert(currentUnit.unitAttack.initiative == currentUnit.unitAttack.attackConstParams.firstInitiative, '${currentUnit.unitAttack.initiative} != ${currentUnit.unitAttack.attackConstParams.firstInitiative}');
 
     for(var i in unitsAttacks.entries) {
 
       final attack = i.value;
 
-      switch(attack.attackClass) {
+      switch(attack.attackConstParams.attackClass) {
 
         case AttackClass.L_DAMAGE:
           continue;
@@ -54,10 +54,10 @@ extension ReapplyAttacks on AttackController {
 
 
           // Применение атаки на обновлённого юнита
-          final attackLevel = attack.level;
+          final attackLevel = attack.attackConstParams.level;
           assert(attackLevel > 0 && attackLevel <= 4);
           final newDamageCoeff = attackLevel * 0.25;
-          final unitMaxDamage = units[current].unitAttack.firstDamage;
+          final unitMaxDamage = units[current].unitAttack.attackConstParams.firstDamage;
           final currentDamage = units[current].unitAttack.damage;
 
           units[current] = units[current].copyWith(
@@ -72,10 +72,10 @@ extension ReapplyAttacks on AttackController {
           continue;
         case AttackClass.L_LOWER_DAMAGE:
 
-          final attackLevel = attack.level;
+          final attackLevel = attack.attackConstParams.level;
           assert(attackLevel == 1 || attackLevel == 2);
           final newDamageCoeff = attackLevel == 1 ? 0.5 : 0.33;
-          final unitMaxDamage = units[current].unitAttack.firstDamage;
+          final unitMaxDamage = units[current].unitAttack.attackConstParams.firstDamage;
           final currentDamage = units[current].unitAttack.damage;
 
           units[current] = units[current].copyWith(
@@ -88,9 +88,9 @@ extension ReapplyAttacks on AttackController {
           break;
         case AttackClass.L_LOWER_INITIATIVE:
 
-          final attackLevel = attack.level;
+          final attackLevel = attack.attackConstParams.level;
           assert(attackLevel == 1);
-          final unitMaxIni = units[current].unitAttack.firstInitiative;
+          final unitMaxIni = units[current].unitAttack.attackConstParams.firstInitiative;
 
           units[current] = units[current].copyWith(
             initLower: true,
