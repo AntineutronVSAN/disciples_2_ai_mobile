@@ -65,6 +65,7 @@ Unit _$UnitFromJson(Map json) => Unit(
       hasSourceImunne: (json['hasSourceImunne'] as Map).map(
         (k, e) => MapEntry(int.parse(k as String), e as bool),
       ),
+      isBig: json['isBig'] as bool,
     );
 
 Map<String, dynamic> _$UnitToJson(Unit instance) => <String, dynamic>{
@@ -72,6 +73,7 @@ Map<String, dynamic> _$UnitToJson(Unit instance) => <String, dynamic>{
       'isDead': instance.isDead,
       'isProtected': instance.isProtected,
       'isWaiting': instance.isWaiting,
+      'isBig': instance.isBig,
       'maxHp': instance.maxHp,
       'currentHp': instance.currentHp,
       'unitName': instance.unitName,

@@ -152,27 +152,96 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       topTeam[4],
       topTeam[5],
 
-      repository.getCopyUnitByName(topTeam[3].unitName),
-      repository.getCopyUnitByName(topTeam[4].unitName),
-      repository.getCopyUnitByName(topTeam[5].unitName),
       repository.getCopyUnitByName(topTeam[0].unitName),
       repository.getCopyUnitByName(topTeam[1].unitName),
       repository.getCopyUnitByName(topTeam[2].unitName),
+      repository.getCopyUnitByName(topTeam[3].unitName),
+      repository.getCopyUnitByName(topTeam[4].unitName),
+      repository.getCopyUnitByName(topTeam[5].unitName),
 
 
     ];
 
-    var index=0;
+    putUnitTo(
+        units: _units,
+        unit: symmetricUnits[0],
+        to: 0, emptyUnit: GameRepositoryBase.globalEmptyUnit);
+    putUnitTo(
+        units: _units,
+        unit: symmetricUnits[1],
+        to: 1, emptyUnit: GameRepositoryBase.globalEmptyUnit);
+    putUnitTo(
+        units: _units,
+        unit: symmetricUnits[2],
+        to: 2, emptyUnit: GameRepositoryBase.globalEmptyUnit);
+    putUnitTo(
+        units: _units,
+        unit: symmetricUnits[3],
+        to: 3, emptyUnit: GameRepositoryBase.globalEmptyUnit);
+    putUnitTo(
+        units: _units,
+        unit: symmetricUnits[4],
+        to: 4, emptyUnit: GameRepositoryBase.globalEmptyUnit);
+    putUnitTo(
+        units: _units,
+        unit: symmetricUnits[5],
+        to: 5, emptyUnit: GameRepositoryBase.globalEmptyUnit);
+
+    putUnitTo(
+        units: _units,
+        unit: symmetricUnits[6],
+        to: 9, emptyUnit: GameRepositoryBase.globalEmptyUnit);
+    putUnitTo(
+        units: _units,
+        unit: symmetricUnits[7],
+        to: 10, emptyUnit: GameRepositoryBase.globalEmptyUnit);
+    putUnitTo(
+        units: _units,
+        unit: symmetricUnits[8],
+        to: 11, emptyUnit: GameRepositoryBase.globalEmptyUnit);
+    putUnitTo(
+        units: _units,
+        unit: symmetricUnits[9],
+        to: 6, emptyUnit: GameRepositoryBase.globalEmptyUnit);
+    putUnitTo(
+        units: _units,
+        unit: symmetricUnits[10],
+        to: 7, emptyUnit: GameRepositoryBase.globalEmptyUnit);
+    putUnitTo(
+        units: _units,
+        unit: symmetricUnits[11],
+        to: 8, emptyUnit: GameRepositoryBase.globalEmptyUnit);
+
+    /*var index=0;
+    var cureIndex = 0;
     for(var i in symmetricUnits) {
-      _units[index] = i.deepCopy();
+      //_units[index] = i.deepCopy();
+      cureIndex = index;
+      if (index > 5) {
+        if (index > 5 && index < 9) {
+          cureIndex = index + 3;
+        }
+        if (index > 8 && index < 11) {
+          cureIndex = index - 3;
+        }
+      }
+
+      putUnitTo(
+          units: _units,
+          unit: i.deepCopy(),
+          to: cureIndex, emptyUnit: GameRepositoryBase.globalEmptyUnit);
       index++;
-    }
+    }*/
 
     final List<String> unitsNames = UnitsPack.packs[2];
     //final List<String> unitsNames = UnitsPack.tournaments[9];
-    index = 0;
+    var index = 0;
     for(var name in unitsNames) {
       //_units[index] = repository.getCopyUnitByName(name);
+      /*putUnitTo(
+          units: _units,
+          unit: repository.getCopyUnitByName(name),
+          to: index, emptyUnit: GameRepositoryBase.globalEmptyUnit);*/
       unitUpgradeController.setLevel(3, index, _units);
       index++;
     }
@@ -542,6 +611,49 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       return;
     }
 
+    final newUnit = unit.copyWith(
+      // На поле боя юниту присваиывается уникальный id
+      unitWarId: uuid.v1(),
+      // Тут важно понять, что репозиторий создаёт всех юнитов один раз и
+      // когда мы копируем юнита из списка всех юнитов репозитория,
+      // все ссылочные типы ссылаются на одни и теже объекты (которые в репозитории)
+      // нужно создать новые объекты
+      attacksMap: <AttackClass, UnitAttack>{},
+      attacks: <UnitAttack>[],
+      unitAttack: unit.unitAttack.copyWith(),
+      unitAttack2: unit.unitAttack2?.copyWith(),
+    );
+
+    putUnitTo(
+        units: _units,
+        unit: newUnit,
+        to: event.cellNumber,
+        emptyUnit: GameRepositoryBase.globalEmptyUnit);
+
+    emit(state.copyWith(units: _units));
+
+    // Провека, можно ли ставить сюда юнита
+    /*final canPut = canPutUnit(units: _units, index: event.cellNumber);
+
+    if (canPut == null) {
+      _units[event.cellNumber] = unit.copyWith(
+        // На поле боя юниту присваиывается уникальный id
+        unitWarId: uuid.v1(),
+        // Тут важно понять, что репозиторий создаёт всех юнитов один раз и
+        // когда мы копируем юнита из списка всех юнитов репозитория,
+        // все ссылочные типы ссылаются на одни и теже объекты (которые в репозитории)
+        // нужно создать новые объекты
+        attacksMap: <AttackClass, UnitAttack>{},
+        attacks: <UnitAttack>[],
+        unitAttack: unit.unitAttack.copyWith(),
+        unitAttack2: unit.unitAttack2?.copyWith(),
+      );
+      emit(state.copyWith(units: _units));
+      return;
+    }
+
+    // Делаем мешающего юнита пустым
+    _units[canPut] = GameRepositoryBase.globalEmptyUnit;
     _units[event.cellNumber] = unit.copyWith(
       // На поле боя юниту присваиывается уникальный id
       unitWarId: uuid.v1(),
@@ -554,7 +666,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       unitAttack: unit.unitAttack.copyWith(),
       unitAttack2: unit.unitAttack2?.copyWith(),
     );
-    emit(state.copyWith(units: _units));
+    emit(state.copyWith(units: _units));*/
   }
 }
 

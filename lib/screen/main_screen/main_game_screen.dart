@@ -25,6 +25,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../styles.dart';
 import 'components/ai_moving_widget.dart';
+import 'components/rating_widget.dart';
+import 'components/team_widget.dart';
 
 const int treeDepth = 8;
 
@@ -135,21 +137,43 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       //_getTeamItems(topTeam: true),
-                      _getTeamWidgets(context, true),
+                      //_getTeamWidgets(context, true),
+                      MainScreenTeamWidget(
+                        onLongPress: (val) {
+                          _onCellLongPress(val, bloc.state.units, context);
+                        },
+                        units: bloc.state.units,
+                        top: true,
+                        onTap: (val) {
+                          _onCellTap(context, bloc.state, val, bloc);
+                        },
+                      ),
                       if (bloc.state.aiMoving)
                         AIMovingWidget(
                           treeDepth: treeDepth,
                           nodesPerSecond: bloc.state.nodesPerSecond ?? 0, height: 50,),
                       if (!bloc.state.aiMoving)
                         _getActionsWidget(context),
-                      _getTeamWidgets(context, false),
+
+                      MainScreenTeamWidget(
+                        onLongPress: (val) {
+                          _onCellLongPress(val, bloc.state.units, context);
+                        },
+                        units: bloc.state.units,
+                        top: false,
+                        onTap: (val) {
+                          _onCellTap(context, bloc.state, val, bloc);
+                        },
+                      ),
+                      //_getTeamWidgets(context, false),
                       //_getTeamItems(topTeam: false),
                     ],
                   ),
                   Positioned.fill(
                       child: Align(
                           alignment: Alignment.centerRight,
-                          child: _getRatingWidget(bloc.state.positionRating))),
+                          //child: _getRatingWidget(bloc.state.positionRating))),
+                        child: RatingWidget(currentPositionRating: bloc.state.positionRating,))),
                 ],
               ),
             ],
@@ -200,7 +224,7 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
     );
   }
 
-  Widget _getRatingWidget(double currentPositionRating) {
+  /*Widget _getRatingWidget(double currentPositionRating) {
     //assert(currentPositionRating >= 0.0 && currentPositionRating <= 1.0);
 
     const maxContainerHeight = 100.0;
@@ -247,7 +271,7 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
         ),
       ],
     );
-  }
+  }*/
 
   Widget _getGeneticInformation(GameBloc bloc) {
     return Padding(
@@ -326,7 +350,7 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
     );
   }
 
-  Widget _getTeamWidgets(BuildContext context, bool top) {
+  /*Widget _getTeamWidgets(BuildContext context, bool top) {
     final offset = top ? 0 : 6;
     final bloc = context.read<GameBloc>();
     return Column(
@@ -389,7 +413,7 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
         ),
       ],
     );
-  }
+  }*/
 
   void _onCellLongPress(int index, List<Unit> cells, BuildContext context) async {
     final result = await Navigator.push(

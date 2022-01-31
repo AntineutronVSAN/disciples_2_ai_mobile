@@ -12,6 +12,8 @@ class Unit {
   bool isProtected;
   bool isWaiting;
 
+  bool isBig;
+
   final int maxHp;
   int currentHp;
 
@@ -137,6 +139,8 @@ class Unit {
     required this.sourceImmune,
     required this.hasClassImunne,
     required this.hasSourceImunne,
+
+    required this.isBig,
   });
 
   factory Unit.fromJson(Map<String, dynamic> json) => _$UnitFromJson(json);
@@ -197,6 +201,8 @@ class Unit {
       hasClassImunne: hasClassImunne.map((key, value) => MapEntry(key, value)),
       hasSourceImunne: hasSourceImunne.map((key, value) => MapEntry(key, value)),
 
+        isBig: isBig,
+
     );
   }
 
@@ -248,6 +254,8 @@ class Unit {
     sourceImmune,
     hasClassImunne,
     hasSourceImunne,
+
+    isBig,
   }) {
 
     //PerfomanceObservatory.addUnitCopyCount();
@@ -299,6 +307,8 @@ class Unit {
       sourceImmune: sourceImmune ?? this.sourceImmune,
       hasSourceImunne: hasSourceImunne ?? this.hasSourceImunne,
       hasClassImunne: hasClassImunne ?? this.hasClassImunne,
+
+        isBig: isBig ?? this.isBig,
     );
   }
 
@@ -367,6 +377,8 @@ class Unit {
       hasClassImunne: hasClassImunne,
       classImmune: classImmune,
       sourceImmune: sourceImmune,
+
+        isBig: isBig,
     );
   }
 
@@ -401,6 +413,7 @@ class Unit {
       sourceImmune: {},
       hasClassImunne: {},
       hasSourceImunne: {},
+        isBig: false,
     );
   }
 
@@ -462,6 +475,30 @@ AttackType? attackTypeFromSource(int? source) {
       return AttackType.air;
   }
   throw Exception("Низвестный источник атаки");
+}
+
+String attackSourceIntToSting(int? source) {
+
+  switch(source) {
+    case 0:
+      return 'Оружие';
+    case 1:
+      return 'Разум';
+    case 2:
+      return 'Жизнь';
+    case 3:
+      return 'Смерть';
+    case 4:
+      return 'Огонь';
+    case 5:
+      return 'Вода';
+    case 6:
+      return 'Земля';
+    case 7:
+      return 'Воздух';
+  }
+  return '';
+
 }
 
 enum ImunneCategory {

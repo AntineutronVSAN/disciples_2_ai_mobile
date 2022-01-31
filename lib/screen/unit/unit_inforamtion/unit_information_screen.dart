@@ -1,4 +1,5 @@
 import 'package:d2_ai_v2/bloc_base/stateless_base.dart';
+import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/screen/unit/components/unit_avatar_section.dart';
 import 'package:d2_ai_v2/screen/unit/components/unit_params_section.dart';
@@ -46,21 +47,21 @@ class UnitInformationScreenBody extends StatelessWidget {
     String protectString = '';
     for(var i in unit.classImmune.entries) {
       if (i.value == ImunneCategory.once) {
-        protectString += '${i.key}, ';
+        protectString += '${attackNameFromGameAttackInt(i.key)}, ';
         continue;
       }
       if (i.value == ImunneCategory.always) {
-        immuneString += '${i.key}, ';
+        immuneString += '${attackNameFromGameAttackInt(i.key)}, ';
         continue;
       }
     }
     for(var i in unit.sourceImmune.entries) {
       if (i.value == ImunneCategory.once) {
-        protectString += '${i.key}, ';
+        protectString += '${attackSourceIntToSting(i.key)}, ';
         continue;
       }
       if (i.value == ImunneCategory.always) {
-        immuneString += '${i.key}, ';
+        immuneString += '${attackSourceIntToSting(i.key)}, ';
         continue;
       }
     }

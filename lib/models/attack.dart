@@ -331,6 +331,115 @@ AttackClass attackClassFromGameAttack(int cls) {
   throw Exception();
 }
 
+String attackNameFromGameAttackInt(int cls) {
+
+  switch (cls) {
+    case 1:
+      return 'Обычный урон';
+    case 2:
+      return 'Вампиризм';
+    case 3:
+      return 'Паралич';
+    case 6:
+      return 'Исцеление';
+    case 7:
+      return 'Страх';
+    case 8:
+      return 'Увеличение урона';
+    case 9:
+      return 'Окаменение';
+    case 10:
+      return 'Снижение повреждения';
+    case 11:
+      return 'Снижение инициативы';
+    case 12:
+      return 'Яд';
+    case 13:
+      return 'Мороз';
+    case 14:
+      return 'Воскрешение';
+    case 15:
+      return 'Высосать жизнь';
+    case 16:
+      return 'Лечение';
+    case 17:
+      return 'Призыв';
+    case 18:
+      return 'Понижение уровня';
+    case 19:
+      return 'Увеличение урона';
+    case 20:
+      return 'Двойник';
+    case 21:
+      return 'Превратить себя';
+    case 22:
+      return 'Превращение';
+    case 23:
+      return 'Ожёг';
+    case 24:
+      return 'Даровать защиту';
+    case 25:
+      return 'Сломать броню';
+  }
+  throw Exception();
+}
+
+String gameAttackNameFromClass(AttackClass? atck) {
+  switch(atck) {
+
+    case AttackClass.L_DAMAGE:
+      return 'Обычный урон';
+    case AttackClass.L_DRAIN:
+      return 'Вампиризм';
+    case AttackClass.L_PARALYZE:
+      return 'Паралич';
+    case AttackClass.L_HEAL:
+      return 'Исцеление';
+    case AttackClass.L_FEAR:
+      return 'Страх';
+    case AttackClass.L_BOOST_DAMAGE:
+      return 'Увеличение урона';
+    case AttackClass.L_PETRIFY:
+      return 'Окаменение';
+    case AttackClass.L_LOWER_DAMAGE:
+      return 'Снижение повреждения';
+    case AttackClass.L_LOWER_INITIATIVE:
+      return 'Снижение инициативы';
+    case AttackClass.L_POISON:
+      return 'Яд';
+    case AttackClass.L_FROSTBITE:
+      return 'Мороз';
+    case AttackClass.L_REVIVE:
+      return 'Воскрешение';
+    case AttackClass.L_DRAIN_OVERFLOW:
+      return 'Высосать жизнь';
+    case AttackClass.L_CURE:
+      return 'Лечение';
+    case AttackClass.L_SUMMON:
+      return 'Призыв';
+    case AttackClass.L_DRAIN_LEVEL:
+      return 'Понижение уровня';
+    case AttackClass.L_GIVE_ATTACK:
+      return 'Увеличение урона';
+    case AttackClass.L_DOPPELGANGER:
+      return 'Двойник';
+    case AttackClass.L_TRANSFORM_SELF:
+      return 'Превратить себя';
+    case AttackClass.L_TRANSFORM_OTHER:
+      return 'Превращение';
+    case AttackClass.L_BLISTER:
+      return 'Ожёг';
+    case AttackClass.L_BESTOW_WARDS:
+      return 'Даровать защиту';
+    case AttackClass.L_SHATTER:
+      return 'Сломать броню';
+    case null:
+      return 'Неизвестно';
+  }
+
+  throw Exception();
+}
+
 int gameAttackNumberFromClass(AttackClass atck) {
   switch(atck) {
 

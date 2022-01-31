@@ -9,6 +9,10 @@ class UnitUpgradeController {
 
     final u = units[current];
 
+    if (u.isEmpty()) {
+      return false;
+    }
+
     if (level > 99 || level < 0) {
       return false;
     }

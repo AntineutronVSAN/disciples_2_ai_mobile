@@ -224,7 +224,7 @@ class GameRepository implements GameRepositoryBase {
         hasClassImunne: hasClassImmune,
         hasSourceImunne: hasSourceImmune,
         classImmune: classImmuneMap,
-
+        isBig: !(unit.size_small ?? false),
       );
 
 

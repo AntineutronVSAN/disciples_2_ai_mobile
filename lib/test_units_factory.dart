@@ -68,7 +68,9 @@ class TestUnitsFactory {
         classImmune: <int, ImunneCategory>{},
         sourceImmune: <int, ImunneCategory>{testDamagerWithOnceImmuneSelfSource: ImunneCategory.once},
         hasClassImunne: <int, bool>{},
-        hasSourceImunne: <int, bool>{testDamagerWithOnceImmuneSelfSource: true});
+        hasSourceImunne: <int, bool>{testDamagerWithOnceImmuneSelfSource: true},
+      isBig: false,
+    );
   }
 
   /// Получить юнита, который превращает цель в другого юнита на 0 ходов.
@@ -116,7 +118,8 @@ class TestUnitsFactory {
         classImmune: {},
         sourceImmune: {},
         hasClassImunne: {},
-        hasSourceImunne: {});
+        hasSourceImunne: {},
+      isBig: false,);
 
   }
 
@@ -161,7 +164,8 @@ class TestUnitsFactory {
         classImmune: {},
         sourceImmune: {},
         hasClassImunne: {},
-        hasSourceImunne: {});
+        hasSourceImunne: {},
+      isBig: false,);
   }
 
   /// Тестовый юнит для тестового репозитория. Тестовый репозиторий
@@ -206,7 +210,8 @@ class TestUnitsFactory {
         classImmune: {},
         sourceImmune: {},
         hasClassImunne: {},
-        hasSourceImunne: {});
+        hasSourceImunne: {},
+      isBig: false,);
   }
 
 
@@ -252,7 +257,8 @@ class TestUnitsFactory {
         classImmune: {},
         sourceImmune: {},
         hasClassImunne: {},
-        hasSourceImunne: {});
+        hasSourceImunne: {},
+      isBig: false,);
 
   }
 
@@ -311,7 +317,8 @@ class TestUnitsFactory {
         classImmune: {},
         sourceImmune: {},
         hasClassImunne: {},
-        hasSourceImunne: {});
+        hasSourceImunne: {},
+      isBig: false,);
 
   }
 }

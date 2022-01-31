@@ -2,6 +2,7 @@
 
 import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
+import 'package:d2_ai_v2/utils/cell_utils.dart';
 
 /*
 
@@ -33,6 +34,37 @@ class EvaluationController {
   /* DAMAGE */
   static const damageInfiniteDotCoeff = 1.2;
   /* END */
+
+  double getEvaluation({
+    required List<Unit> units,
+  }) {
+    var sfr = 0.0;
+    double aiTeamEval = 0.0;
+    double enemyTeamEval = 0.0;
+    List<GameEvaluation> evaluations = [];
+    var index=0;
+    for (var u in units) {
+      final newEval = GameEvaluation();
+      if (checkIsTopTeam(index)) {
+        // Свои
+        //final currentUnitEval = evaluationController.getUnitEvaluation(u);
+        //aiTeamEval += currentUnitEval.getEval();
+        getUnitEvaluation(u, newEval);
+        aiTeamEval += newEval.getEval();
+      } else {
+        // Враги
+        //final currentUnitEval = evaluationController.getUnitEvaluation(u);
+        //enemyTeamEval += currentUnitEval.getEval();
+        getUnitEvaluation(u, newEval);
+        enemyTeamEval += newEval.getEval();
+      }
+      evaluations.add(newEval);
+      index++;
+    }
+    sfr += aiTeamEval;
+    sfr -= enemyTeamEval;
+    return sfr;
+  }
 
   /// Получить ценность юнита с учётом атак
   void getUnitEvaluation(Unit u, GameEvaluation eval) {

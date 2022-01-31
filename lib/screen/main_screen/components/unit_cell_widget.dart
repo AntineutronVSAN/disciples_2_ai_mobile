@@ -7,6 +7,17 @@ import 'package:flutter/material.dart';
 
 import '../../../styles.dart';
 
+const double smallUnitCellWidth = 100.0;
+const double smallUnitActiveCellWidth = 120.0;
+const double smallUnitCellHeight = 100.0;
+const double smallUnitActiveCellHeight = 120.0;
+
+const double bigUnitCellWidth = 100.0;
+const double bigUnitActiveCellWidth = 120.0;
+const double bigUnitCellHeight = 200.0;
+const double bigUnitActiveCellHeight = 240.0;
+
+
 class UnitCellWidget extends StatelessWidget {
 
   final List<Unit> units;
@@ -19,6 +30,12 @@ class UnitCellWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final double activeCellWidth = units[cellNumber].isBig ? bigUnitActiveCellWidth : smallUnitActiveCellWidth;
+    final double activeCellHeight = units[cellNumber].isBig ? bigUnitActiveCellHeight : smallUnitActiveCellHeight;
+    final double cellWidth = units[cellNumber].isBig ? bigUnitCellWidth : smallUnitCellWidth;
+    final double cellHeight = units[cellNumber].isBig ? bigUnitCellHeight : smallUnitCellHeight;
+
 
     final unit = units[cellNumber];
     final maxHp = unit.maxHp;
@@ -94,8 +111,8 @@ class UnitCellWidget extends StatelessWidget {
                       ? Border.all(color: Colors.teal, width: 5)
                       : null,
                 ),
-                width: unit.isMoving ? 120.0 : 100.0,
-                height: unit.isMoving ? 120.0 : 100.0,
+                width: unit.isMoving ? activeCellWidth : cellWidth,
+                height: unit.isMoving ? activeCellHeight : cellHeight,
               ),
             ),
           ),
@@ -106,8 +123,8 @@ class UnitCellWidget extends StatelessWidget {
                 opacity: 0.7,
                 child: AnimatedContainer(
                   margin: const EdgeInsets.all(cellPadding),
-                  width: unit.isMoving ? 120.0 : 100.0,
-                  height: scaleFactor * (unit.isMoving ? 120.0 : 100.0),
+                  width: unit.isMoving ? activeCellWidth : cellWidth,
+                  height: scaleFactor * (unit.isMoving ? activeCellHeight : cellHeight),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     color: damageColor,

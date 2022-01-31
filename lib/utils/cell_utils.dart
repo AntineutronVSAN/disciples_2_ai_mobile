@@ -14,7 +14,95 @@ import 'package:d2_ai_v2/models/unit.dart';
 
 */
 
+const Map<int, int> nearestMap = {
+  0: 3,
+  1: 4,
+  2: 5,
+  3: 0,
+  4: 1,
+  5: 2,
+  6: 9,
+  7: 10,
+  8: 11,
+  9: 6,
+  10: 7,
+  11: 8,
+};
 
+const Map<int, int> bigUnitFixedPos = {
+  0: 3,
+  1: 4,
+  2: 5,
+  3: 3,
+  4: 4,
+  5: 5,
+  6: 6,
+  7: 7,
+  8: 8,
+  9: 6,
+  10: 7,
+  11: 8,
+};
+
+void putUnitTo({
+  required List<Unit> units,
+  required Unit unit,
+  required int to,
+  required Unit emptyUnit}) {
+
+  final currentUnitIsBig = unit.isBig;
+
+  int newUnitPos;
+
+  if (currentUnitIsBig) {
+
+    newUnitPos = bigUnitFixedPos[to]!;
+    final nearestUnitPos = nearestMap[newUnitPos]!;
+
+    units[newUnitPos] = unit;
+    units[nearestUnitPos] = emptyUnit;
+    return;
+  }
+
+  final nearestUnitPos = nearestMap[to]!;
+
+  if (units[nearestUnitPos].isEmpty()) {
+    units[to] = unit;
+    return;
+  }
+
+  if (units[nearestUnitPos].isBig) {
+    units[to] = unit;
+    units[nearestUnitPos] = emptyUnit;
+    return;
+  }
+
+  units[to] = unit;
+}
+
+
+/*int? canPutUnit({required List<Unit> units, required int index}) {
+
+  final nearest = nearestMap[index]!;
+  final currentIsBig = units[index].isBig;
+
+  if (units[nearest].isEmpty()) {
+    return null;
+  }
+
+  final nearestIsBig = units[nearest].isBig;
+
+  if (currentIsBig) {
+
+    return nearest;
+  } else {
+    if (nearestIsBig) {
+      return nearest;
+    }
+    return null;
+  }
+
+}*/
 
 bool checkCanHeal({required Unit unit,
   required int index,

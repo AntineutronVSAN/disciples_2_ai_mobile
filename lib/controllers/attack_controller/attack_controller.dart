@@ -1815,14 +1815,14 @@ class AttackController {
     required int current,
     required int target,
   }) {
-
-    final currentUnit = units[current];
     final targetUnit = units[target];
 
     if (targetUnit.isEmpty()) {
       // TODO Призыв
       return false;
     }
+
+    final currentUnit = units[current];
 
     bool currentIsTopTeam = checkIsTopTeam(current);
     bool targetIsTopTeam = checkIsTopTeam(target);
