@@ -31,7 +31,7 @@ extension ReapplyAttacks on AttackController {
 
     // Проверки для того, что бы убедиться что юнит имеет максимальные параметры
     assert(currentUnit.unitAttack.damage == currentUnit.unitAttack.firstDamage);
-    assert(currentUnit.unitAttack.initiative == currentUnit.unitAttack.firstInitiative);
+    assert(currentUnit.unitAttack.initiative == currentUnit.unitAttack.firstInitiative, '${currentUnit.unitAttack.initiative} != ${currentUnit.unitAttack.firstInitiative}');
 
     for(var i in unitsAttacks.entries) {
 
