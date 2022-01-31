@@ -45,8 +45,10 @@ extension Preprocessing on AttackController {
           if (atckValue.currentDuration == 1) {
             canMove = false;
             atcksToRemove.add(atckId);
-            units[index] = units[index]
-                .copyWith(paralyzed: false, uiInfo: 'Паралич прошёл');
+            //units[index] = units[index].copyWith(paralyzed: false, uiInfo: 'Паралич прошёл');
+            units[index].paralyzed = false;
+            units[index].uiInfo = 'Паралич прошёл';
+
             await onUpdate();
           } else {
             canMove = false;
@@ -55,7 +57,8 @@ extension Preprocessing on AttackController {
                 .copyWith(
                 currentDuration:
                 units[index].attacksMap[atckId]!.currentDuration - 1);
-            units[index] = units[index].copyWith(uiInfo: 'Пас');
+            //units[index] = units[index].copyWith(uiInfo: 'Пас');
+            units[index].uiInfo = 'Пас';
             await onUpdate();
           }
 
@@ -76,8 +79,9 @@ extension Preprocessing on AttackController {
           if (atckValue.currentDuration == 1) {
             canMove = false;
             atcksToRemove.add(atckId);
-            units[index] = units[index]
-                .copyWith(petrified: false, uiInfo: 'Окаменение прошло');
+            //units[index] = units[index].copyWith(petrified: false, uiInfo: 'Окаменение прошло');
+            units[index].petrified = false;
+            units[index].uiInfo = 'Окаменение прошло';
             await onUpdate();
           } else {
             canMove = false;
@@ -86,7 +90,8 @@ extension Preprocessing on AttackController {
                 .copyWith(
                 currentDuration:
                 units[index].attacksMap[atckId]!.currentDuration - 1);
-            units[index] = units[index].copyWith(uiInfo: 'Статуя');
+            //units[index] = units[index].copyWith(uiInfo: 'Статуя');
+            units[index].uiInfo = 'Статуя';
           }
           break;
         case AttackClass.L_LOWER_DAMAGE:
@@ -110,16 +115,21 @@ extension Preprocessing on AttackController {
             isDead = true;
           }
 
-          units[index] = units[index].copyWith(
-            isDead: isDead,
-            currentHp: newUnitHp,
-            uiInfo: newUnitHp - currentUnitHp,
-          );
+          // units[index] = units[index].copyWith(
+          //   isDead: isDead,
+          //   currentHp: newUnitHp,
+          //   uiInfo: newUnitHp - currentUnitHp,
+          // );
+          units[index].isDead = isDead;
+          units[index].currentHp = newUnitHp;
+          units[index].uiInfo = (newUnitHp - currentUnitHp).toString();
+
           await onUpdate();
           if (atckValue.currentDuration == 1) {
             atcksToRemove.add(atckId);
-            units[index] = units[index]
-                .copyWith(poisoned: false, uiInfo: newUnitHp - currentUnitHp);
+            //units[index] = units[index].copyWith(poisoned: false, uiInfo: newUnitHp - currentUnitHp);
+            units[index].poisoned = false;
+            units[index].uiInfo = (newUnitHp - currentUnitHp).toString();
           } else {
             units[index].attacksMap[atckId] = units[index]
                 .attacksMap[atckId]!
@@ -143,16 +153,22 @@ extension Preprocessing on AttackController {
             isDead = true;
           }
 
-          units[index] = units[index].copyWith(
-            isDead: isDead,
-            currentHp: newUnitHp,
-            uiInfo: newUnitHp - currentUnitHp,
-          );
+          // units[index] = units[index].copyWith(
+          //   isDead: isDead,
+          //   currentHp: newUnitHp,
+          //   uiInfo: newUnitHp - currentUnitHp,
+          // );
+          units[index].isDead = isDead;
+          units[index].currentHp = newUnitHp;
+          units[index].uiInfo = (newUnitHp - currentUnitHp).toString();
+
           await onUpdate();
           if (atckValue.currentDuration == 1) {
             atcksToRemove.add(atckId);
-            units[index] = units[index]
-                .copyWith(frostbited: false, uiInfo: newUnitHp - currentUnitHp);
+            //units[index] = units[index].copyWith(frostbited: false, uiInfo: newUnitHp - currentUnitHp);
+            units[index].frostbited = false;
+            units[index].uiInfo = (newUnitHp - currentUnitHp).toString();
+
           } else {
             units[index].attacksMap[atckId] = units[index]
                 .attacksMap[atckId]!
@@ -209,12 +225,15 @@ extension Preprocessing on AttackController {
                 unitName: oldUnit.unitConstParams.unitName,
               ),
 
-              armor: oldUnit.armor,
+              //armor: oldUnit.armor,
               unitAttack: oldUnit.unitAttack,
               unitAttack2: oldUnit.unitAttack2,
-              uiInfo: 'Восстановление формы',
-              transformed: false,
+              //uiInfo: 'Восстановление формы',
+              //transformed: false,
             );
+            units[index].armor = oldUnit.armor;
+            units[index].uiInfo = 'Восстановление формы';
+            units[index].transformed = false;
 
             // Перед переприменением атак, бафы/дебафы сбрасываются
             units[index] = units[index].copyWith(
@@ -283,16 +302,21 @@ extension Preprocessing on AttackController {
             isDead = true;
           }
 
-          units[index] = units[index].copyWith(
-            isDead: isDead,
-            currentHp: newUnitHp,
-            uiInfo: newUnitHp - currentUnitHp,
-          );
+          // units[index] = units[index].copyWith(
+          //   isDead: isDead,
+          //   currentHp: newUnitHp,
+          //   uiInfo: newUnitHp - currentUnitHp,
+          // );
+          units[index].isDead = isDead;
+          units[index].currentHp = newUnitHp;
+          units[index].uiInfo = (newUnitHp - currentUnitHp).toString();
+
           await onUpdate();
           if (atckValue.currentDuration == 1) {
             atcksToRemove.add(atckId);
-            units[index] = units[index]
-                .copyWith(blistered: false, uiInfo: newUnitHp - currentUnitHp);
+            //units[index] = units[index].copyWith(blistered: false, uiInfo: newUnitHp - currentUnitHp);
+            units[index].blistered = false;
+            units[index].uiInfo = (newUnitHp - currentUnitHp).toString();
           } else {
             units[index].attacksMap[atckId] = units[index]
                 .attacksMap[atckId]!

@@ -60,12 +60,14 @@ extension ReapplyAttacks on AttackController {
           final unitMaxDamage = units[current].unitAttack.attackConstParams.firstDamage;
           final currentDamage = units[current].unitAttack.damage;
 
-          units[current] = units[current].copyWith(
-            damageBusted: true,
-            unitAttack: units[current].unitAttack.copyWith(
-              damage: currentDamage + (unitMaxDamage*newDamageCoeff).toInt()
-            ),
-          );
+          // units[current] = units[current].copyWith(
+          //   damageBusted: true,
+          //   unitAttack: units[current].unitAttack.copyWith(
+          //     damage: currentDamage + (unitMaxDamage*newDamageCoeff).toInt()
+          //   ),
+          // );
+          units[current].damageBusted = true;
+          units[current].unitAttack.damage = currentDamage + (unitMaxDamage*newDamageCoeff).toInt();
 
           break;
         case AttackClass.L_PETRIFY:
@@ -78,12 +80,14 @@ extension ReapplyAttacks on AttackController {
           final unitMaxDamage = units[current].unitAttack.attackConstParams.firstDamage;
           final currentDamage = units[current].unitAttack.damage;
 
-          units[current] = units[current].copyWith(
-            damageBusted: true,
-            unitAttack: units[current].unitAttack.copyWith(
-                damage: currentDamage - (unitMaxDamage * newDamageCoeff).toInt()
-            ),
-          );
+          // units[current] = units[current].copyWith(
+          //   damageBusted: true,
+          //   unitAttack: units[current].unitAttack.copyWith(
+          //       damage: currentDamage - (unitMaxDamage * newDamageCoeff).toInt()
+          //   ),
+          // );
+          units[current].damageBusted = true;
+          units[current].unitAttack.damage = currentDamage - (unitMaxDamage * newDamageCoeff).toInt();
 
           break;
         case AttackClass.L_LOWER_INITIATIVE:
@@ -92,12 +96,14 @@ extension ReapplyAttacks on AttackController {
           assert(attackLevel == 1);
           final unitMaxIni = units[current].unitAttack.attackConstParams.firstInitiative;
 
-          units[current] = units[current].copyWith(
-            initLower: true,
-            unitAttack: units[current].unitAttack.copyWith(
-                initiative: unitMaxIni ~/ 2
-            ),
-          );
+          // units[current] = units[current].copyWith(
+          //   initLower: true,
+          //   unitAttack: units[current].unitAttack.copyWith(
+          //       initiative: unitMaxIni ~/ 2
+          //   ),
+          // );
+          units[current].initLower = true;
+          units[current].unitAttack.initiative = unitMaxIni ~/ 2;
 
           break;
         case AttackClass.L_POISON:

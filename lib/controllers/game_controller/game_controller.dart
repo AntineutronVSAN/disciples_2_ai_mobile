@@ -297,8 +297,8 @@ class GameController {
         return await _handleWait(action);
       case ActionType.protect:
         // Если юнит ждал, то ожидание снимается только после хода
-        units[currentActiveCellIndex!] =
-            units[currentActiveCellIndex!].copyWith(isWaiting: false);
+        //units[currentActiveCellIndex!] = units[currentActiveCellIndex!].copyWith(isWaiting: false);
+        units[currentActiveCellIndex!].isWaiting = false;
         return await _handleProtect(action);
 
       case ActionType.startGame:
@@ -327,19 +327,21 @@ class GameController {
       final currentUnit = units[currentActiveCellIndex!];
       if (currentUnit.unitConstParams.isDoubleAttack) {
         if (currentUnit.currentAttack == 0) {
-          units[currentActiveCellIndex!] =
-              units[currentActiveCellIndex!].copyWith(
-            currentAttack: 1,
-          );
+          // units[currentActiveCellIndex!] =
+          //     units[currentActiveCellIndex!].copyWith(
+          //   currentAttack: 1,
+          // );
+          units[currentActiveCellIndex!].currentAttack = 1;
           return ResponseAction.success(
             roundNumber: currentRound,
             activeCell: currentActiveCellIndex!,
           );
         }
-        units[currentActiveCellIndex!] =
-            units[currentActiveCellIndex!].copyWith(
-          currentAttack: 0,
-        );
+        // units[currentActiveCellIndex!] =
+        //     units[currentActiveCellIndex!].copyWith(
+        //   currentAttack: 0,
+        // );
+        units[currentActiveCellIndex!].currentAttack = 0;
       }
     }
 
@@ -370,11 +372,11 @@ class GameController {
           protecting: protecting)) {
         //print('Юнит пропускает ход');
         // Если текщий активный юнит защищался, защита снимается
-        units[currentActiveUnitIndex] =
-            units[currentActiveUnitIndex].copyWith(isProtected: false);
+        //units[currentActiveUnitIndex] = units[currentActiveUnitIndex].copyWith(isProtected: false);
+        units[currentActiveUnitIndex].isProtected = false;
         // Если до этого юнит ждал, ожидание снимается
-        units[currentActiveUnitIndex] =
-            units[currentActiveUnitIndex].copyWith(isWaiting: false);
+        //units[currentActiveUnitIndex] = units[currentActiveUnitIndex].copyWith(isWaiting: false);
+        units[currentActiveUnitIndex].isWaiting = false;
         if (units[currentActiveUnitIndex].isDead) {
           //print('Мертвый не ходит!');
           units[currentActiveUnitIndex] =
@@ -427,8 +429,12 @@ class GameController {
     }
 
     // Если текщий активный юнит защищался, защита снимается
-    units[currentActiveCellIndex!] =
-        units[currentActiveCellIndex!].copyWith(isProtected: false);
+    //units[currentActiveCellIndex!] = units[currentActiveCellIndex!].copyWith(isProtected: false);
+    units[currentActiveCellIndex!].isProtected = false;
+
+    for(var i in units) {
+      i.uiInfo = '';
+    }
 
     return ResponseAction.success(activeCell: currentActiveCellIndex);
   }
@@ -454,9 +460,8 @@ class GameController {
       return responseAction;
     }
     // Снимается ожидание только тогда, когда клик удачный
-    units[currentActiveCellIndex!] =
-        units[currentActiveCellIndex!].copyWith(isWaiting: false);
-
+    //units[currentActiveCellIndex!] = units[currentActiveCellIndex!].copyWith(isWaiting: false);
+    units[currentActiveCellIndex!].isWaiting = false;
     return await _getNextUnit(action, handleDoubleAttack: true);
   }
 
@@ -485,9 +490,8 @@ class GameController {
       throw Exception();
     }
     assert(!currentUnit.isEmpty());
-    units[currentActiveCellIndex!] =
-        units[currentActiveCellIndex!].copyWith(isWaiting: true);
-
+    //units[currentActiveCellIndex!] = units[currentActiveCellIndex!].copyWith(isWaiting: true);
+    units[currentActiveCellIndex!].isWaiting = true;
     // Помещаем юнита в конец очереди
     unitsQueue!.add(currentUnit);
 
@@ -498,8 +502,8 @@ class GameController {
   }
 
   Future<ResponseAction> _handleRetreat(RequestAction action) async {
-    units[currentActiveCellIndex!] =
-        units[currentActiveCellIndex!].copyWith(retreat: true);
+    //units[currentActiveCellIndex!] = units[currentActiveCellIndex!].copyWith(retreat: true);
+    units[currentActiveCellIndex!].retreat = true;
 
     return await _getNextUnit(
         action,
@@ -518,8 +522,9 @@ class GameController {
 
     // Если юнит уже защищён, то что-то не то
     assert(!units[currentActiveCellIndex!].isProtected);
-    units[currentActiveCellIndex!] =
-        units[currentActiveCellIndex!].copyWith(isProtected: true);
+    //units[currentActiveCellIndex!] = units[currentActiveCellIndex!].copyWith(isProtected: true);
+    units[currentActiveCellIndex!].isProtected = true;
+
     return await _getNextUnit(
         action,
         protecting: true);

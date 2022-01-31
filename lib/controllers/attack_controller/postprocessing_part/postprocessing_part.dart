@@ -49,14 +49,19 @@ extension Postprocessing on AttackController {
             final newDamageCoeff = atckValue.attackConstParams.level * 0.25;
 
             atcksToRemove.add(atckId);
-            units[index] = units[index].copyWith(
-              damageBusted: false,
-              uiInfo: 'Усиление закончено',
-              unitAttack: units[index].unitAttack.copyWith(
-                  damage: units[index].unitAttack.damage -
-                      (units[index].unitAttack.attackConstParams.firstDamage * newDamageCoeff)
-                          .toInt()),
-            );
+            // units[index] = units[index].copyWith(
+            //   damageBusted: false,
+            //   uiInfo: 'Усиление закончено',
+            //   unitAttack: units[index].unitAttack.copyWith(
+            //       damage: units[index].unitAttack.damage -
+            //           (units[index].unitAttack.attackConstParams.firstDamage * newDamageCoeff)
+            //               .toInt()),
+            // );
+            units[index].damageBusted = false;
+            units[index].uiInfo = 'Усиление закончено';
+            units[index].unitAttack.damage -= (units[index].unitAttack.attackConstParams.firstDamage * newDamageCoeff)
+                .toInt();
+
           } else {
             units[index].attacksMap[atckId] = units[index]
                 .attacksMap[atckId]!
@@ -75,15 +80,21 @@ extension Postprocessing on AttackController {
           if (atckValue.currentDuration == 1) {
             final newDamageCoeff = atckValue.attackConstParams.level == 1 ? 0.5 : 0.33;
             atcksToRemove.add(atckId);
-            units[index] = units[index].copyWith(
-              damageLower: false,
-              uiInfo: 'Ослабление закончено',
-              unitAttack: units[index].unitAttack.copyWith(
-                damage: units[index].unitAttack.damage +
-                    (units[index].unitAttack.attackConstParams.firstDamage * newDamageCoeff)
-                        .toInt(),
-              ),
-            );
+
+            // units[index] = units[index].copyWith(
+            //   damageLower: false,
+            //   uiInfo: 'Ослабление закончено',
+            //   unitAttack: units[index].unitAttack.copyWith(
+            //     damage: units[index].unitAttack.damage +
+            //         (units[index].unitAttack.attackConstParams.firstDamage * newDamageCoeff)
+            //             .toInt(),
+            //   ),
+            // );
+            units[index].damageLower = false;
+            units[index].uiInfo = 'Ослабление закончено';
+            units[index].unitAttack.damage += (units[index].unitAttack.attackConstParams.firstDamage * newDamageCoeff)
+                .toInt();
+
           } else {
             units[index].attacksMap[atckId] = units[index]
                 .attacksMap[atckId]!
@@ -96,13 +107,18 @@ extension Postprocessing on AttackController {
         case AttackClass.L_LOWER_INITIATIVE:
           if (atckValue.currentDuration == 1) {
             atcksToRemove.add(atckId);
-            units[index] = units[index].copyWith(
-              initLower: false,
-              uiInfo: 'Замедление закончено',
-              unitAttack: units[index].unitAttack.copyWith(
-                initiative: units[index].unitAttack.attackConstParams.firstInitiative,
-              ),
-            );
+
+            // units[index] = units[index].copyWith(
+            //   initLower: false,
+            //   uiInfo: 'Замедление закончено',
+            //   unitAttack: units[index].unitAttack.copyWith(
+            //     initiative: units[index].unitAttack.attackConstParams.firstInitiative,
+            //   ),
+            // );
+            units[index].initLower = false;
+            units[index].uiInfo = 'Замедление закончено';
+            units[index].unitAttack.initiative = units[index].unitAttack.attackConstParams.firstInitiative;
+
           } else {
             units[index].attacksMap[atckId] = units[index]
                 .attacksMap[atckId]!

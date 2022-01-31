@@ -238,6 +238,11 @@ class AiController implements AiControllerBase {
     return resultList;
   }
 
+  @override
+  void initEvalOffsets(List<Unit> units) {
+    // TODO: implement initEvalOffsets
+  }
+
 }
 
 

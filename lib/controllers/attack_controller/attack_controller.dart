@@ -229,11 +229,13 @@ class AttackController {
     final result = immuneController.canApplyAttack(
         units: units, target: target, currentAttack: attack);
     if (result == 1) {
-      units[target] = units[target].copyWith(uiInfo: 'Щит');
+      //units[target] = units[target].copyWith(uiInfo: 'Щит');
+      units[target].uiInfo = 'Щит';
       await onUpdate();
       return ResponseAction.success();
     } else if (result == 2) {
-      units[target] = units[target].copyWith(uiInfo: 'Иммунитет');
+      //units[target] = units[target].copyWith(uiInfo: 'Иммунитет');
+      units[target].uiInfo = 'Иммунитет';
       await onUpdate();
       return ResponseAction.success();
     }
@@ -255,11 +257,13 @@ class AttackController {
         final result = immuneController.canApplyAttack(
             units: units, target: target, currentAttack: attack2);
         if (result == 1) {
-          units[target] = units[target].copyWith(uiInfo: 'Щит');
+          //units[target] = units[target].copyWith(uiInfo: 'Щит');
+          units[target].uiInfo = 'Щит';
           await onUpdate();
           return ResponseAction.success();
         } else if (result == 2) {
-          units[target] = units[target].copyWith(uiInfo: 'Иммунитет');
+          //units[target] = units[target].copyWith(uiInfo: 'Иммунитет');
+          units[target].uiInfo = 'Иммунитет';
           await onUpdate();
           return ResponseAction.success();
         }
@@ -275,7 +279,8 @@ class AttackController {
       }
     } else {
       //print('Атака 1 промах!');
-      units[target] = units[target].copyWith(uiInfo: 'Промах');
+      //units[target] = units[target].copyWith(uiInfo: 'Промах');
+      units[target].uiInfo = 'Промах';
       await onUpdate();
     }
 

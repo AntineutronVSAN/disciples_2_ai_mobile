@@ -35,6 +35,43 @@ class EvaluationController {
   static const damageInfiniteDotCoeff = 1.2;
   /* END */
 
+  double _evaluationOffset = 0.0;
+
+  void resetEvaluationOffset() {
+    _evaluationOffset = 0.0;
+  }
+
+  void initEvaluationOffset(List<Unit> units) {
+    var sfr = 0.0;
+    double aiTeamEval = 0.0;
+    double enemyTeamEval = 0.0;
+    List<GameEvaluation> evaluations = [];
+    var index=0;
+    for (var u in units) {
+      final newEval = GameEvaluation();
+      if (checkIsTopTeam(index)) {
+        // Свои
+        //final currentUnitEval = evaluationController.getUnitEvaluation(u);
+        //aiTeamEval += currentUnitEval.getEval();
+        getUnitEvaluation(u, newEval);
+        aiTeamEval += newEval.getEval();
+      } else {
+        // Враги
+        //final currentUnitEval = evaluationController.getUnitEvaluation(u);
+        //enemyTeamEval += currentUnitEval.getEval();
+        getUnitEvaluation(u, newEval);
+        enemyTeamEval += newEval.getEval();
+      }
+      evaluations.add(newEval);
+      index++;
+    }
+    //sfr += aiTeamEval;
+    //sfr -= enemyTeamEval*0.2;
+
+    _evaluationOffset = aiTeamEval - enemyTeamEval*0.2;
+    print('INITIAL OFFSET = $_evaluationOffset');
+  }
+
   double getEvaluation({
     required List<Unit> units,
   }) {
@@ -62,7 +99,8 @@ class EvaluationController {
       index++;
     }
     sfr += aiTeamEval;
-    sfr -= enemyTeamEval;
+    sfr -= enemyTeamEval*0.2;
+    sfr -= _evaluationOffset;
     return sfr;
   }
 
@@ -85,7 +123,7 @@ class EvaluationController {
 
     var canMove = true;
     if (u.paralyzed || u.petrified) {
-      canMove = false;
+      //canMove = false; //TODO
     }
 
     var onlyUnitEval = _onlyUnitEval(u) * unitParamsCoeff;
@@ -104,6 +142,9 @@ class EvaluationController {
 
     eval.attacksEval = canMove ? unitAtcksEval : 0.0;
     eval.onlyUnitEval = onlyUnitEval * (u.currentHp / u.unitConstParams.maxHp);
+
+    // TODO
+    eval.attacksEval *= (u.currentHp * 0.005);
 
     return;
 

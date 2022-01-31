@@ -52,8 +52,8 @@ class UnitUpgradeController {
 
       level: level,
       //maxHp: newHp,
-      currentHp: newHp,
-      armor: newArmor,
+      //currentHp: newHp,
+      //armor: newArmor,
 
       //overLevel: true,
 
@@ -79,7 +79,7 @@ class UnitUpgradeController {
           firstDamage: attack2newDamage,
         )
       ),
-    );
+    )..currentHp = newHp..armor = newArmor;
 
     return true;
   }

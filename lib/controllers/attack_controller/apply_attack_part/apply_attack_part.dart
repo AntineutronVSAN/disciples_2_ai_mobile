@@ -40,11 +40,14 @@ extension ApplyAttack on AttackController {
           newTargetHp = 0;
           isDead = true;
         }
-        units[target] = units[target].copyWith(
+        /*units[target] = units[target].copyWith(
           isDead: isDead,
           currentHp: newTargetHp,
           uiInfo: (newTargetHp - targetHp).toString(),
-        );
+        );*/
+        units[target].isDead = isDead;
+        units[target].currentHp = newTargetHp;
+        units[target].uiInfo = (newTargetHp - targetHp).toString();
         await onUpdate();
         break;
 
@@ -87,15 +90,22 @@ extension ApplyAttack on AttackController {
           newCurrentUnitHp = currentUnitMaxHp;
         }
 
-        units[current] = units[current].copyWith(
+        /*units[current] = units[current].copyWith(
           currentHp: newCurrentUnitHp,
           uiInfo: (newCurrentUnitHp - currentUnitHp).toString(),
-        );
-        units[target] = units[target].copyWith(
+        );*/
+        units[current].currentHp = newCurrentUnitHp;
+        units[current].uiInfo = (newCurrentUnitHp - currentUnitHp).toString();
+
+        /*units[target] = units[target].copyWith(
           currentHp: newTargetUnitHp,
           isDead: targetIsDead,
           uiInfo: (newTargetUnitHp - targetUnitHp).toString(),
-        );
+        );*/
+        units[target].currentHp = newTargetUnitHp;
+        units[target].isDead =  targetIsDead;
+        units[target].uiInfo = (newTargetUnitHp - targetUnitHp).toString();
+
         await onUpdate();
         break;
       case AttackClass.L_PARALYZE:
@@ -113,8 +123,11 @@ extension ApplyAttack on AttackController {
         if (!targetUnitHasThisAttack) {
           units[target].attacksMap[attack.attackConstParams.attackClass] =
               attack.copyWith(currentDuration: currentAttackDuration);
-          units[target] =
-              units[target].copyWith(paralyzed: true, uiInfo: 'Паралич');
+          // units[target] =
+          //     units[target].copyWith(paralyzed: true, uiInfo: 'Паралич');
+          units[target].paralyzed = true;
+          units[target].uiInfo = 'Паралич';
+
           await onUpdate();
         } else {
           /*final oldUnitsAttackDuration =
@@ -141,15 +154,19 @@ extension ApplyAttack on AttackController {
           newTargetHp = maxTargetHp;
         }
 
-        units[target] = units[target].copyWith(
-          currentHp: newTargetHp,
-          uiInfo: (newTargetHp - targetHp).toString(),
-        );
+        // units[target] = units[target].copyWith(
+        //   currentHp: newTargetHp,
+        //   uiInfo: (newTargetHp - targetHp).toString(),
+        // );
+        units[target].currentHp = newTargetHp;
+        units[target].uiInfo = (newTargetHp - targetHp).toString();
+
         await onUpdate();
         break;
       case AttackClass.L_FEAR:
         if (!targetUnit.retreat) {
-          units[target] = units[target].copyWith(retreat: true);
+          //units[target] = units[target].copyWith(retreat: true);
+          units[target].retreat = true;
           await onUpdate();
         }
         break;
@@ -171,7 +188,7 @@ extension ApplyAttack on AttackController {
         if (!targetUnitHasThisAttack) {
           units[target].attacksMap[attack.attackConstParams.attackClass] =
               attack.copyWith(currentDuration: currentAttackDuration);
-          units[target] = units[target].copyWith(
+          /*units[target] = units[target].copyWith(
             uiInfo: 'Усиление на '
                 '$newDamageCoeffStr%',
             damageBusted: true,
@@ -180,7 +197,13 @@ extension ApplyAttack on AttackController {
                   (units[target].unitAttack.attackConstParams.firstDamage * newDamageCoeff)
                       .toInt(),
             ),
-          );
+          );*/
+          units[target].uiInfo = 'Усиление на '
+              '$newDamageCoeffStr%';
+          units[target].damageBusted = true;
+          units[target].unitAttack.damage += (units[target].unitAttack.attackConstParams.firstDamage * newDamageCoeff)
+              .toInt();
+
           await onUpdate();
         }
         break;
@@ -200,8 +223,9 @@ extension ApplyAttack on AttackController {
         if (!targetUnitHasThisAttack) {
           units[target].attacksMap[attack.attackConstParams.attackClass] =
               attack.copyWith(currentDuration: currentAttackDuration);
-          units[target] =
-              units[target].copyWith(petrified: true, uiInfo: 'Окаменение');
+          //units[target] = units[target].copyWith(petrified: true, uiInfo: 'Окаменение');
+          units[target].petrified = true;
+          units[target].uiInfo = 'Окаменение';
           await onUpdate();
         }
 
@@ -225,7 +249,7 @@ extension ApplyAttack on AttackController {
         if (!targetUnitHasThisAttack) {
           units[target].attacksMap[attack.attackConstParams.attackClass] =
               attack.copyWith(currentDuration: currentAttackDuration);
-          units[target] = units[target].copyWith(
+          /*units[target] = units[target].copyWith(
             uiInfo: 'Ослабление на '
                 '$newDamageCoeffStr%',
             damageLower: true,
@@ -233,7 +257,13 @@ extension ApplyAttack on AttackController {
                 damage: units[target].unitAttack.damage -
                     (units[target].unitAttack.attackConstParams.firstDamage * newDamageCoeff)
                         .toInt()),
-          );
+          );*/
+          units[target].uiInfo = 'Ослабление на '
+              '$newDamageCoeffStr%';
+          units[target].damageLower = true;
+          units[target].unitAttack.damage -= (units[target].unitAttack.attackConstParams.firstDamage * newDamageCoeff)
+              .toInt();
+
           await onUpdate();
         } else {
           // todo Принимаем, что дебафф не обновляется
@@ -291,14 +321,20 @@ extension ApplyAttack on AttackController {
         if (!targetUnitHasThisAttack) {
           units[target].attacksMap[attack.attackConstParams.attackClass] =
               attack.copyWith(currentDuration: currentAttackDuration);
-          units[target] = units[target].copyWith(
+
+          /*units[target] = units[target].copyWith(
             uiInfo: 'Змедление на '
                 '50%',
             initLower: true,
             unitAttack: units[target].unitAttack.copyWith(
               initiative: (targetUnitIniFirst ~/ 2).toInt(),
             ),
-          );
+          );*/
+          units[target].uiInfo = 'Змедление на '
+              '50%';
+          units[target].initLower = true;
+          units[target].unitAttack.initiative = (targetUnitIniFirst ~/ 2).toInt();
+
           await onUpdate();
         } else {
           // Обновляем длительность, если у новой атаки она выше
@@ -308,8 +344,9 @@ extension ApplyAttack on AttackController {
             units[target].attacksMap[attack.attackConstParams.attackClass] = attack.copyWith(
               currentDuration: currentAttackDuration,
             );
-            units[target] = units[target]
-                .copyWith(uiInfo: 'Замедление обновлено', initLower: true);
+            //units[target] = units[target].copyWith(uiInfo: 'Замедление обновлено', initLower: true);
+            units[target].uiInfo = 'Замедление обновлено';
+            units[target].initLower = true;
             await onUpdate();
           }
         }
@@ -349,7 +386,9 @@ extension ApplyAttack on AttackController {
           }
         }
 
-        units[target] = units[target].copyWith(poisoned: true, uiInfo: 'Яд');
+        //units[target] = units[target].copyWith(poisoned: true, uiInfo: 'Яд');
+        units[target].poisoned = true;
+        units[target].uiInfo = 'Яд';
         await onUpdate();
         break;
       case AttackClass.L_FROSTBITE:
@@ -385,8 +424,9 @@ extension ApplyAttack on AttackController {
           }
         }
 
-        units[target] =
-            units[target].copyWith(frostbited: true, uiInfo: 'Мороз');
+        //units[target] = units[target].copyWith(frostbited: true, uiInfo: 'Мороз');
+        units[target].frostbited = true;
+        units[target].uiInfo = 'Мороз';
         await onUpdate();
         break;
       case AttackClass.L_REVIVE:
@@ -401,7 +441,7 @@ extension ApplyAttack on AttackController {
         final unitFirstHp = targetUnit.unitConstParams.maxHp;
         final newHp = unitFirstHp ~/ 2;
 
-        units[target] = units[target].copyWith(
+        /*units[target] = units[target].copyWith(
           isDead: false,
           currentHp: newHp,
           revived: true,
@@ -410,7 +450,14 @@ extension ApplyAttack on AttackController {
             damage: units[target].unitAttack.attackConstParams.firstDamage,
             initiative: units[target].unitAttack.attackConstParams.firstInitiative,
           ),
-        );
+        );*/
+        units[target].isDead = false;
+        units[target].currentHp = newHp;
+        units[target].revived = true;
+        units[target].uiInfo = 'Воскрешение';
+        units[target].unitAttack.damage = units[target].unitAttack.attackConstParams.firstDamage;
+        units[target].unitAttack.initiative = units[target].unitAttack.attackConstParams.firstInitiative;
+
         await onUpdate();
 
         break;
@@ -437,25 +484,33 @@ extension ApplyAttack on AttackController {
           lifesteel = targetHp / 2.0;
         }
 
-        units[target] = units[target].copyWith(
-            currentHp: newTargetHp, isDead: isDead, uiInfo: ' - $damage');
+        //units[target] = units[target].copyWith(currentHp: newTargetHp, isDead: isDead, uiInfo: ' - $damage');
+        units[target].currentHp = newTargetHp;
+        units[target].isDead = isDead;
+        units[target].uiInfo = ' - $damage';
 
         // Сначала лафйстилим себя, затем, если что-то осталось раздаём на остальных
         final currentUnitDeltaHp = currentUnitMaxHp - currentUnitHp;
         if (currentUnitDeltaHp >= lifesteel) {
           // Весь лайфстил на себя
-          units[current] = units[current].copyWith(
-              uiInfo: ' + ${lifesteel.toInt()}',
-              currentHp: units[current].currentHp + lifesteel.toInt());
+          // units[current] = units[current].copyWith(
+          //     uiInfo: ' + ${lifesteel.toInt()}',
+          //     currentHp: units[current].currentHp + lifesteel.toInt());
+          units[current].uiInfo = ' + ${lifesteel.toInt()}';
+          units[current].currentHp += lifesteel.toInt();
+
           await onUpdate();
         } else {
           // Долечиваем себя и раздаём на остальных
           var alliesLifesteel = lifesteel - currentUnitDeltaHp;
           assert(alliesLifesteel > 0);
           if (currentUnitDeltaHp != 0) {
-            units[current] = units[current].copyWith(
-                uiInfo: ' + $lifesteel',
-                currentHp: units[current].currentHp + currentUnitDeltaHp);
+            // units[current] = units[current].copyWith(
+            //     uiInfo: ' + $lifesteel',
+            //     currentHp: units[current].currentHp + currentUnitDeltaHp);
+            units[current].uiInfo = ' + $lifesteel';
+            units[current].currentHp += currentUnitDeltaHp;
+
             await onUpdate();
           }
 
@@ -519,10 +574,12 @@ extension ApplyAttack on AttackController {
               }
               assert(!(alliesLifesteel < 0), '$alliesLifesteel');
 
-              units[i] = units[i].copyWith(
-                currentHp: newHp,
-                uiInfo: '+ $oneUnitHealValue',
-              );
+              // units[i] = units[i].copyWith(
+              //   currentHp: newHp,
+              //   uiInfo: '+ $oneUnitHealValue',
+              // );
+              units[i].currentHp = newHp;
+              units[i].uiInfo = '+ $oneUnitHealValue';
             }
           }
           await onUpdate();
@@ -560,13 +617,19 @@ extension ApplyAttack on AttackController {
         }
 
         if (toRemove.isNotEmpty) {
-          units[target] = units[target].copyWith(
-              frostbited: false,
-              blistered: false,
-              paralyzed: false,
-              poisoned: false,
-              petrified: false,
-              uiInfo: "Лечение");
+          // units[target] = units[target].copyWith(
+          //     frostbited: false,
+          //     blistered: false,
+          //     paralyzed: false,
+          //     poisoned: false,
+          //     petrified: false,
+          //     uiInfo: "Лечение");
+          units[target].frostbited = false;
+          units[target].blistered = false;
+          units[target].paralyzed = false;
+          units[target].poisoned = false;
+          units[target].petrified = false;
+          units[target].uiInfo = "Лечение";
           await onUpdate();
         }
 
@@ -587,7 +650,8 @@ extension ApplyAttack on AttackController {
         }
         if (onUnitAdd2Queue != null) {
           onUnitAdd2Queue!(units[target]);
-          units[target] = units[target].copyWith(uiInfo: 'Вторая атака');
+          //units[target] = units[target].copyWith(uiInfo: 'Вторая атака');
+          units[target].uiInfo = 'Вторая атака';
           await onUpdate();
         } else {
           throw Exception();
@@ -603,6 +667,10 @@ extension ApplyAttack on AttackController {
       case AttackClass.L_TRANSFORM_OTHER:
         final targetUnitHasThisAttck =
         targetUnit.attacksMap.containsKey(attack.attackConstParams.attackClass);
+
+        if (units[target].transformed) {
+          break;
+        }
 
         if (!targetUnitHasThisAttck) {
           final currentAttackDuration =
@@ -623,14 +691,18 @@ extension ApplyAttack on AttackController {
               unitName: transformedUnit.unitConstParams.unitName,
             ),
             // todo Резисты переносятся также с юнита в кого превращаемся
-            armor: transformedUnit.armor,
+            //armor: transformedUnit.armor,
             unitAttack: transformedUnit.unitAttack,
             unitAttack2: transformedUnit.unitAttack2,
             // todo баг если атака null,
             // а у превращаемого юнита не null
-            uiInfo: 'Превращение',
-            transformed: true,
+            //uiInfo: 'Превращение',
+            //transformed: true,
           );
+          units[target].armor = transformedUnit.armor;
+          units[target].uiInfo = 'Превращение';
+          units[target].transformed = true;
+
           await onUpdate();
           reapplyAttacks(units: units, current: target);
           //units[target] = units[target].copyWith(uiInfo: 'Баф/дебафы пересчитаны');
@@ -671,7 +743,9 @@ extension ApplyAttack on AttackController {
           }
         }
 
-        units[target] = units[target].copyWith(blistered: true, uiInfo: 'Ожёг');
+        //units[target] = units[target].copyWith(blistered: true, uiInfo: 'Ожёг');
+        units[target].blistered = true;
+        units[target].uiInfo = 'Ожёг';
         await onUpdate();
         break;
       case AttackClass.L_BESTOW_WARDS:
@@ -696,10 +770,12 @@ extension ApplyAttack on AttackController {
           newUnitArmor = 0;
         }
 
-        units[target] = units[target].copyWith(
-          uiInfo: 'Разрушение',
-          armor: newUnitArmor,
-        );
+        // units[target] = units[target].copyWith(
+        //   uiInfo: 'Разрушение',
+        //   armor: newUnitArmor,
+        // );
+        units[target].uiInfo = 'Разрушение';
+        units[target].armor = newUnitArmor;
         await onUpdate();
 
         break;
@@ -742,11 +818,15 @@ extension ApplyAttack on AttackController {
           newTargetHp = 0;
           isDead = true;
         }
-        units[target] = units[target].copyWith(
-          isDead: isDead,
-          currentHp: newTargetHp,
-          uiInfo: (newTargetHp - targetHp).toString(),
-        );
+        // units[target] = units[target].copyWith(
+        //   isDead: isDead,
+        //   currentHp: newTargetHp,
+        //   uiInfo: (newTargetHp - targetHp).toString(),
+        // );
+        units[target].isDead = isDead;
+        units[target].currentHp = newTargetHp;
+        units[target].uiInfo = (newTargetHp - targetHp).toString();
+
         await onUpdate();
         break;
 
@@ -789,15 +869,21 @@ extension ApplyAttack on AttackController {
           newCurrentUnitHp = currentUnitMaxHp;
         }
 
-        units[current] = units[current].copyWith(
-          currentHp: newCurrentUnitHp,
-          uiInfo: (newCurrentUnitHp - currentUnitHp).toString(),
-        );
-        units[target] = units[target].copyWith(
-          currentHp: newTargetUnitHp,
-          isDead: targetIsDead,
-          uiInfo: (newTargetUnitHp - targetUnitHp).toString(),
-        );
+        // units[current] = units[current].copyWith(
+        //   currentHp: newCurrentUnitHp,
+        //   uiInfo: (newCurrentUnitHp - currentUnitHp).toString(),
+        // );
+        units[current].currentHp = newCurrentUnitHp;
+        units[current].uiInfo = (newCurrentUnitHp - currentUnitHp).toString();
+
+        // units[target] = units[target].copyWith(
+        //   currentHp: newTargetUnitHp,
+        //   isDead: targetIsDead,
+        //   uiInfo: (newTargetUnitHp - targetUnitHp).toString(),
+        // );
+        units[target].currentHp = newTargetUnitHp;
+        units[target].isDead = targetIsDead;
+        units[target].uiInfo = (newTargetUnitHp - targetUnitHp).toString();
         await onUpdate();
         break;
       case AttackClass.L_PARALYZE:
@@ -815,8 +901,9 @@ extension ApplyAttack on AttackController {
         if (!targetUnitHasThisAttack) {
           units[target].attacksMap[attack.attackConstParams.attackClass] =
               attack.copyWith(currentDuration: currentAttackDuration);
-          units[target] =
-              units[target].copyWith(paralyzed: true, uiInfo: 'Паралич');
+          //units[target] = units[target].copyWith(paralyzed: true, uiInfo: 'Паралич');
+          units[target].paralyzed = true;
+          units[target].uiInfo = 'Паралич';
           await onUpdate();
         } else {
           /*final oldUnitsAttackDuration =
@@ -843,15 +930,18 @@ extension ApplyAttack on AttackController {
           newTargetHp = maxTargetHp;
         }
 
-        units[target] = units[target].copyWith(
-          currentHp: newTargetHp,
-          uiInfo: (newTargetHp - targetHp).toString(),
-        );
+        // units[target] = units[target].copyWith(
+        //   currentHp: newTargetHp,
+        //   uiInfo: (newTargetHp - targetHp).toString(),
+        // );
+        units[target].currentHp = newTargetHp;
+        units[target].uiInfo = (newTargetHp - targetHp).toString();
         await onUpdate();
         break;
       case AttackClass.L_FEAR:
         if (!targetUnit.retreat) {
-          units[target] = units[target].copyWith(retreat: true);
+          //units[target] = units[target].copyWith(retreat: true);
+          units[target].retreat = true;
           await onUpdate();
         }
         break;
@@ -873,16 +963,22 @@ extension ApplyAttack on AttackController {
         if (!targetUnitHasThisAttack) {
           units[target].attacksMap[attack.attackConstParams.attackClass] =
               attack.copyWith(currentDuration: currentAttackDuration);
-          units[target] = units[target].copyWith(
-            uiInfo: 'Усиление на '
-                '$newDamageCoeffStr%',
-            damageBusted: true,
-            unitAttack: units[target].unitAttack.copyWith(
-              damage: units[target].unitAttack.damage +
-                  (units[target].unitAttack.attackConstParams.firstDamage * newDamageCoeff)
-                      .toInt(),
-            ),
-          );
+          // units[target] = units[target].copyWith(
+          //   uiInfo: 'Усиление на '
+          //       '$newDamageCoeffStr%',
+          //   damageBusted: true,
+          //   unitAttack: units[target].unitAttack.copyWith(
+          //     damage: units[target].unitAttack.damage +
+          //         (units[target].unitAttack.attackConstParams.firstDamage * newDamageCoeff)
+          //             .toInt(),
+          //   ),
+          // );
+          units[target].uiInfo = 'Усиление на '
+              '$newDamageCoeffStr%';
+          units[target].damageBusted = true;
+          units[target].unitAttack.damage += (units[target].unitAttack.attackConstParams.firstDamage * newDamageCoeff)
+              .toInt();
+
           await onUpdate();
         }
         break;
@@ -902,8 +998,9 @@ extension ApplyAttack on AttackController {
         if (!targetUnitHasThisAttack) {
           units[target].attacksMap[attack.attackConstParams.attackClass] =
               attack.copyWith(currentDuration: currentAttackDuration);
-          units[target] =
-              units[target].copyWith(petrified: true, uiInfo: 'Окаменение');
+          //units[target] = units[target].copyWith(petrified: true, uiInfo: 'Окаменение');
+          units[target].petrified = true;
+          units[target].uiInfo = 'Окаменение';
           await onUpdate();
         }
 
@@ -927,15 +1024,22 @@ extension ApplyAttack on AttackController {
         if (!targetUnitHasThisAttack) {
           units[target].attacksMap[attack.attackConstParams.attackClass] =
               attack.copyWith(currentDuration: currentAttackDuration);
-          units[target] = units[target].copyWith(
-            uiInfo: 'Ослабление на '
-                '$newDamageCoeffStr%',
-            damageLower: true,
-            unitAttack: units[target].unitAttack.copyWith(
-                damage: units[target].unitAttack.damage -
-                    (units[target].unitAttack.attackConstParams.firstDamage * newDamageCoeff)
-                        .toInt()),
-          );
+
+          // units[target] = units[target].copyWith(
+          //   uiInfo: 'Ослабление на '
+          //       '$newDamageCoeffStr%',
+          //   damageLower: true,
+          //   unitAttack: units[target].unitAttack.copyWith(
+          //       damage: units[target].unitAttack.damage -
+          //           (units[target].unitAttack.attackConstParams.firstDamage * newDamageCoeff)
+          //               .toInt()),
+          // );
+          units[target].uiInfo = 'Ослабление на '
+              '$newDamageCoeffStr%';
+          units[target].damageLower = true;
+          units[target].unitAttack.damage -= (units[target].unitAttack.attackConstParams.firstDamage * newDamageCoeff)
+              .toInt();
+
           await onUpdate();
         } else {
           // todo Принимаем, что дебафф не обновляется
@@ -993,14 +1097,19 @@ extension ApplyAttack on AttackController {
         if (!targetUnitHasThisAttack) {
           units[target].attacksMap[attack.attackConstParams.attackClass] =
               attack.copyWith(currentDuration: currentAttackDuration);
-          units[target] = units[target].copyWith(
-            uiInfo: 'Змедление на '
-                '50%',
-            initLower: true,
-            unitAttack: units[target].unitAttack.copyWith(
-              initiative: (targetUnitIniFirst ~/ 2).toInt(),
-            ),
-          );
+          // units[target] = units[target].copyWith(
+          //   uiInfo: 'Змедление на '
+          //       '50%',
+          //   initLower: true,
+          //   unitAttack: units[target].unitAttack.copyWith(
+          //     initiative: (targetUnitIniFirst ~/ 2).toInt(),
+          //   ),
+          // );
+          units[target].uiInfo = 'Змедление на '
+              '50%';
+          units[target].initLower = true;
+          units[target].unitAttack.initiative = (targetUnitIniFirst ~/ 2).toInt();
+
           await onUpdate();
         } else {
           // Обновляем длительность, если у новой атаки она выше
@@ -1010,8 +1119,9 @@ extension ApplyAttack on AttackController {
             units[target].attacksMap[attack.attackConstParams.attackClass] = attack.copyWith(
               currentDuration: currentAttackDuration,
             );
-            units[target] = units[target]
-                .copyWith(uiInfo: 'Замедление обновлено', initLower: true);
+            //units[target] = units[target].copyWith(uiInfo: 'Замедление обновлено', initLower: true);
+            units[target].uiInfo = 'Замедление обновлено';
+            units[target].initLower = true;
             await onUpdate();
           }
         }
@@ -1051,7 +1161,9 @@ extension ApplyAttack on AttackController {
           }
         }
 
-        units[target] = units[target].copyWith(poisoned: true, uiInfo: 'Яд');
+        //units[target] = units[target].copyWith(poisoned: true, uiInfo: 'Яд');
+        units[target].poisoned = true;
+        units[target].uiInfo = 'Яд';
         await onUpdate();
         break;
       case AttackClass.L_FROSTBITE:
@@ -1087,8 +1199,10 @@ extension ApplyAttack on AttackController {
           }
         }
 
-        units[target] =
-            units[target].copyWith(frostbited: true, uiInfo: 'Мороз');
+        //units[target] = units[target].copyWith(frostbited: true, uiInfo: 'Мороз');
+        units[target].frostbited = true;
+        units[target].uiInfo = 'Мороз';
+
         await onUpdate();
         break;
       case AttackClass.L_REVIVE:
@@ -1103,16 +1217,23 @@ extension ApplyAttack on AttackController {
         final unitFirstHp = targetUnit.unitConstParams.maxHp;
         final newHp = unitFirstHp ~/ 2;
 
-        units[target] = units[target].copyWith(
-          isDead: false,
-          currentHp: newHp,
-          revived: true,
-          uiInfo: 'Воскрешение',
-          unitAttack: units[target].unitAttack.copyWith(
-            damage: units[target].unitAttack.attackConstParams.firstDamage,
-            initiative: units[target].unitAttack.attackConstParams.firstInitiative,
-          ),
-        );
+        // units[target] = units[target].copyWith(
+        //   isDead: false,
+        //   currentHp: newHp,
+        //   revived: true,
+        //   uiInfo: 'Воскрешение',
+        //   unitAttack: units[target].unitAttack.copyWith(
+        //     damage: units[target].unitAttack.attackConstParams.firstDamage,
+        //     initiative: units[target].unitAttack.attackConstParams.firstInitiative,
+        //   ),
+        // );
+        units[target].isDead = false;
+        units[target].currentHp = newHp;
+        units[target].revived = true;
+        units[target].uiInfo = 'Воскрешение';
+        units[target].unitAttack.damage = units[target].unitAttack.attackConstParams.firstDamage;
+        units[target].unitAttack.initiative = units[target].unitAttack.attackConstParams.firstInitiative;
+
         await onUpdate();
 
         break;
@@ -1139,25 +1260,33 @@ extension ApplyAttack on AttackController {
           lifesteel = targetHp / 2.0;
         }
 
-        units[target] = units[target].copyWith(
-            currentHp: newTargetHp, isDead: isDead, uiInfo: ' - $damage');
+        //units[target] = units[target].copyWith(currentHp: newTargetHp, isDead: isDead, uiInfo: ' - $damage');
+        units[target].currentHp = newTargetHp;
+        units[target].isDead = isDead;
+        units[target].uiInfo = ' - $damage';
 
         // Сначала лафйстилим себя, затем, если что-то осталось раздаём на остальных
         final currentUnitDeltaHp = currentUnitMaxHp - currentUnitHp;
         if (currentUnitDeltaHp >= lifesteel) {
           // Весь лайфстил на себя
-          units[current] = units[current].copyWith(
-              uiInfo: ' + ${lifesteel.toInt()}',
-              currentHp: units[current].currentHp + lifesteel.toInt());
+          // units[current] = units[current].copyWith(
+          //     uiInfo: ' + ${lifesteel.toInt()}',
+          //     currentHp: units[current].currentHp + lifesteel.toInt());
+          units[current].uiInfo = ' + ${lifesteel.toInt()}';
+          units[current].currentHp += lifesteel.toInt();
+
           await onUpdate();
         } else {
           // Долечиваем себя и раздаём на остальных
           var alliesLifesteel = lifesteel - currentUnitDeltaHp;
           assert(alliesLifesteel > 0);
           if (currentUnitDeltaHp != 0) {
-            units[current] = units[current].copyWith(
-                uiInfo: ' + $lifesteel',
-                currentHp: units[current].currentHp + currentUnitDeltaHp);
+            // units[current] = units[current].copyWith(
+            //     uiInfo: ' + $lifesteel',
+            //     currentHp: units[current].currentHp + currentUnitDeltaHp);
+            units[current].uiInfo = ' + $lifesteel';
+            units[current].currentHp += currentUnitDeltaHp;
+
             await onUpdate();
           }
 
@@ -1221,10 +1350,12 @@ extension ApplyAttack on AttackController {
               }
               assert(!(alliesLifesteel < 0), '$alliesLifesteel');
 
-              units[i] = units[i].copyWith(
-                currentHp: newHp,
-                uiInfo: '+ $oneUnitHealValue',
-              );
+              // units[i] = units[i].copyWith(
+              //   currentHp: newHp,
+              //   uiInfo: '+ $oneUnitHealValue',
+              // );
+              units[i].currentHp = newHp;
+              units[i].uiInfo = '+ $oneUnitHealValue';
             }
           }
           await onUpdate();
@@ -1262,13 +1393,19 @@ extension ApplyAttack on AttackController {
         }
 
         if (toRemove.isNotEmpty) {
-          units[target] = units[target].copyWith(
-              frostbited: false,
-              blistered: false,
-              paralyzed: false,
-              poisoned: false,
-              petrified: false,
-              uiInfo: "Лечение");
+          // units[target] = units[target].copyWith(
+          //     frostbited: false,
+          //     blistered: false,
+          //     paralyzed: false,
+          //     poisoned: false,
+          //     petrified: false,
+          //     uiInfo: "Лечение");
+          units[target].frostbited = false;
+          units[target].blistered = false;
+          units[target].paralyzed = false;
+          units[target].poisoned = false;
+          units[target].petrified = false;
+          units[target].uiInfo = "Лечение";
           await onUpdate();
         }
 
@@ -1289,7 +1426,8 @@ extension ApplyAttack on AttackController {
         }
         if (onUnitAdd2Queue != null) {
           onUnitAdd2Queue!(units[target]);
-          units[target] = units[target].copyWith(uiInfo: 'Вторая атака');
+          //units[target] = units[target].copyWith(uiInfo: 'Вторая атака');
+          units[target].uiInfo = 'Вторая атака';
           await onUpdate();
         } else {
           throw Exception();
@@ -1326,14 +1464,18 @@ extension ApplyAttack on AttackController {
             ),
 
             // todo Резисты переносятся также с юнита в кого превращаемся
-            armor: transformedUnit.armor,
+            //armor: transformedUnit.armor,
             unitAttack: transformedUnit.unitAttack,
             unitAttack2: transformedUnit.unitAttack2,
             // todo баг если атака null,
             // а у превращаемого юнита не null
-            uiInfo: 'Превращение',
-            transformed: true,
+            //uiInfo: 'Превращение',
+            //transformed: true,
           );
+          units[target].armor = transformedUnit.armor;
+          units[target].uiInfo = 'Превращение';
+          units[target].transformed = true;
+
           await onUpdate();
           reapplyAttacks(units: units, current: target);
           //units[target] = units[target].copyWith(uiInfo: 'Баф/дебафы пересчитаны');
@@ -1374,7 +1516,10 @@ extension ApplyAttack on AttackController {
           }
         }
 
-        units[target] = units[target].copyWith(blistered: true, uiInfo: 'Ожёг');
+        //units[target] = units[target].copyWith(blistered: true, uiInfo: 'Ожёг');
+        units[target].blistered = true;
+        units[target].uiInfo = 'Ожёг';
+
         await onUpdate();
         break;
       case AttackClass.L_BESTOW_WARDS:
@@ -1399,10 +1544,13 @@ extension ApplyAttack on AttackController {
           newUnitArmor = 0;
         }
 
-        units[target] = units[target].copyWith(
-          uiInfo: 'Разрушение',
-          armor: newUnitArmor,
-        );
+        // units[target] = units[target].copyWith(
+        //   uiInfo: 'Разрушение',
+        //   armor: newUnitArmor,
+        // );
+        units[target].uiInfo = 'Разрушение';
+        units[target].armor = newUnitArmor;
+
         await onUpdate();
 
         break;

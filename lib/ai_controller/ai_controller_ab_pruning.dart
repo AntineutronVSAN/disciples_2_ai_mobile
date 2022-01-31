@@ -37,6 +37,7 @@ class AlphaBetaPruningController extends AiControllerBase {
   Future<List<RequestAction>> getAction(int currentActiveUnitCellIndex,
       {GameController? gameController,
       UpdateStateContextBase? updateStateContext}) async {
+
     final result = await abPruningIsolate.abPruningBackground(
         controllerSnapshot: gameController!.getSnapshot(),
         treeDepth: treeDepth,
@@ -56,7 +57,7 @@ class AlphaBetaPruningController extends AiControllerBase {
 
   @override
   void init(List<Unit> units, {required AiAlgorithm algorithm}) {
-    // TODO: implement init
+
   }
 
   @override
@@ -70,6 +71,12 @@ class AlphaBetaPruningController extends AiControllerBase {
   @override
   void initFromIndivid(List<Unit> units, IndividualBase ind) {
     // TODO: implement initFromIndivid
+  }
+
+  @override
+  void initEvalOffsets(List<Unit> units) {
+    print('INIT AI CONTROLLER');
+    ABPruningIsolate.evaluationController.initEvaluationOffset(units);
   }
 }
 

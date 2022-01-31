@@ -464,6 +464,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       positionRating: 0.0,
     ));
 
+    aiController.initEvalOffsets(_warUnitsCopies);
+
     if (checkIsTopTeam(currentActiveCell!)) {
       await _handleAiMove(response, emit);
       emit(state.copyWith(

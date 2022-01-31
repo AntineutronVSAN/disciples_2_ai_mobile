@@ -127,6 +127,7 @@ class ABPruningIsolate {
     currentSnapshot.rollConfig.topTeamMaxPower = true;
     currentSnapshot.rollConfig.topTeamMaxDamage = false;
 
+
     //currentSnapshot.rollMaxRandomParamsBotTeam = true;
 
     // Контекст обхода дерева

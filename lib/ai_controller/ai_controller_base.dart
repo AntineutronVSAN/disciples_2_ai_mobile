@@ -21,6 +21,7 @@ abstract class AiControllerBase {
   void init(List<Unit> units, {
     required AiAlgorithm algorithm,
   });
+  void initEvalOffsets(List<Unit> units);
   Future<List<RequestAction>> getAction(
       int currentActiveUnitCellIndex, {GameController? gameController, UpdateStateContextBase? updateStateContext});
 }
