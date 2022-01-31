@@ -141,7 +141,7 @@ void main() {
 
   benchmark('random.nextInt', () {
     final random = Random();
-    for(var i=0; i<2000; i++ ) {
+    for(var i=0; i<200000; i++ ) {
       final val = random.nextInt(100);
     }
 

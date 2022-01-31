@@ -491,18 +491,18 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
                                 onTap: () {
                                   Navigator.pop(context);
                                   bloc.add(OnUnitSelected(
-                                      unitID: state.allUnits[index].unitGameID,
+                                      unitID: state.allUnits[index].unitConstParams.unitGameID,
                                       cellNumber: cellNumber));
                                 },
                                 child: Card(
                                   color: Colors.white54,
                                   elevation: 3,
                                   child: ListTile(
-                                    title: Text(state.allUnits[index].unitName),
+                                    title: Text(state.allUnits[index].unitConstParams.unitName),
                                     trailing:
                                         const Icon(Icons.arrow_forward_ios),
                                     leading: Text(
-                                      state.allUnits[index].unitName[0],
+                                      state.allUnits[index].unitConstParams.unitName[0],
                                       style: const TextStyle(fontSize: 20),
                                     ),
                                   ),

@@ -54,7 +54,7 @@ extension ApplyAttack on AttackController {
         final currentUnit = units[current];
 
         final currentUnitHp = currentUnit.currentHp;
-        final currentUnitMaxHp = currentUnit.maxHp;
+        final currentUnitMaxHp = currentUnit.unitConstParams.maxHp;
         final targetUnitHp = targetUnit.currentHp;
 
         final currentAttackDamage = attack.damage;
@@ -135,7 +135,7 @@ extension ApplyAttack on AttackController {
         final currentHealVal = attack.attackConstParams.heal;
         assert(currentHealVal > 0);
         final targetHp = targetUnit.currentHp;
-        final maxTargetHp = targetUnit.maxHp;
+        final maxTargetHp = targetUnit.unitConstParams.maxHp;
         var newTargetHp = targetHp + currentHealVal;
         if (newTargetHp >= maxTargetHp) {
           newTargetHp = maxTargetHp;
@@ -398,7 +398,7 @@ extension ApplyAttack on AttackController {
           break;
         }
 
-        final unitFirstHp = targetUnit.maxHp;
+        final unitFirstHp = targetUnit.unitConstParams.maxHp;
         final newHp = unitFirstHp ~/ 2;
 
         units[target] = units[target].copyWith(
@@ -419,7 +419,7 @@ extension ApplyAttack on AttackController {
         final targetHp = targetUnit.currentHp;
 
         final currentUnitHp = units[current].currentHp;
-        final currentUnitMaxHp = units[current].maxHp;
+        final currentUnitMaxHp = units[current].unitConstParams.maxHp;
 
         assert(currentDamage > 0);
         final damage = (damageScatter.getScattedDamage(currentDamage, rollMaxDamage: rollMaxDamage) *
@@ -480,7 +480,7 @@ extension ApplyAttack on AttackController {
               unitNeedHeal.add(false);
               continue;
             }
-            if (e.currentHp >= e.maxHp) {
+            if (e.currentHp >= e.unitConstParams.maxHp) {
               unitNeedHeal.add(false);
               continue;
             }
@@ -499,7 +499,7 @@ extension ApplyAttack on AttackController {
           for (var i = 0; i < units.length; i++) {
             if (unitNeedHeal[i]) {
               final currentAllieUnitHp = units[i].currentHp;
-              final currentAllieUnitMaxHp = units[i].maxHp;
+              final currentAllieUnitMaxHp = units[i].unitConstParams.maxHp;
 
               var newHp = currentAllieUnitHp + oneUnitHealValue;
               if (newHp > currentAllieUnitMaxHp) {
@@ -611,14 +611,17 @@ extension ApplyAttack on AttackController {
           var transformedUnit =
           gameRepository.getTransformUnitByAttackId(attack.attackConstParams.attackId);
           // Нужно запомнить текущее состояние юнита
-          assert(transformedUnitsCache[targetUnit.unitWarId] == null);
-          transformedUnitsCache[targetUnit.unitWarId] = targetUnit.copyWith();
+          assert(transformedUnitsCache[targetUnit.unitConstParams.unitWarId] == null);
+          transformedUnitsCache[targetUnit.unitConstParams.unitWarId] = targetUnit.copyWith();
 
           units[target].attacksMap[attack.attackConstParams.attackClass] =
               attack.copyWith(currentDuration: currentAttackDuration);
 
           units[target] = units[target].copyWith(
-            unitName: transformedUnit.unitName,
+            //unitName: transformedUnit.unitConstParams.unitName,
+            unitConstParams: units[target].unitConstParams.copyWith(
+              unitName: transformedUnit.unitConstParams.unitName,
+            ),
             // todo Резисты переносятся также с юнита в кого превращаемся
             armor: transformedUnit.armor,
             unitAttack: transformedUnit.unitAttack,
@@ -753,7 +756,7 @@ extension ApplyAttack on AttackController {
         final currentUnit = units[current];
 
         final currentUnitHp = currentUnit.currentHp;
-        final currentUnitMaxHp = currentUnit.maxHp;
+        final currentUnitMaxHp = currentUnit.unitConstParams.maxHp;
         final targetUnitHp = targetUnit.currentHp;
 
         final currentAttackDamage = attack.damage;
@@ -834,7 +837,7 @@ extension ApplyAttack on AttackController {
         final currentHealVal = attack.attackConstParams.heal;
         assert(currentHealVal > 0);
         final targetHp = targetUnit.currentHp;
-        final maxTargetHp = targetUnit.maxHp;
+        final maxTargetHp = targetUnit.unitConstParams.maxHp;
         var newTargetHp = targetHp + currentHealVal;
         if (newTargetHp >= maxTargetHp) {
           newTargetHp = maxTargetHp;
@@ -1097,7 +1100,7 @@ extension ApplyAttack on AttackController {
           break;
         }
 
-        final unitFirstHp = targetUnit.maxHp;
+        final unitFirstHp = targetUnit.unitConstParams.maxHp;
         final newHp = unitFirstHp ~/ 2;
 
         units[target] = units[target].copyWith(
@@ -1118,7 +1121,7 @@ extension ApplyAttack on AttackController {
         final targetHp = targetUnit.currentHp;
 
         final currentUnitHp = units[current].currentHp;
-        final currentUnitMaxHp = units[current].maxHp;
+        final currentUnitMaxHp = units[current].unitConstParams.maxHp;
 
         assert(currentDamage > 0);
         final damage = (damageScatter.getScattedDamage(currentDamage, rollMaxDamage: rollMaxDamage) *
@@ -1179,7 +1182,7 @@ extension ApplyAttack on AttackController {
               unitNeedHeal.add(false);
               continue;
             }
-            if (e.currentHp >= e.maxHp) {
+            if (e.currentHp >= e.unitConstParams.maxHp) {
               unitNeedHeal.add(false);
               continue;
             }
@@ -1198,7 +1201,7 @@ extension ApplyAttack on AttackController {
           for (var i = 0; i < units.length; i++) {
             if (unitNeedHeal[i]) {
               final currentAllieUnitHp = units[i].currentHp;
-              final currentAllieUnitMaxHp = units[i].maxHp;
+              final currentAllieUnitMaxHp = units[i].unitConstParams.maxHp;
 
               var newHp = currentAllieUnitHp + oneUnitHealValue;
               if (newHp > currentAllieUnitMaxHp) {
@@ -1310,14 +1313,18 @@ extension ApplyAttack on AttackController {
           var transformedUnit =
           gameRepository.getTransformUnitByAttackId(attack.attackConstParams.attackId);
           // Нужно запомнить текущее состояние юнита
-          assert(transformedUnitsCache[targetUnit.unitWarId] == null);
-          transformedUnitsCache[targetUnit.unitWarId] = targetUnit.copyWith();
+          assert(transformedUnitsCache[targetUnit.unitConstParams.unitWarId] == null);
+          transformedUnitsCache[targetUnit.unitConstParams.unitWarId] = targetUnit.copyWith();
 
           units[target].attacksMap[attack.attackConstParams.attackClass] =
               attack.copyWith(currentDuration: currentAttackDuration);
 
           units[target] = units[target].copyWith(
-            unitName: transformedUnit.unitName,
+            //unitName: transformedUnit.unitConstParams.unitName,
+            unitConstParams: units[target].unitConstParams.copyWith(
+              unitName: transformedUnit.unitConstParams.unitName,
+            ),
+
             // todo Резисты переносятся также с юнита в кого превращаемся
             armor: transformedUnit.armor,
             unitAttack: transformedUnit.unitAttack,

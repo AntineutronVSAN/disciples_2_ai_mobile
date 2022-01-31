@@ -153,26 +153,25 @@ class GameRepository implements GameRepositoryBase {
               attackClass: attackClassFromGameAttack(attack.atck_class),
               infinite: attack.infinite ?? false,
               attackId: attack.att_id,
-              level:attack.level ?? 2,
-              source: attack.source)
-      );
+              level: attack.level ?? 2,
+              source: attack.source));
 
       UnitAttack? unitAttack2;
 
       if (attack2 != null) {
         unitAttack2 = UnitAttack(
-          //attackId: attack2.att_id,
-          power: attack2.power,
-          //heal: attack2.qty_heal ?? 0,
-          damage: attack2.qty_dam ?? 0,
-          initiative: attack2.initiative,
-          //firstInitiative: attack2.initiative,
-          //targetsCount: targetsCountFromReach(attack2.reach),
-          //attackClass: attackClassFromGameAttack(attack2.atck_class),
-          //infinite: attack2.infinite ?? false,
-          //firstDamage: attack2.qty_dam ?? 0,
-          //level: attack2.level ?? 2,
-          //source: attack2.source,
+            //attackId: attack2.att_id,
+            power: attack2.power,
+            //heal: attack2.qty_heal ?? 0,
+            damage: attack2.qty_dam ?? 0,
+            initiative: attack2.initiative,
+            //firstInitiative: attack2.initiative,
+            //targetsCount: targetsCountFromReach(attack2.reach),
+            //attackClass: attackClassFromGameAttack(attack2.atck_class),
+            //infinite: attack2.infinite ?? false,
+            //firstDamage: attack2.qty_dam ?? 0,
+            //level: attack2.level ?? 2,
+            //source: attack2.source,
             attackConstParams: AttackConstParams(
                 heal: attack2.qty_heal ?? 0,
                 firstDamage: attack2.qty_dam ?? 0,
@@ -181,9 +180,8 @@ class GameRepository implements GameRepositoryBase {
                 attackClass: attackClassFromGameAttack(attack2.atck_class),
                 infinite: attack2.infinite ?? false,
                 attackId: attack2.att_id,
-                level:attack2.level ?? 2,
-                source: attack2.source)
-        );
+                level: attack2.level ?? 2,
+                source: attack2.source));
       }
       final newMapAtck = <AttackClass, UnitAttack>{};
       final newListAtck = <UnitAttack>[];
@@ -213,16 +211,30 @@ class GameRepository implements GameRepositoryBase {
       }
 
       Unit newUnit = Unit(
+        unitConstParams: UnitConstParams(
+            maxHp: unit.hit_point,
+            isDoubleAttack: unit.atck_twice ?? false,
+            unitName: newGameUnitText.text,
+            unitGameID: unit.unit_id,
+            unitWarId: "",
+            upgradeArmor: dynUpgradeParams.armor ?? 0,
+            upgradeDamage: dynUpgradeParams.damage ?? 0,
+            upgradeHeal: dynUpgradeParams.heal ?? 0,
+            upgradeInitiative: dynUpgradeParams.initiative ?? 0,
+            upgradePower: dynUpgradeParams.power ?? 0,
+            upgradeHp: dynUpgradeParams.hit_point,
+            overLevel: false),
+
         isMoving: false,
-        unitGameID: unit.unit_id,
+        // unitGameID: unit.unit_id,
         currentHp: unit.hit_point,
         isDead: false,
-        maxHp: unit.hit_point,
-        unitName: newGameUnitText.text,
+        // maxHp: unit.hit_point,
+        // unitName: newGameUnitText.text,
         isWaiting: false,
         isProtected: false,
-        unitWarId: "",
-        isDoubleAttack: unit.atck_twice ?? false,
+        // unitWarId: "",
+        // isDoubleAttack: unit.atck_twice ?? false,
         unitAttack: unitAttack1,
         unitAttack2: unitAttack2,
         armor: unit.armor ?? 0,
@@ -230,12 +242,12 @@ class GameRepository implements GameRepositoryBase {
         attacksMap: newMapAtck,
 
         level: unit.level,
-        upgradeArmor: dynUpgradeParams.armor ?? 0,
-        upgradeDamage: dynUpgradeParams.damage ?? 0,
-        upgradeHeal: dynUpgradeParams.heal ?? 0,
-        upgradeInitiative: dynUpgradeParams.initiative ?? 0,
-        upgradePower: dynUpgradeParams.power ?? 0,
-        upgradeHp: dynUpgradeParams.hit_point,
+        // upgradeArmor: dynUpgradeParams.armor ?? 0,
+        // upgradeDamage: dynUpgradeParams.damage ?? 0,
+        // upgradeHeal: dynUpgradeParams.heal ?? 0,
+        // upgradeInitiative: dynUpgradeParams.initiative ?? 0,
+        // upgradePower: dynUpgradeParams.power ?? 0,
+        // upgradeHp: dynUpgradeParams.hit_point,
 
         sourceImmune: sourceImmuneMap,
         hasClassImunne: hasClassImmune,
@@ -248,13 +260,13 @@ class GameRepository implements GameRepositoryBase {
 
       evalController.getUnitEvaluation(newUnit, eval);
       evals.add(PairValues<String, double>(
-          first: newUnit.unitName, end: eval.getEval()));
+          first: newUnit.unitConstParams.unitName, end: eval.getEval()));
 
       // todo Пока не поддерживаются двуклеточники
       if ((unit.size_small ?? false) || true) {
         _units.add(newUnit);
-        _unitsNamesMap[newUnit.unitName] = newUnit;
-        _unitsIdMap[newUnit.unitGameID] = newUnit;
+        _unitsNamesMap[newUnit.unitConstParams.unitName] = newUnit;
+        _unitsIdMap[newUnit.unitConstParams.unitGameID] = newUnit;
       }
     }
 
@@ -271,13 +283,13 @@ class GameRepository implements GameRepositoryBase {
       final randomName = _unitsNamesMap.keys.toList()[randomIndex];
 
       return _getCopyUnitWithNewParams(_unitsNamesMap[randomName]!);
-      return _unitsNamesMap[randomName]!.copyWith(
-        unitWarId: uuid.v1(),
-        attacksMap: <AttackClass, UnitAttack>{},
-        attacks: <UnitAttack>[],
-        unitAttack: _unitsNamesMap[randomName]!.unitAttack.copyWith(),
-        unitAttack2: _unitsNamesMap[randomName]!.unitAttack2?.copyWith(),
-      );
+      // return _unitsNamesMap[randomName]!.copyWith(
+      //   unitWarId: uuid.v1(),
+      //   attacksMap: <AttackClass, UnitAttack>{},
+      //   attacks: <UnitAttack>[],
+      //   unitAttack: _unitsNamesMap[randomName]!.unitAttack.copyWith(),
+      //   unitAttack2: _unitsNamesMap[randomName]!.unitAttack2?.copyWith(),
+      //);
     } else {
       if (options.backLine) {
         final isRange = Random().nextInt(100) > 50;
@@ -285,7 +297,8 @@ class GameRepository implements GameRepositoryBase {
         if (isRange) {
           final units = _units
               .where((element) =>
-                  element.unitAttack.attackConstParams.targetsCount == TargetsCount.any)
+                  element.unitAttack.attackConstParams.targetsCount ==
+                  TargetsCount.any)
               .toList();
           final index = Random().nextInt(units.length);
           return _getCopyUnitWithNewParams(units[index]);
@@ -299,7 +312,8 @@ class GameRepository implements GameRepositoryBase {
         } else {
           final units = _units
               .where((element) =>
-                  element.unitAttack.attackConstParams.targetsCount == TargetsCount.all)
+                  element.unitAttack.attackConstParams.targetsCount ==
+                  TargetsCount.all)
               .toList();
           final index = Random().nextInt(units.length);
           return _getCopyUnitWithNewParams(units[index]);
@@ -315,7 +329,8 @@ class GameRepository implements GameRepositoryBase {
       if (options.frontLine) {
         final units = _units
             .where((element) =>
-                element.unitAttack.attackConstParams.targetsCount == TargetsCount.one)
+                element.unitAttack.attackConstParams.targetsCount ==
+                TargetsCount.one)
             .toList();
         final index = Random().nextInt(units.length);
 
@@ -356,7 +371,7 @@ class GameRepository implements GameRepositoryBase {
     Unit? newUnit;
     bool unitFound = false;
     for (var u in _units) {
-      if (u.unitGameID == id) {
+      if (u.unitConstParams.unitGameID == id) {
         newUnit = _getCopyUnitWithNewParams(u);
         /*newUnit = u.copyWith(
           unitWarId: uuid.v1(),
@@ -378,7 +393,13 @@ class GameRepository implements GameRepositoryBase {
     var newUnit = u.deepCopy();
 
     newUnit = newUnit.copyWith(
-      unitWarId: uuid.v1(),
+      unitConstParams: newUnit.unitConstParams.copyWith(
+        unitWarId: uuid.v1(),
+      ),
+
+      //unitWarId: uuid.v1(),
+
+
       attacksMap: <AttackClass, UnitAttack>{},
       attacks: <UnitAttack>[],
       unitAttack: u.unitAttack.deepCopy(),

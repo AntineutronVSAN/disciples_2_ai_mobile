@@ -351,7 +351,7 @@ List<double> _vectorFromUnit(Unit unit) {
   result.add(unit.currentHp / 9999.0);
   result.add(unit.armor / 90.0);
 
-  result.add(unit.isDoubleAttack ? 1.0 : 0.0);
+  result.add(unit.unitConstParams.isDoubleAttack ? 1.0 : 0.0);
 
   if (unit.attacksMap.containsKey(AttackClass.L_BLISTER)) {
     final atck = unit.attacksMap[AttackClass.L_BLISTER]!;

@@ -69,7 +69,7 @@ class UnitInformationScreenBody extends StatelessWidget {
     return Scaffold(
       appBar: getThemeAppBar(
           title: ThemeAppText(
-              text: unit.unitName, style: GameStyles.getMainAppBarTextStyle()),
+              text: unit.unitConstParams.unitName, style: GameStyles.getMainAppBarTextStyle()),
           leading: ClickableIcon(
             icon: const Icon(
               Icons.arrow_back_ios,
@@ -86,7 +86,7 @@ class UnitInformationScreenBody extends StatelessWidget {
             const UnitAvatarSection(description: 'TODO Описание',),
             Center(child: Text('Характеристики юнита', style: GameStyles.getUnitDescriptionStyle(),),),
             UnitsParamsSection(
-              content: 'Здоровье: макс ${unit.maxHp}, текущее ${unit.currentHp}',
+              content: 'Здоровье: макс ${unit.unitConstParams.maxHp}, текущее ${unit.currentHp}',
             ),
             UnitsParamsSection(
               content: 'Уровень: ${unit.level}',
@@ -99,7 +99,7 @@ class UnitInformationScreenBody extends StatelessWidget {
               content: 'Броня: текущая ${unit.armor}',
             ),
             UnitsParamsSection(
-              content: 'Двойная атака: ${unit.isDoubleAttack}',
+              content: 'Двойная атака: ${unit.unitConstParams.isDoubleAttack}',
             ),
             UnitsParamsSection(
               content: 'Иммунитет: $immuneString',

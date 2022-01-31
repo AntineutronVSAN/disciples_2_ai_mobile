@@ -198,13 +198,17 @@ extension Preprocessing on AttackController {
           }
           if (atckValue.currentDuration == 1) {
             atcksToRemove.add(atckId);
-            final unitId = units[index].unitWarId;
+            final unitId = units[index].unitConstParams.unitWarId;
             final oldUnit = transformedUnitsCache[unitId]!;
 
             transformedUnitsCache.remove(unitId);
 
             units[index] = units[index].copyWith(
-              unitName: oldUnit.unitName,
+              //unitName: oldUnit.unitConstParams.unitName,
+              unitConstParams: units[index].unitConstParams.copyWith(
+                unitName: oldUnit.unitConstParams.unitName,
+              ),
+
               armor: oldUnit.armor,
               unitAttack: oldUnit.unitAttack,
               unitAttack2: oldUnit.unitAttack2,

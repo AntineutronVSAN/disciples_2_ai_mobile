@@ -92,7 +92,7 @@ class EvaluationController {
     //print('Оценка юнита - $onlyUnitEval');
     var unitAtcksEval = getAttackCombinationEvaluation(u.unitAttack, u.unitAttack2) * unitAttacksCoeff;
 
-    if (u.isDoubleAttack) {
+    if (u.unitConstParams.isDoubleAttack) {
       unitAtcksEval *= 1.5;
     }
 
@@ -103,7 +103,7 @@ class EvaluationController {
     //print('Оценка юнита ${u.unitName} результат - $value');
 
     eval.attacksEval = canMove ? unitAtcksEval : 0.0;
-    eval.onlyUnitEval = onlyUnitEval * (u.currentHp / u.maxHp);
+    eval.onlyUnitEval = onlyUnitEval * (u.currentHp / u.unitConstParams.maxHp);
 
     return;
 
@@ -130,7 +130,7 @@ class EvaluationController {
   double _onlyUnitEval(Unit u) {
     double value = 0.0;
 
-    value += u.maxHp / 1000.0;
+    value += u.unitConstParams.maxHp / 1000.0;
     value += u.armor / 90.0 / 2.0;
 
     return value;

@@ -324,8 +324,8 @@ class AttackController {
         botFrontEmpty: context.botFrontLineEmpty,
         currentRecursionLevel: 0);
     if (!canAttack) {
-      return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может атаковать юнита ${targetUnit.unitName}');
+      return ResponseAction.error( // .unitConstParams
+          'Юнит ${currentUnit.unitConstParams.unitName} не может атаковать юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     return await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -405,7 +405,7 @@ class AttackController {
     if (targetUnit.isEmpty()) {
       return ResponseAction.error('Хил не может лечить пустого');
     }
-    if (targetUnit.currentHp >= targetUnit.maxHp) {
+    if (targetUnit.currentHp >= targetUnit.unitConstParams.maxHp) {
       return ResponseAction.error('Хил не может лечить здорового');
     }
     // todo Тут надо подумать, как сделать. Защититься после первой атаки
@@ -505,7 +505,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может атаковать юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может атаковать юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -592,7 +592,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может парализовать юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может парализовать юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -678,7 +678,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может парализовать юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может парализовать юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -760,7 +760,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может парализовать юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может парализовать юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -842,7 +842,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может обжеч юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может обжеч юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -925,7 +925,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может заморозить юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может заморозить юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -1009,7 +1009,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может заморозить юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может заморозить юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -1092,7 +1092,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может заморозить юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может заморозить юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -1176,7 +1176,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может заморозить юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может заморозить юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -1323,7 +1323,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может парализовать юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может парализовать юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -1410,7 +1410,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может заморозить юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может заморозить юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -1498,7 +1498,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может заморозить юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может заморозить юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -1592,7 +1592,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может заморозить юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может заморозить юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -1678,7 +1678,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может заморозить юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может заморозить юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -1767,7 +1767,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может превратить юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может превратить юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,

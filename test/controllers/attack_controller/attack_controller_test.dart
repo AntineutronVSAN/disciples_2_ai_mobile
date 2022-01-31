@@ -65,12 +65,12 @@ void main() {
         reason: 'Юнит может ударять. Сообщение - ${responseAction.message}');
     expect(
         units[7].currentHp ==
-            units[7].maxHp -
+            units[7].unitConstParams.maxHp -
                 units[4].unitAttack.damage -
                 DamageScatter.maxScatterValue,
         true,
         reason:
-            'Неверно посчитан урон ${units[7].currentHp} != ${units[7].maxHp} - (${units[4].unitAttack.damage} + ${DamageScatter.maxScatterValue})');
+            'Неверно посчитан урон ${units[7].currentHp} != ${units[7].unitConstParams.maxHp} - (${units[4].unitAttack.damage} + ${DamageScatter.maxScatterValue})');
     final currentUnitHp = units[7].currentHp;
     attackResponse = await attackController.applyAttack(
         4, 7, units, responseAction,
@@ -363,7 +363,7 @@ void main() {
         onAddUnit2Queue: (u) {}, rollConfig: rollConfig);
     expect(resp.success, true, reason: 'Сообщение - ${responseAction.message}');
 
-    expect(units[6].currentHp, units[6].maxHp, reason: '');
+    expect(units[6].currentHp, units[6].unitConstParams.maxHp, reason: '');
     expect(units[6].hasSourceImunne[testDamagerWithOnceImmuneSelfSource], false,
         reason: 'Защита должна сняться');
 
@@ -372,7 +372,7 @@ void main() {
         onAddUnit2Queue: (u) {}, rollConfig: rollConfig);
     expect(resp.success, true, reason: 'Сообщение - ${responseAction.message}');
 
-    expect(units[7].currentHp, units[7].maxHp, reason: '');
+    expect(units[7].currentHp, units[7].unitConstParams.maxHp, reason: '');
     expect(units[7].hasSourceImunne[testDamagerWithOnceImmuneSelfSource], false,
         reason: 'Защита должна сняться');
 
@@ -381,7 +381,7 @@ void main() {
         onAddUnit2Queue: (u) {}, rollConfig: rollConfig);
     expect(resp.success, true, reason: 'Сообщение - ${responseAction.message}');
 
-    expect(units[4].currentHp, units[4].maxHp, reason: '');
+    expect(units[4].currentHp, units[4].unitConstParams.maxHp, reason: '');
     expect(units[4].hasSourceImunne[testDamagerWithOnceImmuneSelfSource], false,
         reason: 'Защита должна сняться');
 
@@ -402,7 +402,7 @@ void main() {
         onAddUnit2Queue: (u) {}, rollConfig: rollConfig);
     expect(resp.success, true, reason: 'Сообщение - ${responseAction.message}');
 
-    expect(units[5].currentHp, units[5].maxHp, reason: '');
+    expect(units[5].currentHp, units[5].unitConstParams.maxHp, reason: '');
     expect(units[5].hasSourceImunne[testDamagerWithOnceImmuneSelfSource], false,
         reason: 'Защита должна сняться');
 

@@ -106,9 +106,9 @@ class GameController {
       if (i.isNotEmpty()) {
         final currentSnapshotsUnit = i.deepCopy();
         snapshot.units[index] = currentSnapshotsUnit;
-        unitsRefIdMap[i.unitWarId] = currentSnapshotsUnit;
+        unitsRefIdMap[i.unitConstParams.unitWarId] = currentSnapshotsUnit; // .unitConstParams
       } else {
-        unitsRefIdMap[i.unitWarId] = GameRepositoryBase.globalEmptyUnit;
+        unitsRefIdMap[i.unitConstParams.unitWarId] = GameRepositoryBase.globalEmptyUnit;
       }
       index++;
     }
@@ -116,17 +116,17 @@ class GameController {
     snapshot.unitsRef = [];
     for(var i in unitsRef) {
       //List<Unit> u = [];
-      //u.add(unitsRefIdMap[i.unitWarId]!);
-      if (unitsRefIdMap[i.unitWarId] == null) {
+      //u.add(unitsRefIdMap[i.unitConstParams.unitWarId]!);
+      if (unitsRefIdMap[i.unitConstParams.unitWarId] == null) {
         print('asdfasdfasdfasdf');
       }
-      snapshot.unitsRef.add(unitsRefIdMap[i.unitWarId]!);
+      snapshot.unitsRef.add(unitsRefIdMap[i.unitConstParams.unitWarId]!);
     }
     /*for(var i in unitsRef) {
-      //final u = snapshot.units.where((element) => element.unitWarId == i.unitWarId).toList();
+      //final u = snapshot.units.where((element) => element.unitWarId == i.unitConstParams.unitWarId).toList();
       List<Unit> u = [];
       for (var j in snapshot.units) {
-        if (j.unitWarId == i.unitWarId) {
+        if (j.unitWarId == i.unitConstParams.unitWarId) {
           u.add(j);
         }
       }
@@ -138,18 +138,18 @@ class GameController {
     final newQueue = Queue<Unit>();
     for(var i in unitsQueue!) {
       //List<Unit> u = [];
-      //u.add(unitsRefIdMap[i.unitWarId]!);
-      if (unitsRefIdMap[i.unitWarId] == null) {
+      //u.add(unitsRefIdMap[i.unitConstParams.unitWarId]!);
+      if (unitsRefIdMap[i.unitConstParams.unitWarId] == null) {
         print('asdfasdfasdfasdf');
       }
-      newQueue.add(unitsRefIdMap[i.unitWarId]!);
+      newQueue.add(unitsRefIdMap[i.unitConstParams.unitWarId]!);
     }
     /*for(var i in unitsQueue!) {
-      //final u = snapshot.units.where((element) => element.unitWarId == i.unitWarId).toList();
+      //final u = snapshot.units.where((element) => element.unitWarId == i.unitConstParams.unitWarId).toList();
       //assert(u.length == 1);
       List<Unit> u = [];
       for(var j in snapshot.units) {
-        if (j.unitWarId == i.unitWarId) {
+        if (j.unitWarId == i.unitConstParams.unitWarId) {
           u.add(j);
         }
       }
@@ -200,7 +200,7 @@ class GameController {
       }
 
       unitsRef.add(unit);
-      unitPosition[unit.unitWarId] = index;
+      unitPosition[unit.unitConstParams.unitWarId] = index;
 
       index++;
     }
@@ -231,7 +231,7 @@ class GameController {
 
     final currentActiveUnit = unitsQueue!.removeFirst();
 
-    currentActiveCellIndex = unitPosition[currentActiveUnit.unitWarId];
+    currentActiveCellIndex = unitPosition[currentActiveUnit.unitConstParams.unitWarId];
 
     for (var i = 0; i < units.length; i++) {
       if (i == currentActiveCellIndex!) {
@@ -325,7 +325,7 @@ class GameController {
   }) async {
     if (handleDoubleAttack) {
       final currentUnit = units[currentActiveCellIndex!];
-      if (currentUnit.isDoubleAttack) {
+      if (currentUnit.unitConstParams.isDoubleAttack) {
         if (currentUnit.currentAttack == 0) {
           units[currentActiveCellIndex!] =
               units[currentActiveCellIndex!].copyWith(
@@ -357,7 +357,7 @@ class GameController {
         }
       }
 
-      currentActiveUnitID = unitsQueue!.removeFirst().unitWarId;
+      currentActiveUnitID = unitsQueue!.removeFirst().unitConstParams.unitWarId;
       final currentActiveUnitIndex = unitPosition[currentActiveUnitID];
       assert(currentActiveUnitIndex != null);
 
@@ -394,11 +394,11 @@ class GameController {
       if (units[currentActiveUnitIndex].retreat) {
         //print('Юнит отступил');
         final emptyUnit = GameRepositoryBase.globalEmptyUnit;
-        final retreatedUnitWarId = units[currentActiveUnitIndex].unitWarId;
+        final retreatedUnitWarId = units[currentActiveUnitIndex].unitConstParams.unitWarId;
         int? retreatedUnitRefIndex;
         int index = 0;
         for(var i in unitsRef) {
-          if (i.unitWarId == retreatedUnitWarId) {
+          if (i.unitConstParams.unitWarId == retreatedUnitWarId) {
             retreatedUnitRefIndex = index;
             break;
           }
@@ -408,7 +408,7 @@ class GameController {
 
         units[currentActiveUnitIndex] = emptyUnit;
         unitsRef[retreatedUnitRefIndex!] = emptyUnit;
-        unitsQueue!.removeWhere((element) => element.unitWarId == retreatedUnitWarId);
+        unitsQueue!.removeWhere((element) => element.unitConstParams.unitWarId == retreatedUnitWarId);
         continue;
       }
 

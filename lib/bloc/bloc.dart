@@ -68,7 +68,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     repository.init();
     _allUnits.addAll(repository.getAllUnits());
     for (var element in _allUnits) {
-      _allUnitsMap[element.unitGameID] = element;
+      _allUnitsMap[element.unitConstParams.unitGameID] = element;
     }
     initialState.allUnits.addAll(_allUnits);
 
@@ -152,12 +152,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       topTeam[4],
       topTeam[5],
 
-      repository.getCopyUnitByName(topTeam[0].unitName),
-      repository.getCopyUnitByName(topTeam[1].unitName),
-      repository.getCopyUnitByName(topTeam[2].unitName),
-      repository.getCopyUnitByName(topTeam[3].unitName),
-      repository.getCopyUnitByName(topTeam[4].unitName),
-      repository.getCopyUnitByName(topTeam[5].unitName),
+      repository.getCopyUnitByName(topTeam[0].unitConstParams.unitName),
+      repository.getCopyUnitByName(topTeam[1].unitConstParams.unitName),
+      repository.getCopyUnitByName(topTeam[2].unitConstParams.unitName),
+      repository.getCopyUnitByName(topTeam[3].unitConstParams.unitName),
+      repository.getCopyUnitByName(topTeam[4].unitConstParams.unitName),
+      repository.getCopyUnitByName(topTeam[5].unitConstParams.unitName),
 
 
     ];
@@ -233,16 +233,18 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       index++;
     }*/
 
-    final List<String> unitsNames = UnitsPack.packs[2];
+    final List<String> unitsNames = UnitsPack.packs[3];
     //final List<String> unitsNames = UnitsPack.tournaments[9];
     var index = 0;
     for(var name in unitsNames) {
       //_units[index] = repository.getCopyUnitByName(name);
+
       /*putUnitTo(
           units: _units,
           unit: repository.getCopyUnitByName(name),
           to: index, emptyUnit: GameRepositoryBase.globalEmptyUnit);*/
-      unitUpgradeController.setLevel(3, index, _units);
+
+      //unitUpgradeController.setLevel(3, index, _units);
       index++;
     }
 
@@ -280,7 +282,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
       emit(state.copyWith(
           allUnits: _allUnits.where((element) {
-        final name = element.unitName;
+        final name = element.unitConstParams.unitName;
         if (subStringLen > name.length) {
           return false;
         }
@@ -612,8 +614,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     }
 
     final newUnit = unit.copyWith(
+      unitConstParams: unit.unitConstParams.copyWith(
+          unitWarId: uuid.v1()),
       // На поле боя юниту присваиывается уникальный id
-      unitWarId: uuid.v1(),
+      //unitWarId: uuid.v1(),
       // Тут важно понять, что репозиторий создаёт всех юнитов один раз и
       // когда мы копируем юнита из списка всех юнитов репозитория,
       // все ссылочные типы ссылаются на одни и теже объекты (которые в репозитории)

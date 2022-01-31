@@ -55,7 +55,7 @@ void putUnitTo({
   int newUnitPos;
 
   if (currentUnitIsBig) {
-
+    assert(!unit.isEmpty());
     newUnitPos = bigUnitFixedPos[to]!;
     final nearestUnitPos = nearestMap[newUnitPos]!;
 
@@ -72,6 +72,9 @@ void putUnitTo({
   }
 
   if (units[nearestUnitPos].isBig) {
+    if (unit.isEmpty()) {
+      return;
+    }
     units[to] = unit;
     units[nearestUnitPos] = emptyUnit;
     return;

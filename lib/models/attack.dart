@@ -70,6 +70,9 @@ class UnitAttack {
   /// висеть атака на юните
   int currentDuration;
 
+  /// Неизменияемые параметры атаки.
+  /// При глубоком копировании, параметры не копируются, а просто
+  /// меняется ссылка
   final AttackConstParams attackConstParams;
 
   UnitAttack({

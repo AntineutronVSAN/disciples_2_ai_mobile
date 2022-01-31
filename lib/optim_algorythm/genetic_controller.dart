@@ -230,10 +230,10 @@ class GeneticController {
         if (checkIsTopTeam(index)) {
           // todo
           aisUnitsHp.add(u.currentHp);
-          aisUnitsMaxHp.add(u.maxHp);
+          aisUnitsMaxHp.add(u.unitConstParams.maxHp);
         } else {
           enemyUnitsHp.add(u.currentHp);
-          enemyUnitsMaxHp.add(u.maxHp);
+          enemyUnitsMaxHp.add(u.unitConstParams.maxHp);
         }
         index++;
       }

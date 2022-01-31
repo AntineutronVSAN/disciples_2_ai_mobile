@@ -38,7 +38,7 @@ class UnitCellWidget extends StatelessWidget {
 
 
     final unit = units[cellNumber];
-    final maxHp = unit.maxHp;
+    final maxHp = unit.unitConstParams.maxHp;
     final curHp = unit.currentHp;
 
     final paralyzed = unit.paralyzed;
@@ -141,7 +141,7 @@ class UnitCellWidget extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.topCenter,
                   child: AutoSizeText(
-                    unit.unitName,
+                    unit.unitConstParams.unitName,
                     style: const TextStyle(color: Colors.black, fontSize: 12),
                     maxLines: 2,
                   ),
@@ -239,7 +239,7 @@ class UnitCellWidget extends StatelessWidget {
                     'HP ' +
                         unit.currentHp.toString() +
                         ' / ' +
-                        unit.maxHp.toString(),
+                        unit.unitConstParams.maxHp.toString(),
                     style: const TextStyle(
                         fontSize: 12.0,
                         color: Colors.black,
