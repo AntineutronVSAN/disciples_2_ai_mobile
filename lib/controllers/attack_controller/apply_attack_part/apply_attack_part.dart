@@ -677,7 +677,10 @@ extension ApplyAttack on AttackController {
           attackDurationController.getDuration(attack);
           // В кого превращает юнит
           var transformedUnit =
-          gameRepository.getTransformUnitByAttackId(attack.attackConstParams.attackId);
+          gameRepository.getTransformUnitByAttackId(attack.attackConstParams.attackId, isBig: targetUnit.isBig);
+          if (transformedUnit == null) {
+            break;
+          }
           // Нужно запомнить текущее состояние юнита
           assert(transformedUnitsCache[targetUnit.unitConstParams.unitWarId] == null);
           transformedUnitsCache[targetUnit.unitConstParams.unitWarId] = targetUnit.copyWith();
@@ -787,7 +790,7 @@ extension ApplyAttack on AttackController {
 
   // ------------------------------------------------------------
 
-  Future<ResponseAction> applyAttackToUnitFast(
+  /*Future<ResponseAction> applyAttackToUnitFast(
       UnitAttack attack, int target, List<Unit> units,
       {required int current}) async {
     final targetUnit = units[target];
@@ -906,12 +909,12 @@ extension ApplyAttack on AttackController {
           units[target].uiInfo = 'Паралич';
           await onUpdate();
         } else {
-          /*final oldUnitsAttackDuration =
+          *//*final oldUnitsAttackDuration =
               targetUnit.attacksMap[attack.attackConstParams.attackClass]!.currentDuration;
           if (currentAttackDuration > oldUnitsAttackDuration) {
             units[target].attacksMap[attack.attackConstParams.attackClass] =
                 attack.copyWith(currentDuration: currentAttackDuration);
-          }*/
+          }*//*
         }
 
         break;
@@ -1043,7 +1046,7 @@ extension ApplyAttack on AttackController {
           await onUpdate();
         } else {
           // todo Принимаем, что дебафф не обновляется
-          /*final oldDebuffLevel =
+          *//*final oldDebuffLevel =
               units[target].attacksMap[attack.attackConstParams.attackClass]!.level;
           if (oldDebuffLevel > attackLevel) {
             final oldDamageCoeff = oldDebuffLevel == 1 ? 0.5 : 0.33;
@@ -1074,7 +1077,7 @@ extension ApplyAttack on AttackController {
                   uiInfo: 'Ослабление обновлено', damageLower: true);
               await onUpdate();
             }
-          }*/
+          }*//*
         }
 
         break;
@@ -1449,7 +1452,10 @@ extension ApplyAttack on AttackController {
           attackDurationController.getDuration(attack);
           // В кого превращает юнит
           var transformedUnit =
-          gameRepository.getTransformUnitByAttackId(attack.attackConstParams.attackId);
+          gameRepository.getTransformUnitByAttackId(attack.attackConstParams.attackId, isBig: targetUnit.isBig);
+          if (transformedUnit == null) {
+            break;
+          }
           // Нужно запомнить текущее состояние юнита
           assert(transformedUnitsCache[targetUnit.unitConstParams.unitWarId] == null);
           transformedUnitsCache[targetUnit.unitConstParams.unitWarId] = targetUnit.copyWith();
@@ -1557,6 +1563,6 @@ extension ApplyAttack on AttackController {
     }
 
     return ResponseAction.success();
-  }
+  }*/
 
 }

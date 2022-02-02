@@ -38,8 +38,14 @@ class AlphaBetaPruningController extends AiControllerBase {
       {GameController? gameController,
       UpdateStateContextBase? updateStateContext}) async {
 
+    if (!AttackController.attackSupported(gameController!.units[currentActiveUnitCellIndex].unitAttack)) {
+      return [
+        RequestAction(type: ActionType.protect, targetCellIndex: null, currentCellIndex: null)
+      ];
+    }
+
     final result = await abPruningIsolate.abPruningBackground(
-        controllerSnapshot: gameController!.getSnapshot(),
+        controllerSnapshot: gameController.getSnapshot(),
         treeDepth: treeDepth,
         onPosEval: (val) async {
           if (updateStateContext != null) {

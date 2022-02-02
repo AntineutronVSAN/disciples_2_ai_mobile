@@ -30,6 +30,12 @@ extension ReapplyAttacks on AttackController {
     }
 
     // Проверки для того, что бы убедиться что юнит имеет максимальные параметры
+    if (!(currentUnit.unitAttack.damage == currentUnit.unitAttack.attackConstParams.firstDamage)) {
+      print('adfadf');
+    }
+    if (!(currentUnit.unitAttack.initiative == currentUnit.unitAttack.attackConstParams.firstInitiative)) {
+      print('adfadf');
+    }
     assert(currentUnit.unitAttack.damage == currentUnit.unitAttack.attackConstParams.firstDamage);
     assert(currentUnit.unitAttack.initiative == currentUnit.unitAttack.attackConstParams.firstInitiative, '${currentUnit.unitAttack.initiative} != ${currentUnit.unitAttack.attackConstParams.firstInitiative}');
 

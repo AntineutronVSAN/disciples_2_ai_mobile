@@ -98,9 +98,9 @@ class EvaluationController {
       evaluations.add(newEval);
       index++;
     }
-    sfr += aiTeamEval;
-    sfr -= enemyTeamEval*0.2;
-    sfr -= _evaluationOffset;
+    sfr += aiTeamEval*0.2;
+    sfr -= enemyTeamEval;
+    //sfr -= _evaluationOffset;
     return sfr;
   }
 
@@ -144,7 +144,7 @@ class EvaluationController {
     eval.onlyUnitEval = onlyUnitEval * (u.currentHp / u.unitConstParams.maxHp);
 
     // TODO
-    eval.attacksEval *= (u.currentHp * 0.005);
+    eval.attacksEval *= (u.unitConstParams.maxHp * 0.005);
 
     return;
 

@@ -109,7 +109,7 @@ class _D2AiAppBodyState extends State<D2AiAppBody> {
 
   void onTapHandler(int index)  {
     setState(() {
-      selectedIndex = index;
+      selectedIndex = 0;
     });
   }
 

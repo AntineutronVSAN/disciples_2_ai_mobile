@@ -1547,7 +1547,7 @@ class AttackController {
 
   Future<ResponseAction> _handleBustDamage(AttackContext context) async {
     final currentUnitAttack = context.units[context.current].unitAttack;
-    final currentUnit = context.units[context.current];
+    //final currentUnit = context.units[context.current];
     final targetUnit = context.units[context.target];
     final currentUnitIsTopTeam = checkIsTopTeam(context.current);
     final targetUnitIsTopTeam = checkIsTopTeam(context.target);
@@ -1563,6 +1563,12 @@ class AttackController {
       return ResponseAction.error(
           'Невозможное действие над мёртвым/пустым юнитом');
     }
+    // Давать атаку можно только дамагерам
+    if (targetUnit.unitAttack.attackConstParams.attackClass != AttackClass.L_DAMAGE) {
+      return ResponseAction.error(
+          'Нельзя повышать урон не дамагерам');
+    }
+
     final targetUnitAttacks = targetUnit.attacksMap;
     if (targetUnitAttacks[AttackClass.L_BOOST_DAMAGE] != null) {
       return ResponseAction.error('У цели уже повышен урон');
@@ -1584,7 +1590,7 @@ class AttackController {
     final currentUnit = context.units[context.current];
     final targetUnit = context.units[context.target];
     final currentUnitIsTopTeam = checkIsTopTeam(context.current);
-    final targetUnitIsTopTeam = checkIsTopTeam(context.target);
+    //final targetUnitIsTopTeam = checkIsTopTeam(context.target);
 
     final canAttack = findNearestTarget(
         unit: currentUnit,
@@ -1609,7 +1615,7 @@ class AttackController {
   Future<ResponseAction> _handleAllTargetBustDamage(
       AttackContext context) async {
     final currentUnit = context.units[context.current];
-    final currentUnitIsTopTeam = checkIsTopTeam(context.current);
+    //final currentUnitIsTopTeam = checkIsTopTeam(context.current);
     final targetUnitIsTopTeam = checkIsTopTeam(context.target);
     var i1 = targetUnitIsTopTeam ? 0 : 6;
     var i2 = targetUnitIsTopTeam ? 5 : 11;
@@ -1641,7 +1647,7 @@ class AttackController {
 
   Future<ResponseAction> _handleDrainOverflow(AttackContext context) async {
     final currentUnitAttack = context.units[context.current].unitAttack;
-    final currentUnit = context.units[context.current];
+    //final currentUnit = context.units[context.current];
     final targetUnit = context.units[context.target];
     final currentUnitIsTopTeam = checkIsTopTeam(context.current);
     final targetUnitIsTopTeam = checkIsTopTeam(context.target);
@@ -1812,6 +1818,61 @@ class AttackController {
   // L_TRANSFORM_OTHER END
 
 
+
+  static bool attackSupported(UnitAttack attack) {
+
+    switch(attack.attackConstParams.attackClass) {
+
+      case AttackClass.L_DAMAGE:
+        return true;
+      case AttackClass.L_DRAIN:
+        return true;
+      case AttackClass.L_PARALYZE:
+        return true;
+      case AttackClass.L_HEAL:
+        return true;
+      case AttackClass.L_FEAR:
+        return true;
+      case AttackClass.L_BOOST_DAMAGE:
+        return true;
+      case AttackClass.L_PETRIFY:
+        return true;
+      case AttackClass.L_LOWER_DAMAGE:
+        return true;
+      case AttackClass.L_LOWER_INITIATIVE:
+        return true;
+      case AttackClass.L_POISON:
+        return true;
+      case AttackClass.L_FROSTBITE:
+        return true;
+      case AttackClass.L_REVIVE:
+        return true;
+      case AttackClass.L_DRAIN_OVERFLOW:
+        return true;
+      case AttackClass.L_CURE:
+        return true;
+      case AttackClass.L_SUMMON:
+        return false;
+      case AttackClass.L_DRAIN_LEVEL:
+        return false;
+      case AttackClass.L_GIVE_ATTACK:
+        return true;
+      case AttackClass.L_DOPPELGANGER:
+        return false;
+      case AttackClass.L_TRANSFORM_SELF:
+        return false;
+      case AttackClass.L_TRANSFORM_OTHER:
+        return true;
+      case AttackClass.L_BLISTER:
+        return true;
+      case AttackClass.L_BESTOW_WARDS:
+        return false;
+      case AttackClass.L_SHATTER:
+        return true;
+    }
+
+
+  }
 
   /// На какую команду может кликать юнит
   /// true - Может кликать на верхнюю команду

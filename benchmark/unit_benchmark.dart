@@ -146,4 +146,52 @@ void main() {
     }
 
   });
+
+  benchmark('Create final string variable', () {
+    for(var i=0; i<5000000; i++ ) {
+      final val = 'asdfjasdfljkasdfasdfasdfasdfasdf';
+    }
+  });
+  benchmark('Create var string variable', () {
+    for(var i=0; i<5000000; i++ ) {
+      var val = 'asdfjasdfljkasdfasdfasdfasdfasdf';
+    }
+  });
+  benchmark('Create const string variable', () {
+    for(var i=0; i<5000000; i++ ) {
+      const val = 'asdfjasdfljkasdfasdfasdfasdfasdf';
+    }
+  });
+  benchmark('Create var bool variable', () {
+    for(var i=0; i<5000000; i++ ) {
+      var val = true;
+    }
+  });
+  benchmark('Create final bool variable', () {
+    for(var i=0; i<5000000; i++ ) {
+      final val = true;
+    }
+  });
+  benchmark('Create const bool variable', () {
+    for(var i=0; i<5000000; i++ ) {
+      final val = true;
+    }
+  });
+  benchmark('Create final ResponseAction variable', () {
+    for(var i=0; i<5000000; i++ ) {
+      final val = ResponseAction(
+          message: 'ajsdfhaklsdflkasdfjlkasdjflkasdflkasjdf',
+          success: false,
+          endGame: true);
+    }
+  });
+  benchmark('Create var ResponseAction variable', () {
+    for(var i=0; i<5000000; i++ ) {
+      var val = ResponseAction(
+          message: 'ajsdfhaklsdflkasdfjlkasdjflkasdflkasjdf',
+          success: false,
+          endGame: true);
+    }
+  });
+
 }

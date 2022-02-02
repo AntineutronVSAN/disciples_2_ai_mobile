@@ -36,7 +36,7 @@ class GameRepository implements GameRepositoryBase {
 
   final EvaluationController evalController = EvaluationController(); // TODO DI
 
-  final Map<String, List<Unit>> _transfUnitCache = {};
+  final Map<String, List<Unit?>> _transfUnitCache = {};
 
   GameRepository({
     required this.gunitsProvider,
@@ -55,11 +55,13 @@ class GameRepository implements GameRepositoryBase {
 
   /// Получить юнита, в которого превращает атака [attckId]
   @override
-  Unit getTransformUnitByAttackId(String attckId, {bool isBig = false}) {
+  Unit? getTransformUnitByAttackId(String attckId, {bool isBig = false}) {
     final hasCache = _transfUnitCache.containsKey(attckId);
 
     if (hasCache) {
-      return _transfUnitCache[attckId]![0].deepCopy();
+      return isBig
+          ? _transfUnitCache[attckId]![1]?.deepCopy()
+          : _transfUnitCache[attckId]![0]!.deepCopy();
     }
 
     final transfUnitIds = gtransfProvider.objects
@@ -68,21 +70,14 @@ class GameRepository implements GameRepositoryBase {
     assert(transfUnitIds.length <= 2);
 
     final firstUnit = getCopyUnitById(transfUnitIds[0].transf_id).deepCopy();
+    final secondUnit = transfUnitIds.length == 2
+        ? getCopyUnitById(transfUnitIds[1].transf_id).deepCopy()
+        : null;
 
-    _transfUnitCache[attckId] = [firstUnit];
+    _transfUnitCache[attckId] = [firstUnit.deepCopy(), secondUnit?.deepCopy()];
 
-    return firstUnit;
+    return isBig ? secondUnit : firstUnit;
 
-    /*final transfUnitIds = gtransfProvider.objects.where((element) => element.attack_id == attckId).toList();
-    assert(transfUnitIds.length <= 2);
-
-    final firstUnit = getCopyUnitById(transfUnitIds[0].transf_id).deepCopy();
-    //final secondUnit = getCopyUnitById(transfUnitIds[1].transf_id).deepCopy();
-
-    if (isBig) {
-      //todo
-    }
-    return firstUnit;*/
   }
 
   @override
@@ -405,11 +400,11 @@ class GameRepository implements GameRepositoryBase {
       unitAttack: u.unitAttack.deepCopy(),
       unitAttack2: u.unitAttack2?.deepCopy(),
 
-      //classImmune: <int, ImunneCategory>{},
-      //sourceImmune: <int, ImunneCategory>{},
+      classImmune: Map<int, ImunneCategory>.from(newUnit.classImmune),
+      sourceImmune: Map<int, ImunneCategory>.from(newUnit.sourceImmune),
 
-      //hasSourceImunne: <int, bool>{},
-      //hasClassImunne: <int, bool>{},
+      hasSourceImunne: Map<int, bool>.from(newUnit.hasSourceImunne),
+      hasClassImunne: Map<int, bool>.from(newUnit.hasClassImunne),
     );
 
     return newUnit;

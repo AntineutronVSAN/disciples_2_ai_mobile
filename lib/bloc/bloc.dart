@@ -233,16 +233,16 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       index++;
     }*/
 
-    final List<String> unitsNames = UnitsPack.packs[3];
+    final List<String> unitsNames = UnitsPack.packs[9];
     //final List<String> unitsNames = UnitsPack.tournaments[9];
     var index = 0;
     for(var name in unitsNames) {
       //_units[index] = repository.getCopyUnitByName(name);
-
-      /*putUnitTo(
+      _units[index] = GameRepositoryBase.globalEmptyUnit;
+      putUnitTo(
           units: _units,
           unit: repository.getCopyUnitByName(name),
-          to: index, emptyUnit: GameRepositoryBase.globalEmptyUnit);*/
+          to: index, emptyUnit: GameRepositoryBase.globalEmptyUnit);
 
       //unitUpgradeController.setLevel(3, index, _units);
       index++;

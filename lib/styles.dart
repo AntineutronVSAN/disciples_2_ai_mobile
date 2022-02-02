@@ -5,6 +5,13 @@ const double unitDescriptionParamsFontSize = 15.0;
 
 class GameStyles {
 
+  static TextStyle informationWhiteStyle() {
+    return const TextStyle(
+        fontSize: 12.0,
+        color: Colors.white,
+        );
+  }
+
   static TextStyle getUnitShortDescriptionStyle() {
     return const TextStyle(
         fontSize: 12.0,

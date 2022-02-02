@@ -9,7 +9,7 @@ abstract class GameRepositoryBase {
   static Unit globalEmptyUnit = Unit.emptyFroRepo();
 
   List<Unit> getAllUnits();
-  Unit getTransformUnitByAttackId(String attckId, {bool isBig=false});
+  Unit? getTransformUnitByAttackId(String attckId, {bool isBig=false});
 
   void init();
   Unit getRandomUnit({RandomUnitOptions? options});

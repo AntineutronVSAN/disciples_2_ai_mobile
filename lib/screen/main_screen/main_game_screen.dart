@@ -169,11 +169,11 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
                       //_getTeamItems(topTeam: false),
                     ],
                   ),
-                  Positioned.fill(
+                  /*Positioned.fill(
                       child: Align(
                           alignment: Alignment.centerRight,
                           //child: _getRatingWidget(bloc.state.positionRating))),
-                        child: RatingWidget(currentPositionRating: bloc.state.positionRating,))),
+                        child: RatingWidget(currentPositionRating: bloc.state.positionRating,))),*/
                 ],
               ),
             ],

@@ -1,5 +1,6 @@
 
 
+import 'package:d2_ai_v2/controllers/attack_controller/attack_controller.dart';
 import 'package:d2_ai_v2/controllers/game_controller/actions.dart';
 import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/utils/cell_utils.dart';
@@ -42,6 +43,15 @@ class ActionsOrderController {
     required int current,
   }) {
     final result = <RequestAction>[];
+
+    if (!AttackController.attackSupported(units[current].unitAttack)) {
+      // Если атака не поддерживается, то только защита
+      result.add(RequestAction(
+          type: ActionType.protect,
+          targetCellIndex: null,
+          currentCellIndex: null));
+      return result;
+    }
 
     /*
 
