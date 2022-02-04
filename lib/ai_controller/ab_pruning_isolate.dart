@@ -2,6 +2,7 @@ import 'dart:isolate';
 import 'dart:math';
 
 import 'package:d2_ai_v2/controllers/attack_controller/attack_controller.dart';
+import 'package:d2_ai_v2/controllers/evaluation/evaluation_controleer_base.dart';
 import 'package:d2_ai_v2/controllers/evaluation/evaluation_controller.dart';
 import 'package:d2_ai_v2/controllers/game_controller/actions.dart';
 import 'package:d2_ai_v2/controllers/game_controller/game_controller.dart';
@@ -14,7 +15,7 @@ import 'ab_prunning_actions_order_controller.dart';
 class ABPruningIsolate {
 
   static final actionsOrderController = ActionsOrderController(); // TODO DI
-  static final evaluationController = EvaluationController(); // tood DI
+  static final EvaluationController evaluationController = EvaluationController(); // tood DI
 
   static int nodesCount = 0;
 

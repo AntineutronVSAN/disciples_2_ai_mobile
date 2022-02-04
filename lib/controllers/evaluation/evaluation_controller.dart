@@ -2,7 +2,10 @@
 
 import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
+import 'package:d2_ai_v2/optim_algorythm/base.dart';
 import 'package:d2_ai_v2/utils/cell_utils.dart';
+
+import 'evaluation_controleer_base.dart';
 
 /*
 
@@ -42,7 +45,7 @@ class EvaluationController {
   }
 
   void initEvaluationOffset(List<Unit> units) {
-    var sfr = 0.0;
+    /*var sfr = 0.0;
     double aiTeamEval = 0.0;
     double enemyTeamEval = 0.0;
     List<GameEvaluation> evaluations = [];
@@ -69,12 +72,16 @@ class EvaluationController {
     //sfr -= enemyTeamEval*0.2;
 
     _evaluationOffset = aiTeamEval - enemyTeamEval*0.2;
-    print('INITIAL OFFSET = $_evaluationOffset');
+    print('INITIAL OFFSET = $_evaluationOffset');*/
   }
 
   double getEvaluation({
     required List<Unit> units,
+    AiAlgorithm? algorithm,
   }) {
+
+
+
     var sfr = 0.0;
     double aiTeamEval = 0.0;
     double enemyTeamEval = 0.0;
@@ -98,11 +105,25 @@ class EvaluationController {
       evaluations.add(newEval);
       index++;
     }
-    sfr += aiTeamEval*0.2;
+
+    //teamContextEval(evals: evaluations, units: units);
+
+    sfr += aiTeamEval*0.5;//*0.2;
     sfr -= enemyTeamEval;
-    //sfr -= _evaluationOffset;
+
     return sfr;
   }
+
+  /// Оцнека юнитов в контексте команд
+  void teamContextEval({required List<GameEvaluation> evals, required List<Unit> units}) {
+
+    /// ------------------ Оценка заднего ряда выше, если передний ряд
+    /// сможет прожить больше одного хода
+    //var
+
+
+  }
+
 
   /// Получить ценность юнита с учётом атак
   void getUnitEvaluation(Unit u, GameEvaluation eval) {
@@ -121,10 +142,10 @@ class EvaluationController {
       return;
     }
 
-    var canMove = true;
+    /*var canMove = true;
     if (u.paralyzed || u.petrified) {
-      //canMove = false; //TODO
-    }
+      canMove = false; //TODO
+    }*/
 
     var onlyUnitEval = _onlyUnitEval(u) * unitParamsCoeff;
     //print('Оценка юнита - $onlyUnitEval');
@@ -140,11 +161,12 @@ class EvaluationController {
     //print('Оценка атаки с коэффициентами $unitAtcksEval');
     //print('Оценка юнита ${u.unitName} результат - $value');
 
-    eval.attacksEval = canMove ? unitAtcksEval : 0.0;
+    //eval.attacksEval = canMove ? unitAtcksEval : 0.0;
+    eval.attacksEval = unitAtcksEval;
     eval.onlyUnitEval = onlyUnitEval * (u.currentHp / u.unitConstParams.maxHp);
 
     // TODO
-    eval.attacksEval *= (u.unitConstParams.maxHp * 0.005);
+    //eval.attacksEval *= (u.unitConstParams.maxHp * 0.005);
 
     return;
 
@@ -634,8 +656,15 @@ class EvaluationController {
 }
 
 class GameEvaluation {
+  /// Оценка юнита в лоб
   double onlyUnitEval = 0.0;
+  /// Оценка атаки в лоб
   double attacksEval = 0.0;
+
+  /// Полная оценка юнита в контексте своей команды
+  double ourTeamContextEval = 0.0;
+  /// Полная оценка юнита в контексте чужой команды
+  double enemyTeamContextEval = 0.0;
 
   double getEval() {
     return onlyUnitEval + attacksEval;

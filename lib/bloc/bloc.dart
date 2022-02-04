@@ -238,11 +238,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     var index = 0;
     for(var name in unitsNames) {
       //_units[index] = repository.getCopyUnitByName(name);
-      _units[index] = GameRepositoryBase.globalEmptyUnit;
+      /*_units[index] = GameRepositoryBase.globalEmptyUnit;
       putUnitTo(
           units: _units,
           unit: repository.getCopyUnitByName(name),
-          to: index, emptyUnit: GameRepositoryBase.globalEmptyUnit);
+          to: index, emptyUnit: GameRepositoryBase.globalEmptyUnit);*/
 
       //unitUpgradeController.setLevel(3, index, _units);
       index++;

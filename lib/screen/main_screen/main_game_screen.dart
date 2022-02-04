@@ -28,7 +28,7 @@ import 'components/ai_moving_widget.dart';
 import 'components/rating_widget.dart';
 import 'components/team_widget.dart';
 
-const int treeDepth = 8;
+const int treeDepth = 7;
 
 class MainGameScreen extends StatelessWidget {
   const MainGameScreen({Key? key}) : super(key: key);
