@@ -2,7 +2,7 @@ import 'package:d2_ai_v2/models/unit.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:d2_ai_v2/services/firebase_options.dart';
 
 class FirebaseServices {
@@ -14,6 +14,13 @@ class FirebaseServices {
 
 }
 
+class FireBaseCrashAnalytics {
+
+  static Future<void> init() async {
+
+  }
+
+}
 
 class FireBaseAnalytics {
 
@@ -34,6 +41,9 @@ class FireBaseAnalytics {
   }
 
   static void onBattleStartedEvent({required List<Unit> units, required bool isPvE}) async {
+
+    //FirebaseCrashlytics.instance.crash();
+
     final String battleType = isPvE ? 'PvE' : 'PvP';
     await FirebaseAnalytics.instance
         .logEvent(
