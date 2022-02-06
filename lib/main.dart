@@ -1,27 +1,16 @@
-import 'package:d2_ai_v2/ai_controller/ai_contoller.dart';
-import 'package:d2_ai_v2/ai_controller/ai_controller_ab_pruning.dart';
-import 'package:d2_ai_v2/bloc/bloc.dart';
-import 'package:d2_ai_v2/controllers/attack_controller/attack_controller.dart';
-import 'package:d2_ai_v2/controllers/damage_scatter.dart';
-import 'package:d2_ai_v2/controllers/duration_controller.dart';
-import 'package:d2_ai_v2/controllers/power_controller.dart';
-import 'package:d2_ai_v2/models/providers.dart';
-import 'package:d2_ai_v2/repositories/game_repository.dart';
-import 'package:d2_ai_v2/run_genetic_algorithm.dart';
 import 'package:d2_ai_v2/screen/main_screen/main_game_screen.dart';
+import 'package:d2_ai_v2/services/firebase.dart';
 import 'package:d2_ai_v2/styles.dart';
-import 'package:d2_ai_v2/utils/math_utils.dart';
 import 'package:d2_ai_v2/utils/svg_picture.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'bloc/events.dart';
-import 'bloc/states.dart';
-
-import 'controllers/game_controller/game_controller.dart';
-import 'controllers/initiative_shuffler.dart';
 
 void main() async {
+
+  await FirebaseServices.initFirebaseApp();
+  await FireBaseAnalytics.init();
+  FireBaseAnalytics.registerTestEvent();
+
   runApp(const D2AiApp());
 }
 

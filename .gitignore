@@ -50,3 +50,7 @@ app.*.map.json
 
 # Android signing
 key.properties
+
+# Other
+node_modules
+google-services.json

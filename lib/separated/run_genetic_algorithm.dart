@@ -9,18 +9,18 @@ import 'package:d2_ai_v2/repositories/game_repository.dart';
 import 'package:d2_ai_v2/repositories/game_repository_base.dart';
 import 'package:d2_ai_v2/units_pack.dart';
 import 'package:d2_ai_v2/utils/math_utils.dart';
-import 'const.dart';
-import 'controllers/attack_controller/attack_controller.dart';
-import 'controllers/damage_scatter.dart';
-import 'controllers/duration_controller.dart';
-import 'controllers/game_controller/game_controller.dart';
-import 'controllers/imunne_controller.dart';
-import 'controllers/initiative_shuffler.dart';
-import 'controllers/power_controller.dart';
-import 'models/g_immu/g_immu_provider.dart';
-import 'models/g_immu_c/g_immu_c_provider.dart';
-import 'models/unit.dart';
-import 'optim_algorythm/genetic_controller.dart';
+import '../const.dart';
+import '../controllers/attack_controller/attack_controller.dart';
+import '../controllers/damage_scatter.dart';
+import '../controllers/duration_controller.dart';
+import '../controllers/game_controller/game_controller.dart';
+import '../controllers/imunne_controller.dart';
+import '../controllers/initiative_shuffler.dart';
+import '../controllers/power_controller.dart';
+import '../models/g_immu/g_immu_provider.dart';
+import '../models/g_immu_c/g_immu_c_provider.dart';
+import '../models/unit.dart';
+import '../optim_algorythm/genetic_controller.dart';
 
 /*
 

@@ -8,6 +8,7 @@ import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
 import 'package:d2_ai_v2/repositories/game_repository_base.dart';
+import 'package:d2_ai_v2/services/firebase.dart';
 import 'package:d2_ai_v2/update_state_context/update_state_context.dart';
 import 'package:d2_ai_v2/update_state_context/update_state_context_base.dart';
 import 'package:d2_ai_v2/utils/cell_utils.dart';
@@ -395,6 +396,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
     assert(currentActiveCell != null);
 
+    FireBaseAnalytics.onBattleStartedEvent(units: _warUnitsCopies, isPvE: false);
+
     emit(state.copyWith(
       warScreenState: WarScreenState.pvp,
       //units: List.generate(_warUnitsCopies.length, (index) => _warUnitsCopies[index].copyWith()),
@@ -457,6 +460,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       individIndex: 0,
     );*/
 
+
+    FireBaseAnalytics.onBattleStartedEvent(units: _warUnitsCopies, isPvE: true);
 
     emit(state.copyWith(
       warScreenState: WarScreenState.pve,
