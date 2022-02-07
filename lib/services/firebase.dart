@@ -2,7 +2,6 @@ import 'package:d2_ai_v2/models/unit.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:d2_ai_v2/services/firebase_options.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
@@ -27,29 +26,10 @@ class FirebasePushHelper {
 
   static late final String? token;
 
-  static const String tkn = 'dLuhhu_eTzCBJwclYWGvu9:APA91bFPHyQnH-Og6JTcRneUyVXzYQVuK9zAmXrMAe3C_twUFAYVmKnDErFoEEAQPpaaKE7XbailfhMsi4SZHyArIbtviNcRVIn4_il3vW1tMYDcF2qE4ayu4Aid5f55zXHVQS1MVSxM';
-
   static Future<void> init() async {
     token = await FirebaseMessaging.instance.getToken();
-
-    print(tkn);
-
-    /*FirebaseMessaging.onMessage.listen((event) {
-      print('------------------------');
-      print(event);
-      print('------------------------');
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((event) {
-      print('------------------------');
-      print(event);
-      print('------------------------');
-    });*/
-
+    print(token);
   }
-
-
-
 }
 
 class FireBaseAnalytics {
