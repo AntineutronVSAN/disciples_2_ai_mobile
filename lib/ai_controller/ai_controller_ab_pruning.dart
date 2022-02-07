@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:collection/src/iterable_extensions.dart';
@@ -37,8 +38,15 @@ class AlphaBetaPruningController extends AiControllerBase {
   Future<List<RequestAction>> getAction(int currentActiveUnitCellIndex,
       {GameController? gameController,
       UpdateStateContextBase? updateStateContext}) async {
+
+    if (!AttackController.attackSupported(gameController!.units[currentActiveUnitCellIndex].unitAttack)) {
+      return [
+        RequestAction(type: ActionType.protect, targetCellIndex: null, currentCellIndex: null)
+      ];
+    }
+
     final result = await abPruningIsolate.abPruningBackground(
-        controllerSnapshot: gameController!.getSnapshot(),
+        controllerSnapshot: gameController.getSnapshot(),
         treeDepth: treeDepth,
         onPosEval: (val) async {
           if (updateStateContext != null) {
@@ -56,7 +64,7 @@ class AlphaBetaPruningController extends AiControllerBase {
 
   @override
   void init(List<Unit> units, {required AiAlgorithm algorithm}) {
-    // TODO: implement init
+
   }
 
   @override
@@ -70,6 +78,12 @@ class AlphaBetaPruningController extends AiControllerBase {
   @override
   void initFromIndivid(List<Unit> units, IndividualBase ind) {
     // TODO: implement initFromIndivid
+  }
+
+  @override
+  void initEvalOffsets(List<Unit> units) {
+    print('INIT AI CONTROLLER');
+    ABPruningIsolate.evaluationController.initEvaluationOffset(units);
   }
 }
 

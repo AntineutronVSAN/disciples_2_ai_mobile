@@ -4,7 +4,12 @@ import 'package:d2_ai_v2/update_state_context/update_state_context_base.dart';
 
 /// Объект запроса действия к игровому контроллеру
 /// Не допускается добавление ссылочных полей! Т.к. может сломаться
-/// АБ алгоритм
+/// АБ алгоритм TODO fix
+/// [currentCellIndex] - Текущая активная ячейка в игре
+/// [targetCellIndex] - На какую ячейку совершено действие
+/// [context] - Контекст для обнорвления UI
+/// [positionRating] - Текущая оценка позиции
+/// [type] - Тип совершаемого действия
 class RequestAction {
   final int? currentCellIndex;
   final int? targetCellIndex;
@@ -79,6 +84,13 @@ class RequestAction {
 
 enum ActionType { click, wait, protect, retreat, startGame, endGame }
 
+/// Класс - ответ на какое либо действие. К примеру его используют
+/// GameController и AttackController
+/// [message] - Сообщение с ошибкой
+/// [success] - Успешное ли действие
+/// [activeCell] - Опционально, текущая активная ячейка
+/// [endGame] - Сейчас конец игры?
+/// [roundNumber] - Опционально, номер текущего раунда
 class ResponseAction {
   final String message;
   final bool success;

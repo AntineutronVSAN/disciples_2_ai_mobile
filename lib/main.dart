@@ -1,28 +1,36 @@
-import 'package:d2_ai_v2/ai_controller/ai_contoller.dart';
-import 'package:d2_ai_v2/ai_controller/ai_controller_ab_pruning.dart';
-import 'package:d2_ai_v2/bloc/bloc.dart';
-import 'package:d2_ai_v2/controllers/attack_controller/attack_controller.dart';
-import 'package:d2_ai_v2/controllers/damage_scatter.dart';
-import 'package:d2_ai_v2/controllers/duration_controller.dart';
-import 'package:d2_ai_v2/controllers/power_controller.dart';
-import 'package:d2_ai_v2/models/providers.dart';
-import 'package:d2_ai_v2/repositories/game_repository.dart';
-import 'package:d2_ai_v2/run_genetic_algorithm.dart';
 import 'package:d2_ai_v2/screen/main_screen/main_game_screen.dart';
+import 'package:d2_ai_v2/services/firebase.dart';
+import 'package:d2_ai_v2/services/notification_delegate.dart';
+import 'package:d2_ai_v2/services/push_delegate.dart';
 import 'package:d2_ai_v2/styles.dart';
-import 'package:d2_ai_v2/utils/math_utils.dart';
 import 'package:d2_ai_v2/utils/svg_picture.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'bloc/events.dart';
-import 'bloc/states.dart';
-
-import 'controllers/game_controller/game_controller.dart';
-import 'controllers/initiative_shuffler.dart';
 
 void main() async {
+
+  await FirebaseServices.initFirebaseApp();
+  await FireBaseAnalytics.init();
+  FireBaseAnalytics.registerTestEvent();
+
+  //await FirebasePushHelper.init();
+  final pushDelegate = await initializePush();
   runApp(const D2AiApp());
+}
+
+
+Future<PushDelegate> initializePush() async {
+
+  FirebasePushHelper.init();
+
+  final notificationDelegate = NotificationDelegate();
+  await notificationDelegate.init();
+
+  final pushDelegate = PushDelegate(notificationDelegate: notificationDelegate);
+  await pushDelegate.init();
+
+  return pushDelegate;
 }
 
 class D2AiApp extends StatelessWidget {
@@ -56,6 +64,14 @@ class _D2AiAppBodyState extends State<D2AiAppBody> {
 
   @override
   void initState() {
+
+    FirebaseMessaging.onMessage.listen((event) {
+      print(event);
+    });
+    FirebaseMessaging.onMessageOpenedApp.listen((event) {
+      print(event);
+    });
+
     mainGamePage = Container(
       color: Colors.black,
       child: MainGameScreen()
@@ -109,7 +125,7 @@ class _D2AiAppBodyState extends State<D2AiAppBody> {
 
   void onTapHandler(int index)  {
     setState(() {
-      selectedIndex = index;
+      selectedIndex = 0;
     });
   }
 

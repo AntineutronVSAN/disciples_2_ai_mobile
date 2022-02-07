@@ -2,6 +2,7 @@ import 'dart:isolate';
 import 'dart:math';
 
 import 'package:d2_ai_v2/controllers/attack_controller/attack_controller.dart';
+import 'package:d2_ai_v2/controllers/evaluation/evaluation_controleer_base.dart';
 import 'package:d2_ai_v2/controllers/evaluation/evaluation_controller.dart';
 import 'package:d2_ai_v2/controllers/game_controller/actions.dart';
 import 'package:d2_ai_v2/controllers/game_controller/game_controller.dart';
@@ -14,7 +15,7 @@ import 'ab_prunning_actions_order_controller.dart';
 class ABPruningIsolate {
 
   static final actionsOrderController = ActionsOrderController(); // TODO DI
-  static final evaluationController = EvaluationController(); // tood DI
+  static final EvaluationController evaluationController = EvaluationController(); // tood DI
 
   static int nodesCount = 0;
 
@@ -127,6 +128,7 @@ class ABPruningIsolate {
     currentSnapshot.rollConfig.topTeamMaxPower = true;
     currentSnapshot.rollConfig.topTeamMaxDamage = false;
 
+
     //currentSnapshot.rollMaxRandomParamsBotTeam = true;
 
     // Контекст обхода дерева
@@ -176,7 +178,7 @@ class ABPruningIsolate {
     final isMin = !isMax;
 
     bool currentUnitAllTargets = currentSnapshot
-        .units[currentActiveUnitCellIndex].unitAttack.targetsCount ==
+        .units[currentActiveUnitCellIndex].unitAttack.attackConstParams.targetsCount ==
         TargetsCount.all;
     bool currentUnitClicked = false;
 
@@ -314,6 +316,7 @@ class ABPruningIsolate {
     bool currentUnitAllTargets = currentSnapshot
         .units[newActiveCellIndex]
         .unitAttack
+        .attackConstParams
         .targetsCount == TargetsCount.all;
     bool currentUnitClicked = false;
 
@@ -416,32 +419,7 @@ class ABPruningIsolate {
 
   }
   static double _calculateFitness(List<Unit> units) {
-    var sfr = 0.0;
-    double aiTeamEval = 0.0;
-    double enemyTeamEval = 0.0;
-    List<GameEvaluation> evaluations = [];
-    var index=0;
-    for (var u in units) {
-      final newEval = GameEvaluation();
-      if (checkIsTopTeam(index)) {
-        // Свои
-        //final currentUnitEval = evaluationController.getUnitEvaluation(u);
-        //aiTeamEval += currentUnitEval.getEval();
-        evaluationController.getUnitEvaluation(u, newEval);
-        aiTeamEval += newEval.getEval();
-      } else {
-        // Враги
-        //final currentUnitEval = evaluationController.getUnitEvaluation(u);
-        //enemyTeamEval += currentUnitEval.getEval();
-        evaluationController.getUnitEvaluation(u, newEval);
-        enemyTeamEval += newEval.getEval();
-      }
-      evaluations.add(newEval);
-      index++;
-    }
-    sfr += aiTeamEval;
-    sfr -= enemyTeamEval;
-    return sfr;
+    return evaluationController.getEvaluation(units: units);
   }
 
 

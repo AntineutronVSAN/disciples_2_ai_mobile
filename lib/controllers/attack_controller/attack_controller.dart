@@ -7,7 +7,7 @@ import 'package:d2_ai_v2/controllers/game_controller/roll_config.dart';
 import 'package:d2_ai_v2/controllers/power_controller.dart';
 import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
-import 'package:d2_ai_v2/repositories/game_repository.dart';
+import 'package:d2_ai_v2/repositories/game_repository_base.dart';
 import 'package:d2_ai_v2/update_state_context/update_state_context_base.dart';
 import 'package:d2_ai_v2/utils/cell_utils.dart';
 
@@ -19,7 +19,7 @@ import 'attack_context.dart';
 class AttackController {
   final PowerController powerController;
   final DamageScatter damageScatter;
-  final GameRepository gameRepository;
+  final GameRepositoryBase gameRepository;
   final AttackDurationController attackDurationController;
   final ImmuneController immuneController;
 
@@ -159,7 +159,7 @@ class AttackController {
   Future<ResponseAction> _handleAttack(AttackContext context) async {
     final currentUnitAttack = context.units[context.current].unitAttack;
 
-    switch (currentUnitAttack.attackClass) {
+    switch (currentUnitAttack.attackConstParams.attackClass) {
       case AttackClass.L_DAMAGE:
         return await _handleDamage(context);
       case AttackClass.L_DRAIN:
@@ -229,11 +229,13 @@ class AttackController {
     final result = immuneController.canApplyAttack(
         units: units, target: target, currentAttack: attack);
     if (result == 1) {
-      units[target] = units[target].copyWith(uiInfo: 'Щит');
+      //units[target] = units[target].copyWith(uiInfo: 'Щит');
+      units[target].uiInfo = 'Щит';
       await onUpdate();
       return ResponseAction.success();
     } else if (result == 2) {
-      units[target] = units[target].copyWith(uiInfo: 'Иммунитет');
+      //units[target] = units[target].copyWith(uiInfo: 'Иммунитет');
+      units[target].uiInfo = 'Иммунитет';
       await onUpdate();
       return ResponseAction.success();
     }
@@ -255,11 +257,13 @@ class AttackController {
         final result = immuneController.canApplyAttack(
             units: units, target: target, currentAttack: attack2);
         if (result == 1) {
-          units[target] = units[target].copyWith(uiInfo: 'Щит');
+          //units[target] = units[target].copyWith(uiInfo: 'Щит');
+          units[target].uiInfo = 'Щит';
           await onUpdate();
           return ResponseAction.success();
         } else if (result == 2) {
-          units[target] = units[target].copyWith(uiInfo: 'Иммунитет');
+          //units[target] = units[target].copyWith(uiInfo: 'Иммунитет');
+          units[target].uiInfo = 'Иммунитет';
           await onUpdate();
           return ResponseAction.success();
         }
@@ -275,7 +279,8 @@ class AttackController {
       }
     } else {
       //print('Атака 1 промах!');
-      units[target] = units[target].copyWith(uiInfo: 'Промах');
+      //units[target] = units[target].copyWith(uiInfo: 'Промах');
+      units[target].uiInfo = 'Промах';
       await onUpdate();
     }
 
@@ -293,7 +298,7 @@ class AttackController {
       return ResponseAction.error('Невозможно атаковать пустого');
     }
 
-    switch (currentUnitAttack.targetsCount) {
+    switch (currentUnitAttack.attackConstParams.targetsCount) {
       case TargetsCount.one:
         return await _handleOneTargetDamage(context);
       case TargetsCount.all:
@@ -324,8 +329,8 @@ class AttackController {
         botFrontEmpty: context.botFrontLineEmpty,
         currentRecursionLevel: 0);
     if (!canAttack) {
-      return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может атаковать юнита ${targetUnit.unitName}');
+      return ResponseAction.error( // .unitConstParams
+          'Юнит ${currentUnit.unitConstParams.unitName} не может атаковать юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     return await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -386,7 +391,7 @@ class AttackController {
     }
     // Хилы могут воскрешать
     // todo Нв второй атаке, когда все фуловые, невозможнол ничего сделать
-    if (currentUnit.unitAttack2?.attackClass == AttackClass.L_REVIVE) {
+    if (currentUnit.unitAttack2?.attackConstParams.attackClass == AttackClass.L_REVIVE) {
       if (targetUnit.revived) {
         if (targetUnit.currentHp <= 0) {
           return ResponseAction.error('Нельзя воскрешать уже воскрешённого');
@@ -405,7 +410,7 @@ class AttackController {
     if (targetUnit.isEmpty()) {
       return ResponseAction.error('Хил не может лечить пустого');
     }
-    if (targetUnit.currentHp >= targetUnit.maxHp) {
+    if (targetUnit.currentHp >= targetUnit.unitConstParams.maxHp) {
       return ResponseAction.error('Хил не может лечить здорового');
     }
     // todo Тут надо подумать, как сделать. Защититься после первой атаки
@@ -414,7 +419,7 @@ class AttackController {
       return ResponseAction.error('Хил не может лечить. Юнит фуловый');
     }*/
 
-    switch (currentUnitAttack.targetsCount) {
+    switch (currentUnitAttack.attackConstParams.targetsCount) {
       case TargetsCount.one:
         throw Exception();
       case TargetsCount.all:
@@ -437,7 +442,7 @@ class AttackController {
       if (i >= i1 && i <= i2) {
         if (context.units[i].isEmpty() ||
             (context.units[i].isDead &&
-                !(currentUnit.unitAttack2?.attackClass ==
+                !(currentUnit.unitAttack2?.attackConstParams.attackClass ==
                     AttackClass.L_REVIVE))) {
           continue;
         }
@@ -476,7 +481,7 @@ class AttackController {
           'Невозможное действие над мёртвым/пустым юнитом');
     }
 
-    switch (currentUnitAttack.targetsCount) {
+    switch (currentUnitAttack.attackConstParams.targetsCount) {
       case TargetsCount.one:
         return await _handleOneTargetDrain(context);
 
@@ -505,7 +510,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может атаковать юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может атаковать юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -563,7 +568,7 @@ class AttackController {
         targetUnitAttacks[AttackClass.L_PETRIFY] != null) {
       return ResponseAction.error('Цель уже окаменена/парализована');
     }
-    switch (currentUnitAttack.targetsCount) {
+    switch (currentUnitAttack.attackConstParams.targetsCount) {
       case TargetsCount.one:
         return await _handleOneTargetParalyze(context);
 
@@ -592,7 +597,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может парализовать юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может парализовать юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -649,7 +654,7 @@ class AttackController {
       return ResponseAction.error(
           'Юнит уже отступает');
     }
-    switch (currentUnitAttack.targetsCount) {
+    switch (currentUnitAttack.attackConstParams.targetsCount) {
       case TargetsCount.one:
         return await _handleOneTargetFear(context);
 
@@ -678,7 +683,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может парализовать юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может парализовать юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -731,7 +736,7 @@ class AttackController {
       return ResponseAction.error(
           'Невозможное действие над мёртвым/пустым юнитом');
     }
-    switch (currentUnitAttack.targetsCount) {
+    switch (currentUnitAttack.attackConstParams.targetsCount) {
       case TargetsCount.one:
         return await _handleOneTargetPoison(context);
 
@@ -760,7 +765,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может парализовать юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может парализовать юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -813,7 +818,7 @@ class AttackController {
       return ResponseAction.error(
           'Невозможное действие над мёртвым/пустым юнитом');
     }
-    switch (currentUnitAttack.targetsCount) {
+    switch (currentUnitAttack.attackConstParams.targetsCount) {
       case TargetsCount.one:
         return await _handleOneTargetBlister(context);
 
@@ -842,7 +847,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может обжеч юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может обжеч юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -895,7 +900,7 @@ class AttackController {
       return ResponseAction.error(
           'Невозможное действие над мёртвым/пустым юнитом');
     }
-    switch (currentUnitAttack.targetsCount) {
+    switch (currentUnitAttack.attackConstParams.targetsCount) {
       case TargetsCount.one:
         return await _handleOneTargetFrostbite(context);
 
@@ -925,7 +930,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может заморозить юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может заморозить юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -980,7 +985,7 @@ class AttackController {
       return ResponseAction.error(
           'Невозможное действие над мёртвым/пустым юнитом');
     }
-    switch (currentUnitAttack.targetsCount) {
+    switch (currentUnitAttack.attackConstParams.targetsCount) {
       case TargetsCount.one:
         throw Exception();
 
@@ -1009,7 +1014,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может заморозить юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может заморозить юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -1062,7 +1067,7 @@ class AttackController {
       return ResponseAction.error(
           'Невозможное действие над мёртвым/пустым юнитом');
     }
-    switch (currentUnitAttack.targetsCount) {
+    switch (currentUnitAttack.attackConstParams.targetsCount) {
       case TargetsCount.one:
         return await _handleOneTargetLowerDamage(context);
 
@@ -1092,7 +1097,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может заморозить юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может заморозить юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -1147,7 +1152,7 @@ class AttackController {
       return ResponseAction.error(
           'Невозможное действие над мёртвым/пустым юнитом');
     }
-    switch (currentUnitAttack.targetsCount) {
+    switch (currentUnitAttack.attackConstParams.targetsCount) {
       case TargetsCount.one:
         return await _handleOneTargetShatter(context);
 
@@ -1176,7 +1181,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может заморозить юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может заморозить юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -1232,7 +1237,7 @@ class AttackController {
     if (targetUnit.isEmpty()) {
       return ResponseAction.error('Невозможное действие над мёртвым юнитом');
     }
-    switch (currentUnitAttack.targetsCount) {
+    switch (currentUnitAttack.attackConstParams.targetsCount) {
       case TargetsCount.one:
         throw Exception();
 
@@ -1294,7 +1299,7 @@ class AttackController {
         targetUnitAttacks[AttackClass.L_PETRIFY] != null) {
       return ResponseAction.error('Цель уже окаменена/парализована');
     }
-    switch (currentUnitAttack.targetsCount) {
+    switch (currentUnitAttack.attackConstParams.targetsCount) {
       case TargetsCount.one:
         return await _handleOneTargetPetrify(context);
 
@@ -1323,7 +1328,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может парализовать юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может парализовать юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -1381,7 +1386,7 @@ class AttackController {
     if (targetUnitAttacks[AttackClass.L_LOWER_INITIATIVE] != null) {
       return ResponseAction.error('У цели уже снижена инициатива');
     }
-    switch (currentUnitAttack.targetsCount) {
+    switch (currentUnitAttack.attackConstParams.targetsCount) {
       case TargetsCount.one:
         return await _handleOneTargetLowerIni(context);
 
@@ -1410,7 +1415,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может заморозить юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может заморозить юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -1468,7 +1473,7 @@ class AttackController {
     if (targetUnitAttacks[AttackClass.L_GIVE_ATTACK] != null) {
       return ResponseAction.error('У цели уже повышен урон');
     }
-    switch (currentUnitAttack.targetsCount) {
+    switch (currentUnitAttack.attackConstParams.targetsCount) {
       case TargetsCount.one:
         return await _handleOneTargetGiveAttack(context);
 
@@ -1498,7 +1503,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может заморозить юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может заморозить юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -1542,7 +1547,7 @@ class AttackController {
 
   Future<ResponseAction> _handleBustDamage(AttackContext context) async {
     final currentUnitAttack = context.units[context.current].unitAttack;
-    final currentUnit = context.units[context.current];
+    //final currentUnit = context.units[context.current];
     final targetUnit = context.units[context.target];
     final currentUnitIsTopTeam = checkIsTopTeam(context.current);
     final targetUnitIsTopTeam = checkIsTopTeam(context.target);
@@ -1558,11 +1563,17 @@ class AttackController {
       return ResponseAction.error(
           'Невозможное действие над мёртвым/пустым юнитом');
     }
+    // Давать атаку можно только дамагерам
+    if (targetUnit.unitAttack.attackConstParams.attackClass != AttackClass.L_DAMAGE) {
+      return ResponseAction.error(
+          'Нельзя повышать урон не дамагерам');
+    }
+
     final targetUnitAttacks = targetUnit.attacksMap;
     if (targetUnitAttacks[AttackClass.L_BOOST_DAMAGE] != null) {
       return ResponseAction.error('У цели уже повышен урон');
     }
-    switch (currentUnitAttack.targetsCount) {
+    switch (currentUnitAttack.attackConstParams.targetsCount) {
       case TargetsCount.one:
         return await _handleOneTargetBustDamage(context);
 
@@ -1579,7 +1590,7 @@ class AttackController {
     final currentUnit = context.units[context.current];
     final targetUnit = context.units[context.target];
     final currentUnitIsTopTeam = checkIsTopTeam(context.current);
-    final targetUnitIsTopTeam = checkIsTopTeam(context.target);
+    //final targetUnitIsTopTeam = checkIsTopTeam(context.target);
 
     final canAttack = findNearestTarget(
         unit: currentUnit,
@@ -1592,7 +1603,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может заморозить юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может заморозить юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -1604,7 +1615,7 @@ class AttackController {
   Future<ResponseAction> _handleAllTargetBustDamage(
       AttackContext context) async {
     final currentUnit = context.units[context.current];
-    final currentUnitIsTopTeam = checkIsTopTeam(context.current);
+    //final currentUnitIsTopTeam = checkIsTopTeam(context.current);
     final targetUnitIsTopTeam = checkIsTopTeam(context.target);
     var i1 = targetUnitIsTopTeam ? 0 : 6;
     var i2 = targetUnitIsTopTeam ? 5 : 11;
@@ -1636,7 +1647,7 @@ class AttackController {
 
   Future<ResponseAction> _handleDrainOverflow(AttackContext context) async {
     final currentUnitAttack = context.units[context.current].unitAttack;
-    final currentUnit = context.units[context.current];
+    //final currentUnit = context.units[context.current];
     final targetUnit = context.units[context.target];
     final currentUnitIsTopTeam = checkIsTopTeam(context.current);
     final targetUnitIsTopTeam = checkIsTopTeam(context.target);
@@ -1648,7 +1659,7 @@ class AttackController {
       return ResponseAction.error(
           'Невозможное действие над мёртвым/пустым юнитом');
     }
-    switch (currentUnitAttack.targetsCount) {
+    switch (currentUnitAttack.attackConstParams.targetsCount) {
       case TargetsCount.one:
         return await _handleOneTargetDrainOverflow(context);
 
@@ -1678,7 +1689,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может заморозить юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может заморозить юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -1737,7 +1748,7 @@ class AttackController {
     if (targetUnit.transformed) {
       return ResponseAction.error('Юнит уже превращён');
     }
-    switch (currentUnitAttack.targetsCount) {
+    switch (currentUnitAttack.attackConstParams.targetsCount) {
       case TargetsCount.one:
         return await _handleOneTargetTransformOther(context);
 
@@ -1767,7 +1778,7 @@ class AttackController {
         currentRecursionLevel: 0);
     if (!canAttack) {
       return ResponseAction.error(
-          'Юнит ${currentUnit.unitName} не может превратить юнита ${targetUnit.unitName}');
+          'Юнит ${currentUnit.unitConstParams.unitName} не может превратить юнита ${targetUnit.unitConstParams.unitName}');
     }
 
     final resp = await _applyAttacksToUnit(currentUnit.unitAttack,
@@ -1808,6 +1819,61 @@ class AttackController {
 
 
 
+  static bool attackSupported(UnitAttack attack) {
+
+    switch(attack.attackConstParams.attackClass) {
+
+      case AttackClass.L_DAMAGE:
+        return true;
+      case AttackClass.L_DRAIN:
+        return true;
+      case AttackClass.L_PARALYZE:
+        return true;
+      case AttackClass.L_HEAL:
+        return true;
+      case AttackClass.L_FEAR:
+        return true;
+      case AttackClass.L_BOOST_DAMAGE:
+        return true;
+      case AttackClass.L_PETRIFY:
+        return true;
+      case AttackClass.L_LOWER_DAMAGE:
+        return true;
+      case AttackClass.L_LOWER_INITIATIVE:
+        return true;
+      case AttackClass.L_POISON:
+        return true;
+      case AttackClass.L_FROSTBITE:
+        return true;
+      case AttackClass.L_REVIVE:
+        return true;
+      case AttackClass.L_DRAIN_OVERFLOW:
+        return true;
+      case AttackClass.L_CURE:
+        return true;
+      case AttackClass.L_SUMMON:
+        return false;
+      case AttackClass.L_DRAIN_LEVEL:
+        return false;
+      case AttackClass.L_GIVE_ATTACK:
+        return true;
+      case AttackClass.L_DOPPELGANGER:
+        return false;
+      case AttackClass.L_TRANSFORM_SELF:
+        return false;
+      case AttackClass.L_TRANSFORM_OTHER:
+        return true;
+      case AttackClass.L_BLISTER:
+        return true;
+      case AttackClass.L_BESTOW_WARDS:
+        return false;
+      case AttackClass.L_SHATTER:
+        return true;
+    }
+
+
+  }
+
   /// На какую команду может кликать юнит
   /// true - Может кликать на верхнюю команду
   static bool unitCanClickTop({
@@ -1815,8 +1881,6 @@ class AttackController {
     required int current,
     required int target,
   }) {
-
-    final currentUnit = units[current];
     final targetUnit = units[target];
 
     if (targetUnit.isEmpty()) {
@@ -1824,12 +1888,14 @@ class AttackController {
       return false;
     }
 
+    final currentUnit = units[current];
+
     bool currentIsTopTeam = checkIsTopTeam(current);
     bool targetIsTopTeam = checkIsTopTeam(target);
 
     bool result;
 
-    switch(currentUnit.unitAttack.attackClass) {
+    switch(currentUnit.unitAttack.attackConstParams.attackClass) {
 
       case AttackClass.L_DAMAGE:
         result = currentIsTopTeam != targetIsTopTeam;

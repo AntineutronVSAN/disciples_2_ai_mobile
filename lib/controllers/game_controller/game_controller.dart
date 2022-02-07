@@ -5,6 +5,7 @@ import 'package:d2_ai_v2/controllers/attack_controller/preprocessing_part/prepro
 import 'package:d2_ai_v2/controllers/game_controller/roll_config.dart';
 import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
+import 'package:d2_ai_v2/repositories/game_repository_base.dart';
 
 import '../attack_controller/attack_controller.dart';
 import '../initiative_shuffler.dart';
@@ -15,7 +16,7 @@ class GameController {
 
   AttackController attackController;
   InitiativeShuffler initiativeShuffler;
-  GameRepository gameRepository;
+  GameRepositoryBase gameRepository;
 
   RollConfig rollConfig = RollConfig(
       topTeamMaxPower: false,
@@ -84,18 +85,18 @@ class GameController {
     //snapshot.units = List.generate(12, (index) => Unit.empty());
 
     snapshot.units = [
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
-      GameRepository.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
+      GameRepositoryBase.globalEmptyUnit,
     ];
     int index=0;
 
@@ -105,9 +106,9 @@ class GameController {
       if (i.isNotEmpty()) {
         final currentSnapshotsUnit = i.deepCopy();
         snapshot.units[index] = currentSnapshotsUnit;
-        unitsRefIdMap[i.unitWarId] = currentSnapshotsUnit;
+        unitsRefIdMap[i.unitConstParams.unitWarId] = currentSnapshotsUnit; // .unitConstParams
       } else {
-        unitsRefIdMap[i.unitWarId] = GameRepository.globalEmptyUnit;
+        unitsRefIdMap[i.unitConstParams.unitWarId] = GameRepositoryBase.globalEmptyUnit;
       }
       index++;
     }
@@ -115,17 +116,17 @@ class GameController {
     snapshot.unitsRef = [];
     for(var i in unitsRef) {
       //List<Unit> u = [];
-      //u.add(unitsRefIdMap[i.unitWarId]!);
-      if (unitsRefIdMap[i.unitWarId] == null) {
+      //u.add(unitsRefIdMap[i.unitConstParams.unitWarId]!);
+      if (unitsRefIdMap[i.unitConstParams.unitWarId] == null) {
         print('asdfasdfasdfasdf');
       }
-      snapshot.unitsRef.add(unitsRefIdMap[i.unitWarId]!);
+      snapshot.unitsRef.add(unitsRefIdMap[i.unitConstParams.unitWarId]!);
     }
     /*for(var i in unitsRef) {
-      //final u = snapshot.units.where((element) => element.unitWarId == i.unitWarId).toList();
+      //final u = snapshot.units.where((element) => element.unitWarId == i.unitConstParams.unitWarId).toList();
       List<Unit> u = [];
       for (var j in snapshot.units) {
-        if (j.unitWarId == i.unitWarId) {
+        if (j.unitWarId == i.unitConstParams.unitWarId) {
           u.add(j);
         }
       }
@@ -137,18 +138,18 @@ class GameController {
     final newQueue = Queue<Unit>();
     for(var i in unitsQueue!) {
       //List<Unit> u = [];
-      //u.add(unitsRefIdMap[i.unitWarId]!);
-      if (unitsRefIdMap[i.unitWarId] == null) {
+      //u.add(unitsRefIdMap[i.unitConstParams.unitWarId]!);
+      if (unitsRefIdMap[i.unitConstParams.unitWarId] == null) {
         print('asdfasdfasdfasdf');
       }
-      newQueue.add(unitsRefIdMap[i.unitWarId]!);
+      newQueue.add(unitsRefIdMap[i.unitConstParams.unitWarId]!);
     }
     /*for(var i in unitsQueue!) {
-      //final u = snapshot.units.where((element) => element.unitWarId == i.unitWarId).toList();
+      //final u = snapshot.units.where((element) => element.unitWarId == i.unitConstParams.unitWarId).toList();
       //assert(u.length == 1);
       List<Unit> u = [];
       for(var j in snapshot.units) {
-        if (j.unitWarId == i.unitWarId) {
+        if (j.unitWarId == i.unitConstParams.unitWarId) {
           u.add(j);
         }
       }
@@ -199,7 +200,7 @@ class GameController {
       }
 
       unitsRef.add(unit);
-      unitPosition[unit.unitWarId] = index;
+      unitPosition[unit.unitConstParams.unitWarId] = index;
 
       index++;
     }
@@ -230,7 +231,7 @@ class GameController {
 
     final currentActiveUnit = unitsQueue!.removeFirst();
 
-    currentActiveCellIndex = unitPosition[currentActiveUnit.unitWarId];
+    currentActiveCellIndex = unitPosition[currentActiveUnit.unitConstParams.unitWarId];
 
     for (var i = 0; i < units.length; i++) {
       if (i == currentActiveCellIndex!) {
@@ -296,8 +297,8 @@ class GameController {
         return await _handleWait(action);
       case ActionType.protect:
         // Если юнит ждал, то ожидание снимается только после хода
-        units[currentActiveCellIndex!] =
-            units[currentActiveCellIndex!].copyWith(isWaiting: false);
+        //units[currentActiveCellIndex!] = units[currentActiveCellIndex!].copyWith(isWaiting: false);
+        units[currentActiveCellIndex!].isWaiting = false;
         return await _handleProtect(action);
 
       case ActionType.startGame:
@@ -324,21 +325,23 @@ class GameController {
   }) async {
     if (handleDoubleAttack) {
       final currentUnit = units[currentActiveCellIndex!];
-      if (currentUnit.isDoubleAttack) {
+      if (currentUnit.unitConstParams.isDoubleAttack) {
         if (currentUnit.currentAttack == 0) {
-          units[currentActiveCellIndex!] =
-              units[currentActiveCellIndex!].copyWith(
-            currentAttack: 1,
-          );
+          // units[currentActiveCellIndex!] =
+          //     units[currentActiveCellIndex!].copyWith(
+          //   currentAttack: 1,
+          // );
+          units[currentActiveCellIndex!].currentAttack = 1;
           return ResponseAction.success(
             roundNumber: currentRound,
             activeCell: currentActiveCellIndex!,
           );
         }
-        units[currentActiveCellIndex!] =
-            units[currentActiveCellIndex!].copyWith(
-          currentAttack: 0,
-        );
+        // units[currentActiveCellIndex!] =
+        //     units[currentActiveCellIndex!].copyWith(
+        //   currentAttack: 0,
+        // );
+        units[currentActiveCellIndex!].currentAttack = 0;
       }
     }
 
@@ -356,7 +359,7 @@ class GameController {
         }
       }
 
-      currentActiveUnitID = unitsQueue!.removeFirst().unitWarId;
+      currentActiveUnitID = unitsQueue!.removeFirst().unitConstParams.unitWarId;
       final currentActiveUnitIndex = unitPosition[currentActiveUnitID];
       assert(currentActiveUnitIndex != null);
 
@@ -369,11 +372,11 @@ class GameController {
           protecting: protecting)) {
         //print('Юнит пропускает ход');
         // Если текщий активный юнит защищался, защита снимается
-        units[currentActiveUnitIndex] =
-            units[currentActiveUnitIndex].copyWith(isProtected: false);
+        //units[currentActiveUnitIndex] = units[currentActiveUnitIndex].copyWith(isProtected: false);
+        units[currentActiveUnitIndex].isProtected = false;
         // Если до этого юнит ждал, ожидание снимается
-        units[currentActiveUnitIndex] =
-            units[currentActiveUnitIndex].copyWith(isWaiting: false);
+        //units[currentActiveUnitIndex] = units[currentActiveUnitIndex].copyWith(isWaiting: false);
+        units[currentActiveUnitIndex].isWaiting = false;
         if (units[currentActiveUnitIndex].isDead) {
           //print('Мертвый не ходит!');
           units[currentActiveUnitIndex] =
@@ -392,12 +395,12 @@ class GameController {
 
       if (units[currentActiveUnitIndex].retreat) {
         //print('Юнит отступил');
-        final emptyUnit = GameRepository.globalEmptyUnit;
-        final retreatedUnitWarId = units[currentActiveUnitIndex].unitWarId;
+        final emptyUnit = GameRepositoryBase.globalEmptyUnit;
+        final retreatedUnitWarId = units[currentActiveUnitIndex].unitConstParams.unitWarId;
         int? retreatedUnitRefIndex;
         int index = 0;
         for(var i in unitsRef) {
-          if (i.unitWarId == retreatedUnitWarId) {
+          if (i.unitConstParams.unitWarId == retreatedUnitWarId) {
             retreatedUnitRefIndex = index;
             break;
           }
@@ -407,7 +410,7 @@ class GameController {
 
         units[currentActiveUnitIndex] = emptyUnit;
         unitsRef[retreatedUnitRefIndex!] = emptyUnit;
-        unitsQueue!.removeWhere((element) => element.unitWarId == retreatedUnitWarId);
+        unitsQueue!.removeWhere((element) => element.unitConstParams.unitWarId == retreatedUnitWarId);
         continue;
       }
 
@@ -426,8 +429,12 @@ class GameController {
     }
 
     // Если текщий активный юнит защищался, защита снимается
-    units[currentActiveCellIndex!] =
-        units[currentActiveCellIndex!].copyWith(isProtected: false);
+    //units[currentActiveCellIndex!] = units[currentActiveCellIndex!].copyWith(isProtected: false);
+    units[currentActiveCellIndex!].isProtected = false;
+
+    for(var i in units) {
+      i.uiInfo = '';
+    }
 
     return ResponseAction.success(activeCell: currentActiveCellIndex);
   }
@@ -453,9 +460,8 @@ class GameController {
       return responseAction;
     }
     // Снимается ожидание только тогда, когда клик удачный
-    units[currentActiveCellIndex!] =
-        units[currentActiveCellIndex!].copyWith(isWaiting: false);
-
+    //units[currentActiveCellIndex!] = units[currentActiveCellIndex!].copyWith(isWaiting: false);
+    units[currentActiveCellIndex!].isWaiting = false;
     return await _getNextUnit(action, handleDoubleAttack: true);
   }
 
@@ -484,9 +490,8 @@ class GameController {
       throw Exception();
     }
     assert(!currentUnit.isEmpty());
-    units[currentActiveCellIndex!] =
-        units[currentActiveCellIndex!].copyWith(isWaiting: true);
-
+    //units[currentActiveCellIndex!] = units[currentActiveCellIndex!].copyWith(isWaiting: true);
+    units[currentActiveCellIndex!].isWaiting = true;
     // Помещаем юнита в конец очереди
     unitsQueue!.add(currentUnit);
 
@@ -497,8 +502,8 @@ class GameController {
   }
 
   Future<ResponseAction> _handleRetreat(RequestAction action) async {
-    units[currentActiveCellIndex!] =
-        units[currentActiveCellIndex!].copyWith(retreat: true);
+    //units[currentActiveCellIndex!] = units[currentActiveCellIndex!].copyWith(retreat: true);
+    units[currentActiveCellIndex!].retreat = true;
 
     return await _getNextUnit(
         action,
@@ -517,8 +522,9 @@ class GameController {
 
     // Если юнит уже защищён, то что-то не то
     assert(!units[currentActiveCellIndex!].isProtected);
-    units[currentActiveCellIndex!] =
-        units[currentActiveCellIndex!].copyWith(isProtected: true);
+    //units[currentActiveCellIndex!] = units[currentActiveCellIndex!].copyWith(isProtected: true);
+    units[currentActiveCellIndex!].isProtected = true;
+
     return await _getNextUnit(
         action,
         protecting: true);

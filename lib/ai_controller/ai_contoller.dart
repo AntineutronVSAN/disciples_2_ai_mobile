@@ -238,6 +238,11 @@ class AiController implements AiControllerBase {
     return resultList;
   }
 
+  @override
+  void initEvalOffsets(List<Unit> units) {
+    // TODO: implement initEvalOffsets
+  }
+
 }
 
 
@@ -269,15 +274,15 @@ List<double> _vectorFromAttack(UnitAttack? atck) {
 
   result.add(atck.initiative / 90.0);
   result.add(atck.damage / 999.0);
-  result.add(atck.heal / 999.0);
+  result.add(atck.attackConstParams.heal / 999.0);
   result.add(atck.power / 100.0);
-  result.add(atck.infinite ? 1.0 : 0.0);
+  result.add(atck.attackConstParams.infinite ? 1.0 : 0.0);
 
   List<double> atckLevels = [0.0, 0.0, 0.0, 0.0, 0.0];
-  atckLevels[atck.level] = 1.0;
+  atckLevels[atck.attackConstParams.level] = 1.0;
   result.addAll(atckLevels.sublist(1));
 
-  switch(atck.targetsCount) {
+  switch(atck.attackConstParams.targetsCount) {
 
     case TargetsCount.one:
       result.add(1.0);
@@ -298,7 +303,7 @@ List<double> _vectorFromAttack(UnitAttack? atck) {
 
   // todo
   List<double> attackClasses = List.generate(25, (index) => 0.0);
-  final atckIndex = atck.attackClass.index;
+  final atckIndex = atck.attackConstParams.attackClass.index;
   attackClasses[atckIndex] = 1.0;
   result.addAll(attackClasses);
   //result.add(atckIndex / 25.0);
@@ -351,7 +356,7 @@ List<double> _vectorFromUnit(Unit unit) {
   result.add(unit.currentHp / 9999.0);
   result.add(unit.armor / 90.0);
 
-  result.add(unit.isDoubleAttack ? 1.0 : 0.0);
+  result.add(unit.unitConstParams.isDoubleAttack ? 1.0 : 0.0);
 
   if (unit.attacksMap.containsKey(AttackClass.L_BLISTER)) {
     final atck = unit.attacksMap[AttackClass.L_BLISTER]!;

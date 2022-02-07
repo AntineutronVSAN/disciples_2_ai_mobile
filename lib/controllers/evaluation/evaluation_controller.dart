@@ -2,6 +2,10 @@
 
 import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
+import 'package:d2_ai_v2/optim_algorythm/base.dart';
+import 'package:d2_ai_v2/utils/cell_utils.dart';
+
+import 'evaluation_controleer_base.dart';
 
 /*
 
@@ -34,6 +38,93 @@ class EvaluationController {
   static const damageInfiniteDotCoeff = 1.2;
   /* END */
 
+  double _evaluationOffset = 0.0;
+
+  void resetEvaluationOffset() {
+    _evaluationOffset = 0.0;
+  }
+
+  void initEvaluationOffset(List<Unit> units) {
+    /*var sfr = 0.0;
+    double aiTeamEval = 0.0;
+    double enemyTeamEval = 0.0;
+    List<GameEvaluation> evaluations = [];
+    var index=0;
+    for (var u in units) {
+      final newEval = GameEvaluation();
+      if (checkIsTopTeam(index)) {
+        // Свои
+        //final currentUnitEval = evaluationController.getUnitEvaluation(u);
+        //aiTeamEval += currentUnitEval.getEval();
+        getUnitEvaluation(u, newEval);
+        aiTeamEval += newEval.getEval();
+      } else {
+        // Враги
+        //final currentUnitEval = evaluationController.getUnitEvaluation(u);
+        //enemyTeamEval += currentUnitEval.getEval();
+        getUnitEvaluation(u, newEval);
+        enemyTeamEval += newEval.getEval();
+      }
+      evaluations.add(newEval);
+      index++;
+    }
+    //sfr += aiTeamEval;
+    //sfr -= enemyTeamEval*0.2;
+
+    _evaluationOffset = aiTeamEval - enemyTeamEval*0.2;
+    print('INITIAL OFFSET = $_evaluationOffset');*/
+  }
+
+  double getEvaluation({
+    required List<Unit> units,
+    AiAlgorithm? algorithm,
+  }) {
+
+
+
+    var sfr = 0.0;
+    double aiTeamEval = 0.0;
+    double enemyTeamEval = 0.0;
+    List<GameEvaluation> evaluations = [];
+    var index=0;
+    for (var u in units) {
+      final newEval = GameEvaluation();
+      if (checkIsTopTeam(index)) {
+        // Свои
+        //final currentUnitEval = evaluationController.getUnitEvaluation(u);
+        //aiTeamEval += currentUnitEval.getEval();
+        getUnitEvaluation(u, newEval);
+        aiTeamEval += newEval.getEval();
+      } else {
+        // Враги
+        //final currentUnitEval = evaluationController.getUnitEvaluation(u);
+        //enemyTeamEval += currentUnitEval.getEval();
+        getUnitEvaluation(u, newEval);
+        enemyTeamEval += newEval.getEval();
+      }
+      evaluations.add(newEval);
+      index++;
+    }
+
+    //teamContextEval(evals: evaluations, units: units);
+
+    sfr += aiTeamEval*0.5;//*0.2;
+    sfr -= enemyTeamEval;
+
+    return sfr;
+  }
+
+  /// Оцнека юнитов в контексте команд
+  void teamContextEval({required List<GameEvaluation> evals, required List<Unit> units}) {
+
+    /// ------------------ Оценка заднего ряда выше, если передний ряд
+    /// сможет прожить больше одного хода
+    //var
+
+
+  }
+
+
   /// Получить ценность юнита с учётом атак
   void getUnitEvaluation(Unit u, GameEvaluation eval) {
     //print('----------------- Ценность юнита ${u.unitName} --------------------');
@@ -51,16 +142,16 @@ class EvaluationController {
       return;
     }
 
-    var canMove = true;
+    /*var canMove = true;
     if (u.paralyzed || u.petrified) {
-      canMove = false;
-    }
+      canMove = false; //TODO
+    }*/
 
     var onlyUnitEval = _onlyUnitEval(u) * unitParamsCoeff;
     //print('Оценка юнита - $onlyUnitEval');
     var unitAtcksEval = getAttackCombinationEvaluation(u.unitAttack, u.unitAttack2) * unitAttacksCoeff;
 
-    if (u.isDoubleAttack) {
+    if (u.unitConstParams.isDoubleAttack) {
       unitAtcksEval *= 1.5;
     }
 
@@ -70,8 +161,12 @@ class EvaluationController {
     //print('Оценка атаки с коэффициентами $unitAtcksEval');
     //print('Оценка юнита ${u.unitName} результат - $value');
 
-    eval.attacksEval = canMove ? unitAtcksEval : 0.0;
-    eval.onlyUnitEval = onlyUnitEval * (u.currentHp / u.maxHp);
+    //eval.attacksEval = canMove ? unitAtcksEval : 0.0;
+    eval.attacksEval = unitAtcksEval;
+    eval.onlyUnitEval = onlyUnitEval * (u.currentHp / u.unitConstParams.maxHp);
+
+    // TODO
+    //eval.attacksEval *= (u.unitConstParams.maxHp * 0.005);
 
     return;
 
@@ -98,7 +193,7 @@ class EvaluationController {
   double _onlyUnitEval(Unit u) {
     double value = 0.0;
 
-    value += u.maxHp / 1000.0;
+    value += u.unitConstParams.maxHp / 1000.0;
     value += u.armor / 90.0 / 2.0;
 
     return value;
@@ -108,7 +203,7 @@ class EvaluationController {
   double getAttackEvaluation(UnitAttack a) {
     double value = 0.0;
 
-    switch(a.attackClass) {
+    switch(a.attackConstParams.attackClass) {
       case AttackClass.L_DAMAGE:
         value += _handleDamage(a) * 1.0 / 300.0;
         break;
@@ -234,7 +329,7 @@ class EvaluationController {
     var result = 0.0;
 
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
     final expectedValue = a.damage * (a.power / 100.0);
@@ -250,7 +345,7 @@ class EvaluationController {
   double _handleDrain(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
     final expectedValue = a.damage * (a.power / 100.0);
@@ -265,8 +360,8 @@ class EvaluationController {
   double _handleParalyze(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
-      a.infinite ? 1.5 : 1.0,
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
+      a.attackConstParams.infinite ? 1.5 : 1.0,
     ];
 
     final expectedValue = a.power / 100.0;
@@ -281,10 +376,10 @@ class EvaluationController {
   double _handleHeal(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
-    final val = a.heal;
+    final val = a.attackConstParams.heal;
     result += val;
 
     for(var i in coeffs) {
@@ -296,7 +391,7 @@ class EvaluationController {
   double _handleFear(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
     final expectedValue = a.power / 100.0;
@@ -311,10 +406,10 @@ class EvaluationController {
   double _handleBoostDamage(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
-    final val = a.level * 1.0;
+    final val = a.attackConstParams.level * 1.0;
     result += val;
 
     for(var i in coeffs) {
@@ -326,8 +421,8 @@ class EvaluationController {
   double _handlePetrify(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
-      a.infinite ? 1.5 : 1.0,
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
+      a.attackConstParams.infinite ? 1.5 : 1.0,
     ];
 
     final expectedValue = a.power / 100.0;
@@ -342,10 +437,10 @@ class EvaluationController {
   double _handleLowerDamage(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
-    result += a.level == 1 ? 1.0 : 0.77;
+    result += a.attackConstParams.level == 1 ? 1.0 : 0.77;
 
     for(var i in coeffs) {
       result *= i;
@@ -356,10 +451,10 @@ class EvaluationController {
   double _handleLowerInitiative(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
-    result += a.level == 1 ? 1.0 : 0.77;
+    result += a.attackConstParams.level == 1 ? 1.0 : 0.77;
 
     for(var i in coeffs) {
       result *= i;
@@ -370,8 +465,8 @@ class EvaluationController {
   double _handlePoison(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
-      a.infinite ? 1.2 : 1.0,
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
+      a.attackConstParams.infinite ? 1.2 : 1.0,
     ];
 
     result += a.power / 100.0 / 300.0;
@@ -385,8 +480,8 @@ class EvaluationController {
   double _handleFrostbite(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
-      a.infinite ? 1.2 : 1.0,
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
+      a.attackConstParams.infinite ? 1.2 : 1.0,
     ];
 
     result += a.power / 100.0 / 300.0;
@@ -400,7 +495,7 @@ class EvaluationController {
   double _handleRevive(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
     result += 1.0;
@@ -414,7 +509,7 @@ class EvaluationController {
   double _handleDrainOverflow(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
     final expectedValue = a.damage * (a.power / 100.0);
@@ -429,7 +524,7 @@ class EvaluationController {
   double _handleCure(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
     result += 1.0;
@@ -455,7 +550,7 @@ class EvaluationController {
   double _handleDrainLevel(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      //_targetsCountEvaluation(a.targetsCount),
+      //_targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
     for(var i in coeffs) {
@@ -468,7 +563,7 @@ class EvaluationController {
     var result = 0.0;
 
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
     result += 1.0;
@@ -506,7 +601,7 @@ class EvaluationController {
   double _handleTransformOther(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
     result += a.power / 100.0;
@@ -520,8 +615,8 @@ class EvaluationController {
   double _handleBlister(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
-      a.infinite ? 1.2 : 1.0,
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
+      a.attackConstParams.infinite ? 1.2 : 1.0,
     ];
 
     result += a.power / 100.0 / 300.0;
@@ -547,7 +642,7 @@ class EvaluationController {
   double _handleShatter(UnitAttack a) {
     var result = 0.0;
     final List<double> coeffs = [
-      _targetsCountEvaluation(a.targetsCount),
+      _targetsCountEvaluation(a.attackConstParams.targetsCount),
     ];
 
     result += a.damage * a.power / 100.0;
@@ -561,8 +656,15 @@ class EvaluationController {
 }
 
 class GameEvaluation {
+  /// Оценка юнита в лоб
   double onlyUnitEval = 0.0;
+  /// Оценка атаки в лоб
   double attacksEval = 0.0;
+
+  /// Полная оценка юнита в контексте своей команды
+  double ourTeamContextEval = 0.0;
+  /// Полная оценка юнита в контексте чужой команды
+  double enemyTeamContextEval = 0.0;
 
   double getEval() {
     return onlyUnitEval + attacksEval;

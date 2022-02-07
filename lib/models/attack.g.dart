@@ -6,29 +6,22 @@ part of 'attack.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-UnitAttack _$UnitAttackFromJson(Map json) => UnitAttack(
-      power: json['power'] as int,
+AttackConstParams _$AttackConstParamsFromJson(Map json) => AttackConstParams(
       heal: json['heal'] as int,
-      damage: json['damage'] as int,
-      initiative: json['initiative'] as int,
+      firstDamage: json['firstDamage'] as int,
+      firstInitiative: json['firstInitiative'] as int,
       targetsCount: $enumDecode(_$TargetsCountEnumMap, json['targetsCount']),
       attackClass: $enumDecode(_$AttackClassEnumMap, json['attackClass']),
       infinite: json['infinite'] as bool,
       attackId: json['attackId'] as String,
-      currentDuration: json['currentDuration'] as int? ?? 0,
-      firstDamage: json['firstDamage'] as int,
       level: json['level'] as int,
-      firstInitiative: json['firstInitiative'] as int,
       source: json['source'] as int,
     );
 
-Map<String, dynamic> _$UnitAttackToJson(UnitAttack instance) =>
+Map<String, dynamic> _$AttackConstParamsToJson(AttackConstParams instance) =>
     <String, dynamic>{
-      'power': instance.power,
       'heal': instance.heal,
-      'damage': instance.damage,
       'firstDamage': instance.firstDamage,
-      'initiative': instance.initiative,
       'firstInitiative': instance.firstInitiative,
       'targetsCount': _$TargetsCountEnumMap[instance.targetsCount],
       'attackClass': _$AttackClassEnumMap[instance.attackClass],
@@ -36,7 +29,6 @@ Map<String, dynamic> _$UnitAttackToJson(UnitAttack instance) =>
       'attackId': instance.attackId,
       'level': instance.level,
       'source': instance.source,
-      'currentDuration': instance.currentDuration,
     };
 
 const _$TargetsCountEnumMap = {
@@ -70,3 +62,21 @@ const _$AttackClassEnumMap = {
   AttackClass.L_BESTOW_WARDS: 'L_BESTOW_WARDS',
   AttackClass.L_SHATTER: 'L_SHATTER',
 };
+
+UnitAttack _$UnitAttackFromJson(Map json) => UnitAttack(
+      power: json['power'] as int,
+      damage: json['damage'] as int,
+      initiative: json['initiative'] as int,
+      currentDuration: json['currentDuration'] as int? ?? 0,
+      attackConstParams: AttackConstParams.fromJson(
+          Map<String, dynamic>.from(json['attackConstParams'] as Map)),
+    );
+
+Map<String, dynamic> _$UnitAttackToJson(UnitAttack instance) =>
+    <String, dynamic>{
+      'power': instance.power,
+      'damage': instance.damage,
+      'initiative': instance.initiative,
+      'currentDuration': instance.currentDuration,
+      'attackConstParams': instance.attackConstParams.toJson(),
+    };

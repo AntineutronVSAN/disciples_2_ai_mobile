@@ -10,7 +10,7 @@ class AttackDurationController {
 
   int getDuration(UnitAttack attack) {
 
-    if (!attack.infinite) {
+    if (!attack.attackConstParams.infinite) {
       return 1;
     }
 

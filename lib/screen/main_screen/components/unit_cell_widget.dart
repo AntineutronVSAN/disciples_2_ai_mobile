@@ -7,6 +7,17 @@ import 'package:flutter/material.dart';
 
 import '../../../styles.dart';
 
+const double smallUnitCellWidth = 100.0;
+const double smallUnitActiveCellWidth = 120.0;
+const double smallUnitCellHeight = 100.0;
+const double smallUnitActiveCellHeight = 120.0;
+
+const double bigUnitCellWidth = 100.0;
+const double bigUnitActiveCellWidth = 120.0;
+const double bigUnitCellHeight = 200.0;
+const double bigUnitActiveCellHeight = 240.0;
+
+
 class UnitCellWidget extends StatelessWidget {
 
   final List<Unit> units;
@@ -20,8 +31,14 @@ class UnitCellWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
+    final double activeCellWidth = units[cellNumber].isBig ? bigUnitActiveCellWidth : smallUnitActiveCellWidth;
+    final double activeCellHeight = units[cellNumber].isBig ? bigUnitActiveCellHeight : smallUnitActiveCellHeight;
+    final double cellWidth = units[cellNumber].isBig ? bigUnitCellWidth : smallUnitCellWidth;
+    final double cellHeight = units[cellNumber].isBig ? bigUnitCellHeight : smallUnitCellHeight;
+
+
     final unit = units[cellNumber];
-    final maxHp = unit.maxHp;
+    final maxHp = unit.unitConstParams.maxHp;
     final curHp = unit.currentHp;
 
     final paralyzed = unit.paralyzed;
@@ -94,8 +111,8 @@ class UnitCellWidget extends StatelessWidget {
                       ? Border.all(color: Colors.teal, width: 5)
                       : null,
                 ),
-                width: unit.isMoving ? 120.0 : 100.0,
-                height: unit.isMoving ? 120.0 : 100.0,
+                width: unit.isMoving ? activeCellWidth : cellWidth,
+                height: unit.isMoving ? activeCellHeight : cellHeight,
               ),
             ),
           ),
@@ -106,8 +123,8 @@ class UnitCellWidget extends StatelessWidget {
                 opacity: 0.7,
                 child: AnimatedContainer(
                   margin: const EdgeInsets.all(cellPadding),
-                  width: unit.isMoving ? 120.0 : 100.0,
-                  height: scaleFactor * (unit.isMoving ? 120.0 : 100.0),
+                  width: unit.isMoving ? activeCellWidth : cellWidth,
+                  height: scaleFactor * (unit.isMoving ? activeCellHeight : cellHeight),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     color: damageColor,
@@ -124,7 +141,7 @@ class UnitCellWidget extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.topCenter,
                   child: AutoSizeText(
-                    unit.unitName,
+                    unit.unitConstParams.unitName,
                     style: const TextStyle(color: Colors.black, fontSize: 12),
                     maxLines: 2,
                   ),
@@ -222,7 +239,7 @@ class UnitCellWidget extends StatelessWidget {
                     'HP ' +
                         unit.currentHp.toString() +
                         ' / ' +
-                        unit.maxHp.toString(),
+                        unit.unitConstParams.maxHp.toString(),
                     style: const TextStyle(
                         fontSize: 12.0,
                         color: Colors.black,
@@ -233,35 +250,35 @@ class UnitCellWidget extends StatelessWidget {
                         TextSpan(children: [
                           if (unit.unitAttack.damage > 0)
                             TextSpan(
-                                text: 'DMG ${unit.unitAttack.firstDamage}',
+                                text: 'DMG ${unit.unitAttack.attackConstParams.firstDamage}',
                                 style: GameStyles.getUnitShortDescriptionStyle()),
-                          if (unit.unitAttack.firstDamage -
+                          if (unit.unitAttack.attackConstParams.firstDamage -
                               unit.unitAttack.damage !=
                               0)
                             TextSpan(
                                 text:
-                                ' ${unit.unitAttack.firstDamage - unit.unitAttack.damage > 0 ? '- ' : '+ '} '
-                                    '${((unit.unitAttack.firstDamage - unit.unitAttack.damage).abs())}',
+                                ' ${unit.unitAttack.attackConstParams.firstDamage - unit.unitAttack.damage > 0 ? '- ' : '+ '} '
+                                    '${((unit.unitAttack.attackConstParams.firstDamage - unit.unitAttack.damage).abs())}',
                                 style: GameStyles
                                     .getUnitShortDescriptionDebuffStyle()),
                           if ((unit.unitAttack2?.damage ?? 0) > 0)
                             TextSpan(
-                                text: ' / ${(unit.unitAttack2?.firstDamage ?? '')}',
+                                text: ' / ${(unit.unitAttack2?.attackConstParams.firstDamage ?? '')}',
                                 style: GameStyles.getUnitShortDescriptionStyle()),
                         ])),
-                  if (unit.unitAttack.firstInitiative > 0)
+                  if (unit.unitAttack.attackConstParams.firstInitiative > 0)
                     AutoSizeText.rich(
                         TextSpan(children: [
-                          if (unit.unitAttack.firstInitiative > 0)
+                          if (unit.unitAttack.attackConstParams.firstInitiative > 0)
                             TextSpan(
-                                text: 'INI ${unit.unitAttack.firstInitiative}',
+                                text: 'INI ${unit.unitAttack.attackConstParams.firstInitiative}',
                                 style: GameStyles.getUnitShortDescriptionStyle()),
-                          if (unit.unitAttack.firstInitiative -
+                          if (unit.unitAttack.attackConstParams.firstInitiative -
                               unit.unitAttack.initiative !=
                               0)
                             TextSpan(
                                 text:
-                                ' - ${unit.unitAttack.firstInitiative - unit.unitAttack.initiative}',
+                                ' - ${unit.unitAttack.attackConstParams.firstInitiative - unit.unitAttack.initiative}',
                                 style: GameStyles
                                     .getUnitShortDescriptionDebuffStyle()),
                         ])),

@@ -15,14 +15,14 @@ String getABPruningNodeKey({
   res += '_';
 
   for(var u in controller.units) {
-    res += u.unitWarId;
+    res += u.unitConstParams.unitWarId;
     res += '_';
     res += u.currentHp.toString();
     res += '_';
   }
 
   for(var u in controller.unitsQueue!) {
-    res += u.unitWarId;
+    res += u.unitConstParams.unitWarId;
     res += '_';
   }
 
@@ -45,7 +45,7 @@ String getABPruningNodeKeySync({
   res += '_';
 
   for(var u in controller.units) {
-    res += u.unitWarId;
+    res += u.unitConstParams.unitWarId;
     res += '_';
     res += u.currentHp.toString();
     res += '_';

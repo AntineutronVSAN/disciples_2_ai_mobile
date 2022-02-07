@@ -1,5 +1,6 @@
 
 
+import 'package:d2_ai_v2/controllers/attack_controller/attack_controller.dart';
 import 'package:d2_ai_v2/controllers/game_controller/actions.dart';
 import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/utils/cell_utils.dart';
@@ -43,6 +44,15 @@ class ActionsOrderController {
   }) {
     final result = <RequestAction>[];
 
+    if (!AttackController.attackSupported(units[current].unitAttack)) {
+      // Если атака не поддерживается, то только защита
+      result.add(RequestAction(
+          type: ActionType.protect,
+          targetCellIndex: null,
+          currentCellIndex: null));
+      return result;
+    }
+
     /*
 
     Топ милишник - [12, 6,7,8, 13, 9,10,11, 0,1,2,3,4,5]
@@ -63,7 +73,7 @@ class ActionsOrderController {
     List<int> newIndexes;
 
     // По началу будет только проверка для лучников
-    switch(currentUnitAttack.targetsCount) {
+    switch(currentUnitAttack.attackConstParams.targetsCount) {
 
       case TargetsCount.one:
         if (currentIsTopTeam) {
@@ -109,7 +119,7 @@ class ActionsOrderController {
     final currentTopTeam = checkIsTopTeam(current);
     final currentUnit = units[current];
 
-    final currentUnitTargets = units[current].unitAttack.targetsCount;
+    final currentUnitTargets = units[current].unitAttack.attackConstParams.targetsCount;
 
     final targetsCountAny = currentUnitTargets == TargetsCount.any;
 

@@ -1,4 +1,5 @@
 import 'package:d2_ai_v2/models/attack.dart';
+import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/theme/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -60,14 +61,14 @@ class UnitAttackSection extends StatelessWidget {
         color: UIColors.attackInfoSectionColor,
         elevation: 1,
         child: Column(children: [
-          UnitsParamsSection(content: 'Класс: ${attack?.attackClass}',),
-          UnitsParamsSection(content: 'Источник: ${attack?.source}',),
-          UnitsParamsSection(content: 'Число целей: ${attack?.targetsCount}',),
+          UnitsParamsSection(content: 'Класс: ${gameAttackNameFromClass(attack?.attackConstParams.attackClass)}',),
+          UnitsParamsSection(content: 'Источник: ${attackSourceIntToSting(attack?.attackConstParams.source)}',),
+          UnitsParamsSection(content: 'Число целей: ${attack?.attackConstParams.targetsCount}',),
           UnitsParamsSection(content: 'Точность: ${attack?.power}',),
-          UnitsParamsSection(content: 'Дамаг: ${attack?.firstDamage}',),
-          UnitsParamsSection(content: 'Хил: ${attack?.heal}',),
-          UnitsParamsSection(content: 'Длительная: ${attack?.infinite}',),
-          UnitsParamsSection(content: 'Уровень: ${attack?.level}',),
+          UnitsParamsSection(content: 'Дамаг: ${attack?.attackConstParams.firstDamage}',),
+          UnitsParamsSection(content: 'Хил: ${attack?.attackConstParams.heal}',),
+          UnitsParamsSection(content: 'Длительная: ${attack?.attackConstParams.infinite}',),
+          UnitsParamsSection(content: 'Уровень: ${attack?.attackConstParams.level}',),
         ],),
       ),
     );

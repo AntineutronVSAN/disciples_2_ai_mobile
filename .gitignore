@@ -47,3 +47,10 @@ app.*.map.json
 
 # Checkpoints
 *Gen-*.json
+
+# Android signing
+key.properties
+
+# Other
+node_modules
+google-services.json

@@ -1,4 +1,5 @@
 import 'package:d2_ai_v2/bloc_base/stateless_base.dart';
+import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/screen/unit/components/unit_avatar_section.dart';
 import 'package:d2_ai_v2/screen/unit/components/unit_params_section.dart';
@@ -39,28 +40,28 @@ class UnitInformationScreenBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    final deltaIni = unit.unitAttack.initiative - unit.unitAttack.firstInitiative;
+    final deltaIni = unit.unitAttack.initiative - unit.unitAttack.attackConstParams.firstInitiative;
     final String sign = deltaIni < 0 ? '-' : '+';
 
     String immuneString = '';
     String protectString = '';
     for(var i in unit.classImmune.entries) {
       if (i.value == ImunneCategory.once) {
-        protectString += '${i.key}, ';
+        protectString += '${attackNameFromGameAttackInt(i.key)}, ';
         continue;
       }
       if (i.value == ImunneCategory.always) {
-        immuneString += '${i.key}, ';
+        immuneString += '${attackNameFromGameAttackInt(i.key)}, ';
         continue;
       }
     }
     for(var i in unit.sourceImmune.entries) {
       if (i.value == ImunneCategory.once) {
-        protectString += '${i.key}, ';
+        protectString += '${attackSourceIntToSting(i.key)}, ';
         continue;
       }
       if (i.value == ImunneCategory.always) {
-        immuneString += '${i.key}, ';
+        immuneString += '${attackSourceIntToSting(i.key)}, ';
         continue;
       }
     }
@@ -68,7 +69,7 @@ class UnitInformationScreenBody extends StatelessWidget {
     return Scaffold(
       appBar: getThemeAppBar(
           title: ThemeAppText(
-              text: unit.unitName, style: GameStyles.getMainAppBarTextStyle()),
+              text: unit.unitConstParams.unitName, style: GameStyles.getMainAppBarTextStyle()),
           leading: ClickableIcon(
             icon: const Icon(
               Icons.arrow_back_ios,
@@ -85,20 +86,20 @@ class UnitInformationScreenBody extends StatelessWidget {
             const UnitAvatarSection(description: 'TODO Описание',),
             Center(child: Text('Характеристики юнита', style: GameStyles.getUnitDescriptionStyle(),),),
             UnitsParamsSection(
-              content: 'Здоровье: макс ${unit.maxHp}, текущее ${unit.currentHp}',
+              content: 'Здоровье: макс ${unit.unitConstParams.maxHp}, текущее ${unit.currentHp}',
             ),
             UnitsParamsSection(
               content: 'Уровень: ${unit.level}',
             ),
             UnitsParamsSection(
-              content: 'Инициатива: ${unit.unitAttack.firstInitiative}',
+              content: 'Инициатива: ${unit.unitAttack.attackConstParams.firstInitiative}',
               debuffContent: deltaIni == 0 ? null : ' $sign $deltaIni',
             ),
             UnitsParamsSection(
               content: 'Броня: текущая ${unit.armor}',
             ),
             UnitsParamsSection(
-              content: 'Двойная атака: ${unit.isDoubleAttack}',
+              content: 'Двойная атака: ${unit.unitConstParams.isDoubleAttack}',
             ),
             UnitsParamsSection(
               content: 'Иммунитет: $immuneString',

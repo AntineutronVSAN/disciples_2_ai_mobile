@@ -6,17 +6,45 @@ part of 'unit.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+UnitConstParams _$UnitConstParamsFromJson(Map json) => UnitConstParams(
+      maxHp: json['maxHp'] as int,
+      isDoubleAttack: json['isDoubleAttack'] as bool,
+      unitName: json['unitName'] as String,
+      unitGameID: json['unitGameID'] as String,
+      unitWarId: json['unitWarId'] as String,
+      upgradeDamage: json['upgradeDamage'] as int,
+      upgradePower: json['upgradePower'] as int,
+      upgradeHeal: json['upgradeHeal'] as int,
+      upgradeInitiative: json['upgradeInitiative'] as int,
+      upgradeHp: json['upgradeHp'] as int,
+      upgradeArmor: json['upgradeArmor'] as int,
+      overLevel: json['overLevel'] as bool,
+    );
+
+Map<String, dynamic> _$UnitConstParamsToJson(UnitConstParams instance) =>
+    <String, dynamic>{
+      'maxHp': instance.maxHp,
+      'unitName': instance.unitName,
+      'unitGameID': instance.unitGameID,
+      'unitWarId': instance.unitWarId,
+      'isDoubleAttack': instance.isDoubleAttack,
+      'upgradeDamage': instance.upgradeDamage,
+      'upgradeArmor': instance.upgradeArmor,
+      'upgradeInitiative': instance.upgradeInitiative,
+      'upgradeHeal': instance.upgradeHeal,
+      'upgradePower': instance.upgradePower,
+      'upgradeHp': instance.upgradeHp,
+      'overLevel': instance.overLevel,
+    };
+
 Unit _$UnitFromJson(Map json) => Unit(
+      unitConstParams: UnitConstParams.fromJson(
+          Map<String, dynamic>.from(json['unitConstParams'] as Map)),
       isDead: json['isDead'] as bool,
       isMoving: json['isMoving'] as bool,
       isProtected: json['isProtected'] as bool,
       isWaiting: json['isWaiting'] as bool,
       currentHp: json['currentHp'] as int,
-      maxHp: json['maxHp'] as int,
-      unitName: json['unitName'] as String,
-      unitGameID: json['unitGameID'] as String,
-      unitWarId: json['unitWarId'] as String,
-      isDoubleAttack: json['isDoubleAttack'] as bool,
       currentAttack: json['currentAttack'] as int? ?? 0,
       unitAttack: UnitAttack.fromJson(
           Map<String, dynamic>.from(json['unitAttack'] as Map)),
@@ -42,15 +70,6 @@ Unit _$UnitFromJson(Map json) => Unit(
       damageBusted: json['damageBusted'] as bool? ?? false,
       transformed: json['transformed'] as bool? ?? false,
       level: json['level'] as int,
-      upgradeArmor: json['upgradeArmor'] as int,
-      upgradeDamage: json['upgradeDamage'] as int,
-      upgradeHeal: json['upgradeHeal'] as int,
-      upgradeInitiative: json['upgradeInitiative'] as int,
-      upgradePower: json['upgradePower'] as int,
-      upgradeHp: json['upgradeHp'] as int,
-      nextID: json['nextID'] as String?,
-      prevID: json['prevID'] as String?,
-      overLevel: json['overLevel'] as bool? ?? false,
       classImmune: (json['classImmune'] as Map).map(
         (k, e) => MapEntry(
             int.parse(k as String), $enumDecode(_$ImunneCategoryEnumMap, e)),
@@ -65,6 +84,7 @@ Unit _$UnitFromJson(Map json) => Unit(
       hasSourceImunne: (json['hasSourceImunne'] as Map).map(
         (k, e) => MapEntry(int.parse(k as String), e as bool),
       ),
+      isBig: json['isBig'] as bool,
     );
 
 Map<String, dynamic> _$UnitToJson(Unit instance) => <String, dynamic>{
@@ -72,12 +92,9 @@ Map<String, dynamic> _$UnitToJson(Unit instance) => <String, dynamic>{
       'isDead': instance.isDead,
       'isProtected': instance.isProtected,
       'isWaiting': instance.isWaiting,
-      'maxHp': instance.maxHp,
+      'isBig': instance.isBig,
+      'unitConstParams': instance.unitConstParams.toJson(),
       'currentHp': instance.currentHp,
-      'unitName': instance.unitName,
-      'unitGameID': instance.unitGameID,
-      'unitWarId': instance.unitWarId,
-      'isDoubleAttack': instance.isDoubleAttack,
       'currentAttack': instance.currentAttack,
       'unitAttack': instance.unitAttack.toJson(),
       'unitAttack2': instance.unitAttack2?.toJson(),
@@ -97,15 +114,6 @@ Map<String, dynamic> _$UnitToJson(Unit instance) => <String, dynamic>{
       'damageBusted': instance.damageBusted,
       'transformed': instance.transformed,
       'level': instance.level,
-      'upgradeDamage': instance.upgradeDamage,
-      'upgradeArmor': instance.upgradeArmor,
-      'upgradeInitiative': instance.upgradeInitiative,
-      'upgradeHeal': instance.upgradeHeal,
-      'upgradePower': instance.upgradePower,
-      'upgradeHp': instance.upgradeHp,
-      'nextID': instance.nextID,
-      'prevID': instance.prevID,
-      'overLevel': instance.overLevel,
       'classImmune': instance.classImmune
           .map((k, e) => MapEntry(k.toString(), _$ImunneCategoryEnumMap[e])),
       'sourceImmune': instance.sourceImmune
