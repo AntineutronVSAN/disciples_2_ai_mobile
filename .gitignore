@@ -54,3 +54,7 @@ key.properties
 # Other
 node_modules
 google-services.json
+
+# Database files
+*.dbf
+*.DBF
