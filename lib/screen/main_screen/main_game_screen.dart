@@ -1,4 +1,4 @@
-import 'package:auto_size_text/auto_size_text.dart';
+
 import 'package:d2_ai_v2/ai_controller/ai_controller_ab_pruning.dart';
 import 'package:d2_ai_v2/bloc/bloc.dart';
 import 'package:d2_ai_v2/bloc/events.dart';
@@ -11,23 +11,18 @@ import 'package:d2_ai_v2/controllers/imunne_controller.dart';
 import 'package:d2_ai_v2/controllers/initiative_shuffler.dart';
 import 'package:d2_ai_v2/controllers/power_controller.dart';
 import 'package:d2_ai_v2/d2_entities/unit/unit_provider.dart';
-import 'package:d2_ai_v2/models/g_immu/g_immu_provider.dart';
-import 'package:d2_ai_v2/models/g_immu_c/g_immu_c_provider.dart';
-import 'package:d2_ai_v2/models/providers.dart';
 import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
-import 'package:d2_ai_v2/screen/main_screen/components/unit_cell_widget.dart';
+
 import 'package:d2_ai_v2/screen/navigator.dart';
 import 'package:d2_ai_v2/utils/math_utils.dart';
-import 'package:d2_ai_v2/utils/svg_picture.dart';
+
 import 'package:d2_ai_v2/widgets/clicable_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../const.dart';
-import '../../styles.dart';
 import 'components/ai_moving_widget.dart';
-import 'components/rating_widget.dart';
 import 'components/team_widget.dart';
 
 const int treeDepth = 7;

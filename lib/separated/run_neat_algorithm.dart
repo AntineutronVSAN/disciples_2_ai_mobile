@@ -1,8 +1,4 @@
 
-import 'package:d2_ai_v2/models/providers.dart';
-import 'package:d2_ai_v2/repositories/game_repository.dart';
-import '../models/g_immu/g_immu_provider.dart';
-import '../models/g_immu_c/g_immu_c_provider.dart';
 
 void main() async {
 

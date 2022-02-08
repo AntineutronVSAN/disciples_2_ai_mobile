@@ -1,8 +1,6 @@
-import 'package:collection/src/iterable_extensions.dart';
+
 import 'package:d2_ai_v2/ai_controller/ai_contoller.dart';
 import 'package:d2_ai_v2/d2_entities/unit/unit_provider.dart';
-import 'package:d2_ai_v2/dart_nural/networks/linear_network_v2.dart';
-import 'package:d2_ai_v2/models/providers.dart';
 import 'package:d2_ai_v2/optim_algorythm/factories/neat_factory.dart';
 import 'package:d2_ai_v2/optim_algorythm/factories/networks_factory.dart';
 import 'package:d2_ai_v2/providers/dart_file_provider.dart';
@@ -18,8 +16,6 @@ import '../controllers/game_controller/game_controller.dart';
 import '../controllers/imunne_controller.dart';
 import '../controllers/initiative_shuffler.dart';
 import '../controllers/power_controller.dart';
-import '../models/g_immu/g_immu_provider.dart';
-import '../models/g_immu_c/g_immu_c_provider.dart';
 import '../models/unit.dart';
 import '../optim_algorythm/genetic_controller.dart';
 
