@@ -3,11 +3,7 @@ import 'dart:isolate';
 import 'dart:math';
 import 'package:d2_ai_v2/ai_controller/ai_controller_base.dart';
 import 'package:d2_ai_v2/controllers/imunne_controller.dart';
-import 'package:d2_ai_v2/dart_nural/networks/linear_network_v2.dart';
-import 'package:d2_ai_v2/dart_nural/neural_base.dart';
-import 'package:d2_ai_v2/models/g_immu/g_immu_provider.dart';
-import 'package:d2_ai_v2/models/g_immu_c/g_immu_c_provider.dart';
-import 'package:d2_ai_v2/models/providers.dart';
+import 'package:d2_ai_v2/d2_entities/unit/unit_provider.dart';
 import 'package:d2_ai_v2/optim_algorythm/base.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -21,13 +17,12 @@ import 'package:d2_ai_v2/controllers/power_controller.dart';
 import 'package:d2_ai_v2/models/unit.dart';
 
 import 'package:collection/collection.dart';
-import 'package:d2_ai_v2/optim_algorythm/genetic/genetic_checkpoint.dart';
 import 'package:d2_ai_v2/providers/file_provider_base.dart';
 import 'package:d2_ai_v2/update_state_context/update_state_context_base.dart';
 import 'package:d2_ai_v2/utils/cell_utils.dart';
 import 'package:d2_ai_v2/utils/math_utils.dart';
-//import 'package:flutter/foundation.dart' show compute;
 
+import '../const.dart';
 import 'genetic/individs/genetic_individ.dart';
 import 'individual_base.dart';
 
@@ -116,13 +111,13 @@ class GeneticController {
     final aiController = AiController();
     final individController = AiController();
     final repo = GameRepository(
-        gimmuCProvider: GimmuCProvider(),
-        gimmuProvider: GimmuProvider(),
-        gtransfProvider: GtransfProvider(),
-        tglobalProvider: TglobalProvider(),
-        gattacksProvider: GattacksProvider(),
-        gDynUpgrProvider: GDynUpgrProvider(),
-        gunitsProvider: GunitsProvider());
+        gimmuCProvider: DBFObjectsProvider(assetsPath: smnsD2ImmuCProviderAssetPath, idKey: smnsD2ImmuCProviderIDkey),
+        gimmuProvider: DBFObjectsProvider(assetsPath: smnsD2ImmuProviderAssetPath, idKey: smnsD2ImmuProviderIDkey),
+        gtransfProvider: DBFObjectsProvider(assetsPath: smnsD2TransfProviderAssetPath, idKey: smnsD2TransfProviderIDkey),
+        tglobalProvider: DBFObjectsProvider(assetsPath: smnsD2GlobalProviderAssetPath, idKey: smnsD2GlobalProviderIDkey),
+        gattacksProvider: DBFObjectsProvider(assetsPath: smnsD2AttacksProviderAssetPath, idKey: smnsD2AttacksProviderIDkey),
+        gDynUpgrProvider: DBFObjectsProvider(assetsPath: smnsD2GDynUpgProviderAssetPath, idKey: smnsD2GDynUpgProviderIDkey),
+        gunitsProvider: DBFObjectsProvider(assetsPath: smnsD2UnitsProviderAssetPath, idKey: smnsD2UnitsProviderIDkey));
     final gameController = GameController(
       attackController: AttackController(
         immuneController: ImmuneController(),

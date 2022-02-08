@@ -2,6 +2,7 @@
 import 'dart:math';
 
 import 'package:benchmark/benchmark.dart';
+import 'package:d2_ai_v2/const.dart';
 import 'package:d2_ai_v2/controllers/attack_controller/attack_controller.dart';
 import 'package:d2_ai_v2/controllers/attack_controller/postprocessing_part/postprocessing_part.dart';
 import 'package:d2_ai_v2/controllers/attack_controller/preprocessing_part/preprocessing_part.dart';
@@ -11,9 +12,7 @@ import 'package:d2_ai_v2/controllers/game_controller/actions.dart';
 import 'package:d2_ai_v2/controllers/game_controller/roll_config.dart';
 import 'package:d2_ai_v2/controllers/imunne_controller.dart';
 import 'package:d2_ai_v2/controllers/power_controller.dart';
-import 'package:d2_ai_v2/models/g_immu/g_immu_provider.dart';
-import 'package:d2_ai_v2/models/g_immu_c/g_immu_c_provider.dart';
-import 'package:d2_ai_v2/models/providers.dart';
+import 'package:d2_ai_v2/d2_entities/unit/unit_provider.dart';
 import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
 import 'package:d2_ai_v2/repositories/game_repository_base.dart';
@@ -23,13 +22,14 @@ import 'package:d2_ai_v2/utils/math_utils.dart';
 
 void main() {
   final GameRepository gameRepository = GameRepository(
-      gunitsProvider: GunitsProvider(),
-      tglobalProvider: TglobalProvider(),
-      gattacksProvider: GattacksProvider(),
-      gtransfProvider: GtransfProvider(),
-      gDynUpgrProvider: GDynUpgrProvider(),
-      gimmuProvider: GimmuProvider(),
-      gimmuCProvider: GimmuCProvider())..init();
+      gunitsProvider: DBFObjectsProvider(assetsPath: smnsD2UnitsProviderAssetPath, idKey: smnsD2UnitsProviderIDkey),
+      tglobalProvider: DBFObjectsProvider(assetsPath: smnsD2GlobalProviderAssetPath, idKey: smnsD2GlobalProviderIDkey),
+      gattacksProvider: DBFObjectsProvider(assetsPath: smnsD2AttacksProviderAssetPath, idKey: smnsD2AttacksProviderIDkey),
+      gtransfProvider: DBFObjectsProvider(assetsPath: smnsD2TransfProviderAssetPath, idKey: smnsD2TransfProviderIDkey),
+      gDynUpgrProvider: DBFObjectsProvider(assetsPath: smnsD2GDynUpgProviderAssetPath, idKey: smnsD2GDynUpgProviderIDkey),
+      gimmuProvider: DBFObjectsProvider(assetsPath: smnsD2ImmuProviderAssetPath, idKey: smnsD2ImmuProviderIDkey),
+      gimmuCProvider: DBFObjectsProvider(assetsPath: smnsD2ImmuCProviderAssetPath, idKey: smnsD2ImmuCProviderIDkey),
+  )..init();
 
   final Unit testUnit = gameRepository.getRandomUnit();
 

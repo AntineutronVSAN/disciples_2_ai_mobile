@@ -1,4 +1,25 @@
 
+/// ---------------- Провайдеры игровых объектов ------------------
+const String smnsD2UnitsProviderIDkey = 'UNIT_ID';
+const String smnsD2UnitsProviderAssetPath = 'assets/dbf/smns_path_0_999/Globals/Gunits.dbf';
+
+const String smnsD2AttacksProviderIDkey = 'ATT_ID';
+const String smnsD2AttacksProviderAssetPath = 'assets/dbf/smns_path_0_999/Globals/Gattacks.dbf';
+
+const String smnsD2TransfProviderIDkey = '';
+const String smnsD2TransfProviderAssetPath = 'assets/dbf/smns_path_0_999/Globals/Gtransf.dbf';
+
+const String smnsD2ImmuCProviderIDkey = '';
+const String smnsD2ImmuCProviderAssetPath = 'assets/dbf/smns_path_0_999/Globals/GimmuC.dbf';
+
+const String smnsD2ImmuProviderIDkey = '';
+const String smnsD2ImmuProviderAssetPath = 'assets/dbf/smns_path_0_999/Globals/Gimmu.dbf';
+
+const String smnsD2GDynUpgProviderIDkey = '';
+const String smnsD2GDynUpgProviderAssetPath = 'assets/dbf/smns_path_0_999/Globals/GDynUpgr.DBF';
+
+const String smnsD2GlobalProviderIDkey = '';
+const String smnsD2GlobalProviderAssetPath = 'assets/dbf/smns_path_0_999/Globals/Tglobal.dbf';
 
 const int maxUnitXp = 9999;
 const int maxUnitDamage = 999;

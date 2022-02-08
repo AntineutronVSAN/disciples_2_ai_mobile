@@ -1,4 +1,4 @@
-import 'package:auto_size_text/auto_size_text.dart';
+
 import 'package:d2_ai_v2/ai_controller/ai_controller_ab_pruning.dart';
 import 'package:d2_ai_v2/bloc/bloc.dart';
 import 'package:d2_ai_v2/bloc/events.dart';
@@ -10,22 +10,19 @@ import 'package:d2_ai_v2/controllers/game_controller/game_controller.dart';
 import 'package:d2_ai_v2/controllers/imunne_controller.dart';
 import 'package:d2_ai_v2/controllers/initiative_shuffler.dart';
 import 'package:d2_ai_v2/controllers/power_controller.dart';
-import 'package:d2_ai_v2/models/g_immu/g_immu_provider.dart';
-import 'package:d2_ai_v2/models/g_immu_c/g_immu_c_provider.dart';
-import 'package:d2_ai_v2/models/providers.dart';
+import 'package:d2_ai_v2/d2_entities/unit/unit_provider.dart';
 import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
-import 'package:d2_ai_v2/screen/main_screen/components/unit_cell_widget.dart';
+
 import 'package:d2_ai_v2/screen/navigator.dart';
 import 'package:d2_ai_v2/utils/math_utils.dart';
-import 'package:d2_ai_v2/utils/svg_picture.dart';
+
 import 'package:d2_ai_v2/widgets/clicable_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../styles.dart';
+import '../../const.dart';
 import 'components/ai_moving_widget.dart';
-import 'components/rating_widget.dart';
 import 'components/team_widget.dart';
 
 const int treeDepth = 7;
@@ -36,13 +33,13 @@ class MainGameScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final repo = GameRepository(
-        gimmuCProvider: GimmuCProvider(),
-        gimmuProvider: GimmuProvider(),
-        gtransfProvider: GtransfProvider(),
-        tglobalProvider: TglobalProvider(),
-        gattacksProvider: GattacksProvider(),
-        gDynUpgrProvider: GDynUpgrProvider(),
-        gunitsProvider: GunitsProvider());
+        gimmuCProvider: DBFObjectsProvider(assetsPath: smnsD2ImmuCProviderAssetPath, idKey: smnsD2ImmuCProviderIDkey),
+        gimmuProvider: DBFObjectsProvider(assetsPath: smnsD2ImmuProviderAssetPath, idKey: smnsD2ImmuProviderIDkey),
+        gtransfProvider: DBFObjectsProvider(assetsPath: smnsD2TransfProviderAssetPath, idKey: smnsD2TransfProviderIDkey),
+        tglobalProvider: DBFObjectsProvider(assetsPath: smnsD2GlobalProviderAssetPath, idKey: smnsD2GlobalProviderIDkey),
+        gattacksProvider: DBFObjectsProvider(assetsPath: smnsD2AttacksProviderAssetPath, idKey: smnsD2AttacksProviderIDkey),
+        gDynUpgrProvider: DBFObjectsProvider(assetsPath: smnsD2GDynUpgProviderAssetPath, idKey: smnsD2GDynUpgProviderIDkey),
+        gunitsProvider: DBFObjectsProvider(assetsPath: smnsD2UnitsProviderAssetPath, idKey: smnsD2UnitsProviderIDkey));
 
     return BlocProvider<GameBloc>(
         create: (BuildContext context) => GameBloc(

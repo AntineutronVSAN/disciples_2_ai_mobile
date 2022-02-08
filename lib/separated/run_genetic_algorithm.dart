@@ -1,7 +1,6 @@
-import 'package:collection/src/iterable_extensions.dart';
+
 import 'package:d2_ai_v2/ai_controller/ai_contoller.dart';
-import 'package:d2_ai_v2/dart_nural/networks/linear_network_v2.dart';
-import 'package:d2_ai_v2/models/providers.dart';
+import 'package:d2_ai_v2/d2_entities/unit/unit_provider.dart';
 import 'package:d2_ai_v2/optim_algorythm/factories/neat_factory.dart';
 import 'package:d2_ai_v2/optim_algorythm/factories/networks_factory.dart';
 import 'package:d2_ai_v2/providers/dart_file_provider.dart';
@@ -17,8 +16,6 @@ import '../controllers/game_controller/game_controller.dart';
 import '../controllers/imunne_controller.dart';
 import '../controllers/initiative_shuffler.dart';
 import '../controllers/power_controller.dart';
-import '../models/g_immu/g_immu_provider.dart';
-import '../models/g_immu_c/g_immu_c_provider.dart';
 import '../models/unit.dart';
 import '../optim_algorythm/genetic_controller.dart';
 
@@ -46,13 +43,13 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
   //fromCheckpoint = 'Gen-799';
 
   final GameRepository repository = GameRepository(
-    gimmuCProvider: GimmuCProvider(),
-    gimmuProvider: GimmuProvider(),
-    gattacksProvider: GattacksProvider(),
-    gunitsProvider: GunitsProvider(),
-    tglobalProvider: TglobalProvider(),
-    gtransfProvider: GtransfProvider(),
-    gDynUpgrProvider: GDynUpgrProvider(),
+    gimmuCProvider: DBFObjectsProvider(assetsPath: smnsD2ImmuCProviderAssetPath, idKey: smnsD2ImmuCProviderIDkey),
+    gimmuProvider: DBFObjectsProvider(assetsPath: smnsD2ImmuProviderAssetPath, idKey: smnsD2ImmuProviderIDkey),
+    gattacksProvider: DBFObjectsProvider(assetsPath: smnsD2AttacksProviderAssetPath, idKey: smnsD2AttacksProviderIDkey),
+    gunitsProvider: DBFObjectsProvider(assetsPath: smnsD2UnitsProviderAssetPath, idKey: smnsD2UnitsProviderIDkey),
+    tglobalProvider: DBFObjectsProvider(assetsPath: smnsD2GlobalProviderAssetPath, idKey: smnsD2GlobalProviderIDkey),
+    gtransfProvider: DBFObjectsProvider(assetsPath: smnsD2TransfProviderAssetPath, idKey: smnsD2TransfProviderIDkey),
+    gDynUpgrProvider: DBFObjectsProvider(assetsPath: smnsD2GDynUpgProviderAssetPath, idKey: smnsD2GDynUpgProviderIDkey),
   );
   repository.init();
   // Создание юнитов
@@ -110,13 +107,13 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
       version: 1);
 
   final repo = GameRepository(
-      gimmuCProvider: GimmuCProvider(),
-      gimmuProvider: GimmuProvider(),
-      gtransfProvider: GtransfProvider(),
-      tglobalProvider: TglobalProvider(),
-      gattacksProvider: GattacksProvider(),
-      gDynUpgrProvider: GDynUpgrProvider(),
-      gunitsProvider: GunitsProvider());
+      gimmuCProvider: DBFObjectsProvider(assetsPath: smnsD2ImmuCProviderAssetPath, idKey: smnsD2ImmuCProviderIDkey),
+      gimmuProvider: DBFObjectsProvider(assetsPath: smnsD2ImmuProviderAssetPath, idKey: smnsD2ImmuProviderIDkey),
+      gtransfProvider: DBFObjectsProvider(assetsPath: smnsD2TransfProviderAssetPath, idKey: smnsD2TransfProviderIDkey),
+      tglobalProvider: DBFObjectsProvider(assetsPath: smnsD2GlobalProviderAssetPath, idKey: smnsD2GlobalProviderIDkey),
+      gattacksProvider: DBFObjectsProvider(assetsPath: smnsD2AttacksProviderAssetPath, idKey: smnsD2AttacksProviderIDkey),
+      gDynUpgrProvider: DBFObjectsProvider(assetsPath: smnsD2GDynUpgProviderAssetPath, idKey: smnsD2GDynUpgProviderIDkey),
+      gunitsProvider: DBFObjectsProvider(assetsPath: smnsD2UnitsProviderAssetPath, idKey: smnsD2UnitsProviderIDkey));
 
   final gc = GeneticController(
     gameController: GameController(
