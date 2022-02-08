@@ -5,6 +5,7 @@ import 'package:d2_ai_v2/services/notification_delegate.dart';
 import 'package:d2_ai_v2/services/push_delegate.dart';
 import 'package:d2_ai_v2/styles.dart';
 import 'package:d2_ai_v2/utils/svg_picture.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
@@ -33,10 +34,12 @@ void main() async {
 
   await FirebaseServices.initFirebaseApp();
   await FireBaseAnalytics.init();
-  FireBaseAnalytics.registerTestEvent();
+  //FireBaseAnalytics.registerTestEvent();
 
   //await FirebasePushHelper.init();
   final pushDelegate = await initializePush();
+  //FirebaseCrashlytics.instance.recordError('testError', StackTrace.empty);
+  //FirebaseCrashlytics.instance.log('LOG MESSAGE');
   runApp(const D2AiApp());
 }
 
@@ -111,14 +114,16 @@ class _D2AiAppBodyState extends State<D2AiAppBody> {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: selectedIndex,
-        items: [
+        items: const [
           BottomNavigationBarItem(
-            icon: const SvgIcon(asset: 'ic_ai.svg', size: 30, color: null,),
-            title: Text("Битва", style: GameStyles.getMainTextStyle(),),
+            icon: SvgIcon(asset: 'ic_ai.svg', size: 30, color: null,),
+            //title: Text("Битва", style: GameStyles.getMainTextStyle(),),
+            label: "Битва",
           ),
           BottomNavigationBarItem(
-            icon: const SvgIcon(asset: 'ic_analytics.svg', size: 30, color: null,),
-            title: Text("Анализ", style: GameStyles.getMainTextStyle(),),
+            icon: SvgIcon(asset: 'ic_analytics.svg', size: 30, color: null,),
+            //title: Text("Анализ", style: GameStyles.getMainTextStyle(),),
+            label: "Анализ",
           ),
           /*BottomNavigationBarItem(
             icon: const SvgIcon(asset: 'ic_training.svg', size: 30, color: null,),
