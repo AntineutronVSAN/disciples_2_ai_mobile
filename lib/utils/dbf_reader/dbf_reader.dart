@@ -26,8 +26,9 @@ N:=(HeaderSize-33)/32 байт.
 Сместившись на HeaderSize байт от начала файла, мы переходим к непосредственно к
 самим записям, размер которых указан в 10,11 байтах заголовка - RecordSize, а их количество в 04..07 байтах - RecordsCount.
 
-http://www.delphikingdom.com/asp/viewitem.asp?catalogid=624
-https://softclipper.net/bazy-dbf/format-fajla-dbf.html
+Байты каждой строки начинаются с символа на удаление!
+
+
 
 */
 
@@ -43,6 +44,9 @@ class DBFReader {
   /// Описание всех столбцов/полей
   final List<DBFColumn> columns = [];
   /// Тело/строки
+  final List<DBFRow> rows = [];
+
+  static const utf8decoder = Utf8Decoder();
 
   void read(Uint8List bytes) {
 
@@ -50,90 +54,94 @@ class DBFReader {
     for(var i=0; i<header.fieldsCount; i++) {
       columns.add(DBFColumn(bytes: bytes.sublist(32*(i+1), 32*(i+2))));
     }
+    // Начало данных
+    final valuesOffset = header.headerSizeBytes;
+    // Байты данных
+    final bodyBytes = bytes.sublist(valuesOffset);
 
-    print(header);
+    // Положение каретки
+    int caretPos = 0;
 
-    print('asdfasdf');
+    for(var row = 0; row < header.recordsCount; row++) {
 
-    /*print(bytes[0]);
+      final newRow = DBFRow();
 
-    print('---Дата последнего обновления в формате YYMMDD');
-    print(bytes[1]);
-    print(bytes[2]);
-    print(bytes[3]);
+      // Певрый байт строки - флаг на удаление
+      final deleteFlag = String.fromCharCode(bodyBytes[caretPos]);
+      caretPos++;
 
-    print('---Количество записей в таблице 32-битное число');
-    //print(bytes[4]);
-    //print(bytes[5]);
-    //print(bytes[6]);
-    //print(bytes[7]);
-    var test = Uint8List(4);
-    test[3] = bytes[4];
-    test[2] = bytes[5];
-    test[1] = bytes[6];
-    test[0] = bytes[7];
-    print('result = ${test.buffer.asByteData().getUint32(0)}');
+      for(var col in columns) {
 
-    print('---Количество байтов, занимаемых заголовком 16-битное число');
-    test = Uint8List(2);
-    test[1] = bytes[8];
-    test[0] = bytes[9];
-    var headerSize = test.buffer.asByteData().getUint16(0);
-    print('Result = $headerSize');
+        final dataType = col.type;
+        final dataLength = col.binFieldSize;
+        final colName = col.fieldName;
 
-    print('---Количество байтов, занимаемых записью 16-битное число');
-    test = Uint8List(2);
-    test[1] = bytes[10];
-    test[0] = bytes[11];
-    print('Result = ${test.buffer.asByteData().getUint16(0)}');
+        final recordAllBytes = bodyBytes.sublist(caretPos, caretPos + dataLength);
+        final value = _getValueByType(recordAllBytes, dataType, dataLength);
 
-    print('---Зарезервированная область, заполнена нулями 2 байта');
-    print(bytes[12]);
-    print(bytes[13]);
+        newRow.objectsMap[col.fieldName] = value;
 
-    print('---Флаг, указывающий на наличие незавершенной транзакции');
-    print(bytes[14]);
-
-    print('---Флаг кодировки');
-    print(bytes[15]);
-
-    print('Зарезервированная область для многопользовательского использования dBASE IV');
-    for(var i in bytes.sublist(16, 27)) {
-      print(i);
+        caretPos+=dataLength;
+      }
+      rows.add(newRow);
     }
 
-    print('Флаг наличия MDX-файла: 01H - файл присутствует, 00H - файл отсутствует');
-    print(bytes[28]);
+    print(this);
+  }
 
-    print('ID драйвера языка');
-    print(bytes[29]);
+  Uint8List toBytes() {
+    throw Exception('Not implemented');
+  }
 
-    print('Зарезервированная область, заполнена нулями');
-    print(bytes[30]);
-    print(bytes[31]);
+  dynamic _getValueByType(Uint8List data, String type, int length) {
 
-    print('--------- 32-n по 32 байта Массив с описаниями полей (структура каждого такого описания показана ниже)');
+    switch (type) {
+      case 'C':
+        // C (Символы)
+        // Все символы кодовой страницы OEM
+        return utf8decoder.convert(data);
+      case 'N':
+        // N (Числовой)
+        // - . 0 1 2 3 4 5 6 7 8 9
+        final chars = List.filled(length, 0);
+        for (var i = 0; i < length; i++) {
+          // force the byte to a positive integer interpretation before casting to char
+          chars[i] = (0x00FF & data[i]);
+        }
+        final str = String.fromCharCodes(chars).trim();
 
-    print('------------- Рассчёт числа полей-----------------');
-    var fieldsCount = (headerSize-33)/32;
-    print('Число полей - $fieldsCount');
+        final res = int.tryParse(str);
 
-    for(var i=0; i<fieldsCount; i++) {
-      fieldsDescription(bytes.sublist(32*(i+1), 32*(i+2)));
+        return res;
+
+      case 'L':
+        // L (Логический)
+        // ? Y y N n T t F f (? - не инициализировано)
+        switch(utf8decoder.convert(data)) {
+          case 'Y':
+          case 'y':
+          case 'T':
+          case 't':
+            return true;
+          case 'N':
+          case 'n':
+          case 'F':
+          case 'f':
+            return false;
+          case '?':
+            return null;
+        }
+        return null;
+
     }
-
-    print(columns);
-
-
-    print('Переход к записям');*/
-
-
-
-    //fieldsDescription(bytes.sublist(64, 64+32));
+    throw Exception('Type $type not supported');
 
   }
 }
 
+class DBFRow {
+  final Map<String, dynamic> objectsMap = {};
+}
 
 class DBFHeader {
 
@@ -250,20 +258,15 @@ class DBFColumn {
     reservedArea = bytes.sublist(12, 16);
 
     //print('16 1 байт Размер поля в бинарном формате');
-    //print(bytes[16]);
     binFieldSize = bytes[16];
 
     //print('17 1 байт Порядковый номер поля в бинарном формате');
-    //print(bytes[17]);
     binFieldNumber = bytes[17];
 
     //print('18-19 2 байта Зарезервированная область');
-    //print(bytes[18]);
-    //print(bytes[19]);
     reservedArea2 = bytes.sublist(18,20);
 
     //print('20 1 байт ID рабочей области');
-    //print(bytes[20]);
     workPlaceId = bytes[20];
 
     /*print('21-30 10 байт Зарезервированная область');
@@ -273,7 +276,6 @@ class DBFColumn {
     reservedArea3 = bytes.sublist(21, 31);
 
     //print('31 1 байт Флаг MDX-поля: 01H если поле имеет метку индекса в MDX-файле, 00H - нет.');
-    //print(bytes[31]);
     mdxFieldFlag = bytes[31];
   }
 
