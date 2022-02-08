@@ -47,13 +47,13 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
   //fromCheckpoint = 'Gen-799';
 
   final GameRepository repository = GameRepository(
-    gimmuCProvider: GimmuCProvider(),
-    gimmuProvider: GimmuProvider(),
+    gimmuCProvider: DBFObjectsProvider(assetsPath: smnsD2ImmuCProviderAssetPath, idKey: smnsD2ImmuCProviderIDkey),
+    gimmuProvider: DBFObjectsProvider(assetsPath: smnsD2ImmuProviderAssetPath, idKey: smnsD2ImmuProviderIDkey),
     gattacksProvider: DBFObjectsProvider(assetsPath: smnsD2AttacksProviderAssetPath, idKey: smnsD2AttacksProviderIDkey),
     gunitsProvider: DBFObjectsProvider(assetsPath: smnsD2UnitsProviderAssetPath, idKey: smnsD2UnitsProviderIDkey),
-    tglobalProvider: TglobalProvider(),
+    tglobalProvider: DBFObjectsProvider(assetsPath: smnsD2GlobalProviderAssetPath, idKey: smnsD2GlobalProviderIDkey),
     gtransfProvider: DBFObjectsProvider(assetsPath: smnsD2TransfProviderAssetPath, idKey: smnsD2TransfProviderIDkey),
-    gDynUpgrProvider: GDynUpgrProvider(),
+    gDynUpgrProvider: DBFObjectsProvider(assetsPath: smnsD2GDynUpgProviderAssetPath, idKey: smnsD2GDynUpgProviderIDkey),
   );
   repository.init();
   // Создание юнитов
@@ -111,12 +111,12 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
       version: 1);
 
   final repo = GameRepository(
-      gimmuCProvider: GimmuCProvider(),
-      gimmuProvider: GimmuProvider(),
+      gimmuCProvider: DBFObjectsProvider(assetsPath: smnsD2ImmuCProviderAssetPath, idKey: smnsD2ImmuCProviderIDkey),
+      gimmuProvider: DBFObjectsProvider(assetsPath: smnsD2ImmuProviderAssetPath, idKey: smnsD2ImmuProviderIDkey),
       gtransfProvider: DBFObjectsProvider(assetsPath: smnsD2TransfProviderAssetPath, idKey: smnsD2TransfProviderIDkey),
-      tglobalProvider: TglobalProvider(),
+      tglobalProvider: DBFObjectsProvider(assetsPath: smnsD2GlobalProviderAssetPath, idKey: smnsD2GlobalProviderIDkey),
       gattacksProvider: DBFObjectsProvider(assetsPath: smnsD2AttacksProviderAssetPath, idKey: smnsD2AttacksProviderIDkey),
-      gDynUpgrProvider: GDynUpgrProvider(),
+      gDynUpgrProvider: DBFObjectsProvider(assetsPath: smnsD2GDynUpgProviderAssetPath, idKey: smnsD2GDynUpgProviderIDkey),
       gunitsProvider: DBFObjectsProvider(assetsPath: smnsD2UnitsProviderAssetPath, idKey: smnsD2UnitsProviderIDkey));
 
   final gc = GeneticController(

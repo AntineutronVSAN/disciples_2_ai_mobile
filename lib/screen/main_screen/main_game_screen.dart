@@ -38,12 +38,12 @@ class MainGameScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final repo = GameRepository(
-        gimmuCProvider: GimmuCProvider(),
-        gimmuProvider: GimmuProvider(),
+        gimmuCProvider: DBFObjectsProvider(assetsPath: smnsD2ImmuCProviderAssetPath, idKey: smnsD2ImmuCProviderIDkey),
+        gimmuProvider: DBFObjectsProvider(assetsPath: smnsD2ImmuProviderAssetPath, idKey: smnsD2ImmuProviderIDkey),
         gtransfProvider: DBFObjectsProvider(assetsPath: smnsD2TransfProviderAssetPath, idKey: smnsD2TransfProviderIDkey),
-        tglobalProvider: TglobalProvider(),
+        tglobalProvider: DBFObjectsProvider(assetsPath: smnsD2GlobalProviderAssetPath, idKey: smnsD2GlobalProviderIDkey),
         gattacksProvider: DBFObjectsProvider(assetsPath: smnsD2AttacksProviderAssetPath, idKey: smnsD2AttacksProviderIDkey),
-        gDynUpgrProvider: GDynUpgrProvider(),
+        gDynUpgrProvider: DBFObjectsProvider(assetsPath: smnsD2GDynUpgProviderAssetPath, idKey: smnsD2GDynUpgProviderIDkey),
         gunitsProvider: DBFObjectsProvider(assetsPath: smnsD2UnitsProviderAssetPath, idKey: smnsD2UnitsProviderIDkey));
 
     return BlocProvider<GameBloc>(

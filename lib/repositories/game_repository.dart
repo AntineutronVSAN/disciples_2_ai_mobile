@@ -21,12 +21,12 @@ class GameRepository implements GameRepositoryBase {
   final Random random = Random();
 
   final GameObjectsProviderBaseV2 gunitsProvider;
-  final TglobalProvider tglobalProvider;
+  final GameObjectsProviderBaseV2 tglobalProvider;
   final GameObjectsProviderBaseV2 gattacksProvider;
   final GameObjectsProviderBaseV2 gtransfProvider;
-  final GDynUpgrProvider gDynUpgrProvider;
-  final GimmuCProvider gimmuCProvider;
-  final GimmuProvider gimmuProvider;
+  final GameObjectsProviderBaseV2 gDynUpgrProvider;
+  final GameObjectsProviderBaseV2 gimmuCProvider;
+  final GameObjectsProviderBaseV2 gimmuProvider;
 
   /// Мапа всех игровых юнитов с ID
   //final Map<String, Gunits> _allGameUnits = {};
@@ -91,16 +91,27 @@ class GameRepository implements GameRepositoryBase {
     await gunitsProvider.init();
     await gattacksProvider.init();
     await gtransfProvider.init();
+    await gimmuCProvider.init();
+    await gimmuProvider.init();
+    await gDynUpgrProvider.init();
+    await tglobalProvider.init();
 
     final evals = <PairValues<String, double>>[];
 
     // Достаются юниты
     for (var unit in gunitsProvider.objects) {
-      Tglobal newGameUnitText;
-      GDynUpgr dynUpgradeParams;
+
+      if (unit['HIT_POINT'] == null) {
+        print('WARNING: unit ${unit['UNIT_ID']} has not hit points');
+        continue;
+      }
+
+      Map<String, dynamic> newGameUnitText;
+      Map<String, dynamic> dynUpgradeParams;
       try {
         newGameUnitText =
-          tglobalProvider.objects.firstWhere((e) => e.txt_id == unit['NAME_TXT']);
+          //tglobalProvider.objects.firstWhere((e) => e.txt_id == unit['NAME_TXT']);
+          tglobalProvider.objects.firstWhere((e) => e['TXT_ID'] == unit['NAME_TXT']);
 
       } catch(e) {
         print('WARNING: Unknown unit name. ID = ${unit['UNIT_ID']}');
@@ -125,7 +136,8 @@ class GameRepository implements GameRepositoryBase {
       final unitDynUpgrade = unit['DYN_UPG1'];
       try {
         dynUpgradeParams = gDynUpgrProvider.objects
-            .firstWhere((element) => element.upgrade_id == unitDynUpgrade);
+            //.firstWhere((element) => element.upgrade_id == unitDynUpgrade);
+            .firstWhere((element) => element['UPGRADE_ID'] == unitDynUpgrade);
       } catch(e) {
         print('WARNING: Unknown unit DYN_UPG1. ID = ${unit['UNIT_ID']}');
         continue;
@@ -198,20 +210,36 @@ class GameRepository implements GameRepositoryBase {
       final hasSourceImmune = <int, bool>{};
 
       final unitClassImmu = gimmuCProvider.objects
-          .where((element) => element.unit_id == unit['UNIT_ID']);
+          //.where((element) => element.unit_id == unit['UNIT_ID']);
+          .where((element) => element['UNIT_ID'] == unit['UNIT_ID']);
       final unitSourceImmu = gimmuProvider.objects
-          .where((element) => element.unit_id == unit['UNIT_ID']);
+          //.where((element) => element.unit_id == unit['UNIT_ID']);
+          .where((element) => element['UNIT_ID'] == unit['UNIT_ID']);
 
       for (var i in unitClassImmu) {
-        final immuC = i.immunity;
-        final cat = i.immunecat;
+        //final immuC = i.immunity;
+        final immuC = i['IMMUNITY'];
+        if (immuC == null) {
+          continue;
+        }
+        //final cat = i.immunecat;
+        final cat = i['IMMUNECAT'];
         classImmuneMap[immuC] = immuneCategoryFromValue(cat);
         hasClassImmune[immuC] = true;
       }
 
       for (var i in unitSourceImmu) {
-        final immuC = i.immunity;
-        final cat = i.immunecat;
+        //final immuC = i.immunity;
+        final immuC = i['IMMUNITY'];
+        if (immuC == null) {
+          continue;
+        }
+        //final cat = i.immunecat;
+        final cat = i['IMMUNECAT'];
+        if (cat == 0 || cat == null) {
+          print('WARNING: suorce immune troubles - category = $cat');
+          continue;
+        }
         sourceImmuneMap[immuC] = immuneCategoryFromValue(cat);
         hasSourceImmune[immuC] = true;
       }
@@ -220,15 +248,22 @@ class GameRepository implements GameRepositoryBase {
         unitConstParams: UnitConstParams(
             maxHp: unit['HIT_POINT'],
             isDoubleAttack: unit['ATCK_TWICE'] ?? false,
-            unitName: newGameUnitText.text,
+            //unitName: newGameUnitText.text,
+            unitName: newGameUnitText['TEXT'],
             unitGameID: unit['UNIT_ID'],
             unitWarId: "",
-            upgradeArmor: dynUpgradeParams.armor ?? 0,
+            /*upgradeArmor: dynUpgradeParams.armor ?? 0,
             upgradeDamage: dynUpgradeParams.damage ?? 0,
             upgradeHeal: dynUpgradeParams.heal ?? 0,
             upgradeInitiative: dynUpgradeParams.initiative ?? 0,
             upgradePower: dynUpgradeParams.power ?? 0,
-            upgradeHp: dynUpgradeParams.hit_point,
+            upgradeHp: dynUpgradeParams.hit_point,*/
+            upgradeArmor: dynUpgradeParams['ARMOR'] ?? 0,
+            upgradeDamage: dynUpgradeParams['DAMAGE'] ?? 0,
+            upgradeHeal: dynUpgradeParams['HEAL'] ?? 0,
+            upgradeInitiative: dynUpgradeParams['INITIATIVE'] ?? 0,
+            upgradePower: dynUpgradeParams['POWER'] ?? 0,
+            upgradeHp: dynUpgradeParams['HIT_POINT'] ?? 0,
             overLevel: false),
 
         isMoving: false,

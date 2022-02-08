@@ -26,12 +26,13 @@ import 'package:d2_ai_v2/utils/math_utils.dart';
 void main() {
   final GameRepository gameRepository = GameRepository(
       gunitsProvider: DBFObjectsProvider(assetsPath: smnsD2UnitsProviderAssetPath, idKey: smnsD2UnitsProviderIDkey),
-      tglobalProvider: TglobalProvider(),
+      tglobalProvider: DBFObjectsProvider(assetsPath: smnsD2GlobalProviderAssetPath, idKey: smnsD2GlobalProviderIDkey),
       gattacksProvider: DBFObjectsProvider(assetsPath: smnsD2AttacksProviderAssetPath, idKey: smnsD2AttacksProviderIDkey),
       gtransfProvider: DBFObjectsProvider(assetsPath: smnsD2TransfProviderAssetPath, idKey: smnsD2TransfProviderIDkey),
-      gDynUpgrProvider: GDynUpgrProvider(),
-      gimmuProvider: GimmuProvider(),
-      gimmuCProvider: GimmuCProvider())..init();
+      gDynUpgrProvider: DBFObjectsProvider(assetsPath: smnsD2GDynUpgProviderAssetPath, idKey: smnsD2GDynUpgProviderIDkey),
+      gimmuProvider: DBFObjectsProvider(assetsPath: smnsD2ImmuProviderAssetPath, idKey: smnsD2ImmuProviderIDkey),
+      gimmuCProvider: DBFObjectsProvider(assetsPath: smnsD2ImmuCProviderAssetPath, idKey: smnsD2ImmuCProviderIDkey),
+  )..init();
 
   final Unit testUnit = gameRepository.getRandomUnit();
 
