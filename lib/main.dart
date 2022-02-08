@@ -5,6 +5,7 @@ import 'package:d2_ai_v2/services/notification_delegate.dart';
 import 'package:d2_ai_v2/services/push_delegate.dart';
 import 'package:d2_ai_v2/styles.dart';
 import 'package:d2_ai_v2/utils/svg_picture.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
@@ -33,10 +34,12 @@ void main() async {
 
   await FirebaseServices.initFirebaseApp();
   await FireBaseAnalytics.init();
-  FireBaseAnalytics.registerTestEvent();
+  //FireBaseAnalytics.registerTestEvent();
 
   //await FirebasePushHelper.init();
   final pushDelegate = await initializePush();
+  //FirebaseCrashlytics.instance.recordError('testError', StackTrace.empty);
+  //FirebaseCrashlytics.instance.log('LOG MESSAGE');
   runApp(const D2AiApp());
 }
 
