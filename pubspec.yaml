@@ -50,6 +50,7 @@ dependencies:
   flutter_local_notifications: ^9.2.0
   package_info: ^2.0.2
   rxdart: ^0.27.3
+  charset_converter: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -78,6 +79,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/dbf/smns_path_0_999/Globals/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

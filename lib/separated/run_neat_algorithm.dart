@@ -1,21 +1,12 @@
-import 'dart:math';
 
 import 'package:d2_ai_v2/models/providers.dart';
-import 'package:d2_ai_v2/optim_algorythm/neat/adjacency_dict.dart';
-import 'package:d2_ai_v2/optim_algorythm/neat/id_calculator.dart';
-import 'package:d2_ai_v2/optim_algorythm/neat/trees/tree_v1.dart';
-import 'package:d2_ai_v2/providers/game_models/units_provider.dart';
 import 'package:d2_ai_v2/repositories/game_repository.dart';
-import 'package:d2_ai_v2/utils/crc.dart';
-
 import '../models/g_immu/g_immu_provider.dart';
 import '../models/g_immu_c/g_immu_c_provider.dart';
-import '../optim_algorythm/neat/edges/edge_v1.dart';
-import '../optim_algorythm/neat/nodes/node_v1.dart';
 
 void main() async {
 
-  final a = GameRepository(
+  /*final a = GameRepository(
       gimmuCProvider: GimmuCProvider(),
       gimmuProvider: GimmuProvider(),
       gattacksProvider: GattacksProvider(),
@@ -28,7 +19,7 @@ void main() async {
   print(a.gunitsProvider.objects.length);
 
   final test = FileUnitsProvider(filePath: 'asfd');
-  await test.init();
+  await test.init();*/
 
   //await startNeatAlgorithm();
 

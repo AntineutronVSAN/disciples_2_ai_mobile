@@ -1,5 +1,6 @@
 import 'package:collection/src/iterable_extensions.dart';
 import 'package:d2_ai_v2/ai_controller/ai_contoller.dart';
+import 'package:d2_ai_v2/d2_entities/unit/unit_provider.dart';
 import 'package:d2_ai_v2/dart_nural/networks/linear_network_v2.dart';
 import 'package:d2_ai_v2/models/providers.dart';
 import 'package:d2_ai_v2/optim_algorythm/factories/neat_factory.dart';
@@ -48,10 +49,10 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
   final GameRepository repository = GameRepository(
     gimmuCProvider: GimmuCProvider(),
     gimmuProvider: GimmuProvider(),
-    gattacksProvider: GattacksProvider(),
-    gunitsProvider: GunitsProvider(),
+    gattacksProvider: DBFObjectsProvider(assetsPath: smnsD2AttacksProviderAssetPath, idKey: smnsD2AttacksProviderIDkey),
+    gunitsProvider: DBFObjectsProvider(assetsPath: smnsD2UnitsProviderAssetPath, idKey: smnsD2UnitsProviderIDkey),
     tglobalProvider: TglobalProvider(),
-    gtransfProvider: GtransfProvider(),
+    gtransfProvider: DBFObjectsProvider(assetsPath: smnsD2TransfProviderAssetPath, idKey: smnsD2TransfProviderIDkey),
     gDynUpgrProvider: GDynUpgrProvider(),
   );
   repository.init();
@@ -112,11 +113,11 @@ Future<void> startOnlyGeneticAlgorithm(List<String> args) async {
   final repo = GameRepository(
       gimmuCProvider: GimmuCProvider(),
       gimmuProvider: GimmuProvider(),
-      gtransfProvider: GtransfProvider(),
+      gtransfProvider: DBFObjectsProvider(assetsPath: smnsD2TransfProviderAssetPath, idKey: smnsD2TransfProviderIDkey),
       tglobalProvider: TglobalProvider(),
-      gattacksProvider: GattacksProvider(),
+      gattacksProvider: DBFObjectsProvider(assetsPath: smnsD2AttacksProviderAssetPath, idKey: smnsD2AttacksProviderIDkey),
       gDynUpgrProvider: GDynUpgrProvider(),
-      gunitsProvider: GunitsProvider());
+      gunitsProvider: DBFObjectsProvider(assetsPath: smnsD2UnitsProviderAssetPath, idKey: smnsD2UnitsProviderIDkey));
 
   final gc = GeneticController(
     gameController: GameController(

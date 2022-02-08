@@ -10,6 +10,7 @@ import 'package:d2_ai_v2/controllers/game_controller/game_controller.dart';
 import 'package:d2_ai_v2/controllers/imunne_controller.dart';
 import 'package:d2_ai_v2/controllers/initiative_shuffler.dart';
 import 'package:d2_ai_v2/controllers/power_controller.dart';
+import 'package:d2_ai_v2/d2_entities/unit/unit_provider.dart';
 import 'package:d2_ai_v2/models/g_immu/g_immu_provider.dart';
 import 'package:d2_ai_v2/models/g_immu_c/g_immu_c_provider.dart';
 import 'package:d2_ai_v2/models/providers.dart';
@@ -23,6 +24,7 @@ import 'package:d2_ai_v2/widgets/clicable_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../const.dart';
 import '../../styles.dart';
 import 'components/ai_moving_widget.dart';
 import 'components/rating_widget.dart';
@@ -38,11 +40,11 @@ class MainGameScreen extends StatelessWidget {
     final repo = GameRepository(
         gimmuCProvider: GimmuCProvider(),
         gimmuProvider: GimmuProvider(),
-        gtransfProvider: GtransfProvider(),
+        gtransfProvider: DBFObjectsProvider(assetsPath: smnsD2TransfProviderAssetPath, idKey: smnsD2TransfProviderIDkey),
         tglobalProvider: TglobalProvider(),
-        gattacksProvider: GattacksProvider(),
+        gattacksProvider: DBFObjectsProvider(assetsPath: smnsD2AttacksProviderAssetPath, idKey: smnsD2AttacksProviderIDkey),
         gDynUpgrProvider: GDynUpgrProvider(),
-        gunitsProvider: GunitsProvider());
+        gunitsProvider: DBFObjectsProvider(assetsPath: smnsD2UnitsProviderAssetPath, idKey: smnsD2UnitsProviderIDkey));
 
     return BlocProvider<GameBloc>(
         create: (BuildContext context) => GameBloc(

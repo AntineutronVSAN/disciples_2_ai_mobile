@@ -28,13 +28,14 @@ N:=(HeaderSize-33)/32 байт.
 
 Байты каждой строки начинаются с символа на удаление!
 
-
+// cp866
 
 */
 
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:charset_converter/charset_converter.dart';
 import 'package:d2_ai_v2/utils/bytes_utils.dart';
 
 class DBFReader {
@@ -48,7 +49,9 @@ class DBFReader {
 
   static const utf8decoder = Utf8Decoder();
 
-  void read(Uint8List bytes) {
+  bool fileRead = false;
+
+  Future<void> read(Uint8List bytes) async {
 
     header = DBFHeader(bytes: bytes);
     for(var i=0; i<header.fieldsCount; i++) {
@@ -77,29 +80,41 @@ class DBFReader {
         final colName = col.fieldName;
 
         final recordAllBytes = bodyBytes.sublist(caretPos, caretPos + dataLength);
-        final value = _getValueByType(recordAllBytes, dataType, dataLength);
+        final value = await _getValueByType(recordAllBytes, dataType, dataLength);
 
-        newRow.objectsMap[col.fieldName] = value;
+        newRow.objectsMap[col.fieldName.replaceAll(RegExp('[^A-Za-z0-9_]'), '')] = value;
 
         caretPos+=dataLength;
       }
       rows.add(newRow);
     }
 
-    print(this);
+    //print(this);
+    fileRead = true;
   }
 
   Uint8List toBytes() {
     throw Exception('Not implemented');
   }
 
-  dynamic _getValueByType(Uint8List data, String type, int length) {
+  Future<dynamic> _getValueByType(Uint8List data, String type, int length) async {
 
     switch (type) {
       case 'C':
         // C (Символы)
         // Все символы кодовой страницы OEM
-        return utf8decoder.convert(data);
+        try {
+          return utf8decoder.convert(data);
+        } catch(e) {
+          //final res = base64.encode(data);
+
+          //final res = AsciiCodec().decode(data);
+          final res = await CharsetConverter.decode('cp866', data);
+          //final en = Encoding();
+
+          return res!.trim();
+        }
+
       case 'N':
         // N (Числовой)
         // - . 0 1 2 3 4 5 6 7 8 9
@@ -246,7 +261,7 @@ class DBFColumn {
       list[i] = bytes[i];
     }
     final name = const Utf8Decoder().convert(list);
-    fieldName = name;
+    fieldName = name.trim(); // TODO Тут всё не просто
 
     //print('11 1 байт Тип поля в ASCII (C, D, F, L, M или N)');
     list = Uint8List(1);
