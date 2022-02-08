@@ -1,4 +1,3 @@
-
 import 'package:d2_ai_v2/ai_controller/ai_controller_ab_pruning.dart';
 import 'package:d2_ai_v2/bloc/bloc.dart';
 import 'package:d2_ai_v2/bloc/events.dart';
@@ -33,54 +32,62 @@ class MainGameScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final repo = GameRepository(
-        gimmuCProvider: DBFObjectsProvider(assetsPath: smnsD2ImmuCProviderAssetPath, idKey: smnsD2ImmuCProviderIDkey),
-        gimmuProvider: DBFObjectsProvider(assetsPath: smnsD2ImmuProviderAssetPath, idKey: smnsD2ImmuProviderIDkey),
-        gtransfProvider: DBFObjectsProvider(assetsPath: smnsD2TransfProviderAssetPath, idKey: smnsD2TransfProviderIDkey),
-        tglobalProvider: DBFObjectsProvider(assetsPath: smnsD2GlobalProviderAssetPath, idKey: smnsD2GlobalProviderIDkey),
-        gattacksProvider: DBFObjectsProvider(assetsPath: smnsD2AttacksProviderAssetPath, idKey: smnsD2AttacksProviderIDkey),
-        gDynUpgrProvider: DBFObjectsProvider(assetsPath: smnsD2GDynUpgProviderAssetPath, idKey: smnsD2GDynUpgProviderIDkey),
-        gunitsProvider: DBFObjectsProvider(assetsPath: smnsD2UnitsProviderAssetPath, idKey: smnsD2UnitsProviderIDkey));
+        gimmuCProvider: DBFObjectsProvider(
+            assetsPath: smnsD2ImmuCProviderAssetPath,
+            idKey: smnsD2ImmuCProviderIDkey),
+        gimmuProvider: DBFObjectsProvider(
+            assetsPath: smnsD2ImmuProviderAssetPath,
+            idKey: smnsD2ImmuProviderIDkey),
+        gtransfProvider: DBFObjectsProvider(
+            assetsPath: smnsD2TransfProviderAssetPath,
+            idKey: smnsD2TransfProviderIDkey),
+        tglobalProvider: DBFObjectsProvider(
+            assetsPath: smnsD2GlobalProviderAssetPath,
+            idKey: smnsD2GlobalProviderIDkey),
+        gattacksProvider: DBFObjectsProvider(
+            assetsPath: smnsD2AttacksProviderAssetPath,
+            idKey: smnsD2AttacksProviderIDkey),
+        gDynUpgrProvider: DBFObjectsProvider(
+            assetsPath: smnsD2GDynUpgProviderAssetPath,
+            idKey: smnsD2GDynUpgProviderIDkey),
+        gunitsProvider: DBFObjectsProvider(
+            assetsPath: smnsD2UnitsProviderAssetPath,
+            idKey: smnsD2UnitsProviderIDkey));
 
     return BlocProvider<GameBloc>(
-        create: (BuildContext context) => GameBloc(
-            GameSceneState([], allUnits: []),
-            repository: repo,
-            controller: GameController(
-              attackController: AttackController(
-                immuneController: ImmuneController(),
-                gameRepository: repo,
-                powerController: PowerController(
-                  randomExponentialDistribution:
-                      RandomExponentialDistribution(),
-                ),
-                damageScatter: DamageScatter(
-                  randomExponentialDistribution:
-                      RandomExponentialDistribution(),
-                ),
-                attackDurationController: AttackDurationController(),
-              ),
-              initiativeShuffler: InitiativeShuffler(
-                  randomExponentialDistribution:
-                      RandomExponentialDistribution()),
+      create: (BuildContext context) => GameBloc(
+          GameSceneState([], allUnits: []),
+          repository: repo,
+          controller: GameController(
+            attackController: AttackController(
+              immuneController: ImmuneController(),
               gameRepository: repo,
+              powerController: PowerController(
+                randomExponentialDistribution: RandomExponentialDistribution(),
+              ),
+              damageScatter: DamageScatter(
+                randomExponentialDistribution: RandomExponentialDistribution(),
+              ),
+              attackDurationController: AttackDurationController(),
             ),
-            //aiController: AiController()),
-            aiController:
-                AlphaBetaPruningController(treeDepth: treeDepth, isTopTeam: true)),
-        child: BlocConsumer<GameBloc, GameState>(
-          listener: (context, state) {
-            if (state.errorMessage != null) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(state.errorMessage!),
-                duration: const Duration(seconds: 1),
-              ));
-            }
-          },
-          builder: (context, state) {
-              return MainGameScreenBody();
-            }
+            initiativeShuffler: InitiativeShuffler(
+                randomExponentialDistribution: RandomExponentialDistribution()),
+            gameRepository: repo,
           ),
-        );
+          //aiController: AiController()),
+          aiController: AlphaBetaPruningController(
+              treeDepth: treeDepth, isTopTeam: true)),
+      child: BlocConsumer<GameBloc, GameState>(listener: (context, state) {
+        if (state.errorMessage != null) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(state.errorMessage!),
+            duration: const Duration(seconds: 1),
+          ));
+        }
+      }, builder: (context, state) {
+        return MainGameScreenBody();
+      }),
+    );
   }
 }
 
@@ -148,9 +155,10 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
                       if (bloc.state.aiMoving)
                         AIMovingWidget(
                           treeDepth: treeDepth,
-                          nodesPerSecond: bloc.state.nodesPerSecond ?? 0, height: 50,),
-                      if (!bloc.state.aiMoving)
-                        _getActionsWidget(context),
+                          nodesPerSecond: bloc.state.nodesPerSecond ?? 0,
+                          height: 50,
+                        ),
+                      if (!bloc.state.aiMoving) _getActionsWidget(context),
 
                       MainScreenTeamWidget(
                         onLongPress: (val) {
@@ -297,7 +305,6 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
   }
 
   Widget _getHeader(BuildContext context) {
-
     final bloc = BlocProvider.of<GameBloc>(context);
 
     final isPvp = bloc.state.warScreenState == WarScreenState.pvp;
@@ -314,13 +321,11 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
             if (!isBattle)
               _getTextButton(
                   text: 'Старт',
-                  onPressed: () => bloc
-                      .add(OnPVPStartedEvent())),
+                  onPressed: () => bloc.add(OnPVPStartedEvent())),
             if (!isBattle)
               _getTextButton(
                   text: 'Страт с ИИ',
-                  onPressed: () => bloc
-                      .add(OnPVEStartedEvent())),
+                  onPressed: () => bloc.add(OnPVEStartedEvent())),
             /*_getTextButton(
                 text: 'Start EVE',
                 onPressed: () => BlocProvider.of<GameBloc>(context)
@@ -412,10 +417,13 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
     );
   }*/
 
-  void _onCellLongPress(int index, List<Unit> cells, BuildContext context) async {
+  void _onCellLongPress(
+      int index, List<Unit> cells, BuildContext context) async {
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ScreensNavigator.getUnitInfoScreen(unit: cells[index])),
+      MaterialPageRoute(
+          builder: (context) =>
+              ScreensNavigator.getUnitInfoScreen(unit: cells[index])),
     );
     print(result);
   }
@@ -425,11 +433,13 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
       padding: const EdgeInsets.symmetric(horizontal: 5),
       child: TextButton(
         onPressed: onPressed,
-        child: Text(text, maxLines: 2,),
-        style: TextButton.styleFrom(
-          primary: Colors.black,
-          backgroundColor: Colors.white.withOpacity(0.5)
+        child: Text(
+          text,
+          maxLines: 2,
         ),
+        style: TextButton.styleFrom(
+            primary: Colors.black,
+            backgroundColor: Colors.white.withOpacity(0.5)),
       ),
     );
   }
@@ -488,18 +498,21 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
                                 onTap: () {
                                   Navigator.pop(context);
                                   bloc.add(OnUnitSelected(
-                                      unitID: state.allUnits[index].unitConstParams.unitGameID,
+                                      unitID: state.allUnits[index]
+                                          .unitConstParams.unitGameID,
                                       cellNumber: cellNumber));
                                 },
                                 child: Card(
                                   color: Colors.white54,
                                   elevation: 3,
                                   child: ListTile(
-                                    title: Text(state.allUnits[index].unitConstParams.unitName),
+                                    title: Text(state.allUnits[index]
+                                        .unitConstParams.unitName),
                                     trailing:
                                         const Icon(Icons.arrow_forward_ios),
                                     leading: Text(
-                                      state.allUnits[index].unitConstParams.unitName[0],
+                                      state.allUnits[index].unitConstParams
+                                          .unitName[0],
                                       style: const TextStyle(fontSize: 20),
                                     ),
                                   ),

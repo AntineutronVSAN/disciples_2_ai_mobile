@@ -114,14 +114,16 @@ class _D2AiAppBodyState extends State<D2AiAppBody> {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: selectedIndex,
-        items: [
+        items: const [
           BottomNavigationBarItem(
-            icon: const SvgIcon(asset: 'ic_ai.svg', size: 30, color: null,),
-            title: Text("Битва", style: GameStyles.getMainTextStyle(),),
+            icon: SvgIcon(asset: 'ic_ai.svg', size: 30, color: null,),
+            //title: Text("Битва", style: GameStyles.getMainTextStyle(),),
+            label: "Битва",
           ),
           BottomNavigationBarItem(
-            icon: const SvgIcon(asset: 'ic_analytics.svg', size: 30, color: null,),
-            title: Text("Анализ", style: GameStyles.getMainTextStyle(),),
+            icon: SvgIcon(asset: 'ic_analytics.svg', size: 30, color: null,),
+            //title: Text("Анализ", style: GameStyles.getMainTextStyle(),),
+            label: "Анализ",
           ),
           /*BottomNavigationBarItem(
             icon: const SvgIcon(asset: 'ic_training.svg', size: 30, color: null,),
