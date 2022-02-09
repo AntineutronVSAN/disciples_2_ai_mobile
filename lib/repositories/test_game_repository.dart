@@ -37,7 +37,7 @@ class TestGameRepository implements GameRepositoryBase {
   }
 
   @override
-  void init() {
+  Future<void> init() async {
     // TODO: implement init
   }
 

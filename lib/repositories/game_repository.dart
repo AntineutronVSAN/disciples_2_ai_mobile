@@ -81,7 +81,7 @@ class GameRepository implements GameRepositoryBase {
   }
 
   @override
-  void init() async {
+  Future<void> init() async {
 
     await gunitsProvider.init();
     await gattacksProvider.init();

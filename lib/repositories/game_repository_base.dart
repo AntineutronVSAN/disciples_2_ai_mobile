@@ -11,7 +11,7 @@ abstract class GameRepositoryBase {
   List<Unit> getAllUnits();
   Unit? getTransformUnitByAttackId(String attckId, {bool isBig=false});
 
-  void init();
+  Future<void> init();
   Unit getRandomUnit({RandomUnitOptions? options});
   Unit getCopyUnitByName(String name);
   Unit getCopyUnitById(String id);

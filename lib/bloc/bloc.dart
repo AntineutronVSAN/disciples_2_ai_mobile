@@ -66,14 +66,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       GameRepositoryBase.globalEmptyUnit,
       GameRepositoryBase.globalEmptyUnit,
     ]);
-    repository.init();
-    _allUnits.addAll(repository.getAllUnits());
-    for (var element in _allUnits) {
-      _allUnitsMap[element.unitConstParams.unitGameID] = element;
-    }
-    initialState.allUnits.addAll(_allUnits);
 
-    initialState.units.addAll(_units);
 
     on<OnPVPStartedEvent>(
         (event, emit) => _handleEvent(() => _onPVPStarted(event, emit)));
@@ -104,7 +97,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
     on<OnUnitsLoad>(
         (event, emit) => _handleEvent(() => _onUnitsLoad(event, emit)));
+
+    on<InitialEvent>(
+            (event, emit) => _handleEvent(() => _onInitial(event, emit)));
   }
+
+
 
   Future<void> _handleEvent(Function() func) async {
     if (canAcceptNewEvent) {
@@ -118,6 +116,19 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   void onChange(Change<GameState> change) {
     // TODO: implement onChange
     super.onChange(change);
+  }
+
+  Future<void> _onInitial(InitialEvent event, Emitter emit) async {
+    emit(state.copyWith(loading: true));
+    await repository.init(); // todo Нужно ждать
+    _allUnits.addAll(repository.getAllUnits());
+    for (var element in _allUnits) {
+      _allUnitsMap[element.unitConstParams.unitGameID] = element;
+    }
+    state.allUnits.addAll(_allUnits);
+
+    state.units.addAll(_units);
+    emit(state.copyWith(loading: false));
   }
 
   Future<void> _onUnitsLoad(OnUnitsLoad event, Emitter emit) async {

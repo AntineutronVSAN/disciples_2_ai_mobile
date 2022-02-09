@@ -56,7 +56,7 @@ class MainGameScreen extends StatelessWidget {
 
     return BlocProvider<GameBloc>(
       create: (BuildContext context) => GameBloc(
-          GameSceneState([], allUnits: []),
+          GameSceneState([], allUnits: [], loading: true),
           repository: repo,
           controller: GameController(
             attackController: AttackController(
@@ -76,7 +76,7 @@ class MainGameScreen extends StatelessWidget {
           ),
           //aiController: AiController()),
           aiController: AlphaBetaPruningController(
-              treeDepth: treeDepth, isTopTeam: true)),
+              treeDepth: treeDepth, isTopTeam: true))..add(InitialEvent()),
       child: BlocConsumer<GameBloc, GameState>(listener: (context, state) {
         if (state.errorMessage != null) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -143,6 +143,7 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
                       //_getTeamItems(topTeam: true),
                       //_getTeamWidgets(context, true),
                       MainScreenTeamWidget(
+                        loading: bloc.state.loading ?? false,
                         onLongPress: (val) {
                           _onCellLongPress(val, bloc.state.units, context);
                         },
@@ -161,6 +162,7 @@ class _MainGameScreenBodyState extends State<MainGameScreenBody> {
                       if (!bloc.state.aiMoving) _getActionsWidget(context),
 
                       MainScreenTeamWidget(
+                        loading: bloc.state.loading ?? false,
                         onLongPress: (val) {
                           _onCellLongPress(val, bloc.state.units, context);
                         },

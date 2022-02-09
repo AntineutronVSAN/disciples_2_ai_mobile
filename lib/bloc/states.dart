@@ -21,6 +21,8 @@ abstract class GameState {
 
   final String? errorMessage;
 
+  final bool? loading;
+
   GameState({
     required this.units,
     this.warScreenState = WarScreenState.view,
@@ -33,6 +35,7 @@ abstract class GameState {
     this.aiMoving = false,
     this.nodesPerSecond,
     this.errorMessage,
+    this.loading,
   });
 
   GameState copyWith({
@@ -47,6 +50,7 @@ abstract class GameState {
     aiMoving,
     nodesPerSecond,
     errorMessage,
+    loading,
   });
 }
 
@@ -62,7 +66,8 @@ class GameSceneState extends GameState {
     List<WarItem>? bottomTeamItems,
     bool aiMoving = false,
     int? nodesPerSecond,
-        String? errorMessage,
+    String? errorMessage,
+    bool? loading,
   }) : super(
           units: units,
           warScreenState: warScreenState,
@@ -75,6 +80,7 @@ class GameSceneState extends GameState {
       aiMoving: aiMoving,
       nodesPerSecond: nodesPerSecond,
       errorMessage: errorMessage,
+    loading: loading,
         );
 
   @override
@@ -91,6 +97,7 @@ class GameSceneState extends GameState {
     aiMoving,
     nodesPerSecond,
     errorMessage,
+    loading,
   }) {
     return GameSceneState(
       units ?? this.units,
@@ -104,6 +111,7 @@ class GameSceneState extends GameState {
         aiMoving: aiMoving ?? this.aiMoving,
         nodesPerSecond: nodesPerSecond ?? this.nodesPerSecond,
         errorMessage: errorMessage,
+        loading: loading ?? loading,
     );
   }
 }

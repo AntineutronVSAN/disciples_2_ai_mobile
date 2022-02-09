@@ -1,9 +1,8 @@
-import 'package:d2_ai_v2/d2_entities/unit/unit_provider.dart';
+
 import 'package:d2_ai_v2/screen/main_screen/main_game_screen.dart';
 import 'package:d2_ai_v2/services/firebase.dart';
 import 'package:d2_ai_v2/services/notification_delegate.dart';
 import 'package:d2_ai_v2/services/push_delegate.dart';
-import 'package:d2_ai_v2/styles.dart';
 import 'package:d2_ai_v2/utils/svg_picture.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -13,24 +12,6 @@ import 'package:flutter/material.dart';
 void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
-  /*final a = GameRepository(
-      gimmuCProvider: GimmuCProvider(),
-      gimmuProvider: GimmuProvider(),
-      gattacksProvider: GattacksProvider(),
-      gunitsProvider: GunitsProvider(),
-      gtransfProvider: GtransfProvider(),
-      gDynUpgrProvider: GDynUpgrProvider(),
-      tglobalProvider: TglobalProvider());
-  a.init();
-
-  print(a.gunitsProvider.objects.length);*/
-
-  //await DBFUnitsProvider(assetsPath: 'assets/dbf/smns_path_0_999/Globals/Gunits.dbf').init();
-
-  //final test = FileUnitsProvider(filePath: 'asfd');
-  //await test.init();
-
-
 
   await FirebaseServices.initFirebaseApp();
   await FireBaseAnalytics.init();
@@ -64,7 +45,7 @@ class D2AiApp extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return MaterialApp(
-        title: 'Flutter Demo',
+        title: 'D2 AI Tools',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),

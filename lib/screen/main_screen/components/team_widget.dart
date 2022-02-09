@@ -4,7 +4,18 @@ import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/screen/main_screen/components/unit_cell_widget.dart';
 import 'package:flutter/material.dart';
 
-class MainScreenTeamWidget extends StatelessWidget {
+import '../../../bloc_base/downloadable_stateless.dart';
+
+const teamWidgetSkeletonOptions = SkeletonOptions(
+    estimatedWidth: 300.0,
+    estimatedHeight: 200.0,
+    skeletonColor: Colors.white10,
+    padding: EdgeInsets.all(5.0),
+    info: 'Загружаем .dbf ...',
+    infoStyle: TextStyle(color: Colors.white, fontSize: 15.0),
+);
+
+class MainScreenTeamWidget extends DowloadableStateless {
 
   final bool top;
   final Function(int) onTap;
@@ -16,9 +27,10 @@ class MainScreenTeamWidget extends StatelessWidget {
     required this.top,
     required this.onTap,
     required this.onLongPress,
+    required bool loading,
   required this.units,
     required
-  }) : super(key: key);
+  }) : super(key: key, options: teamWidgetSkeletonOptions, loading: loading);
 
 
   Widget _getUnitsSection({
@@ -67,9 +79,8 @@ class MainScreenTeamWidget extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget buildBody(BuildContext context) {
     final offset = top ? 0 : 6;
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -79,64 +90,6 @@ class MainScreenTeamWidget extends StatelessWidget {
         _getUnitsSection(units: units, u1: offset + 2, u2: offset + 5),
       ],
     );
-
-    /*return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            UnitCellWidget(
-              units: units,
-              cellNumber: 0 + offset,
-              onTap: () => onTap(0 + offset),
-              onLongPress: () => onLongPress(0 + offset),
-            ),
-            UnitCellWidget(
-              units: units,
-              cellNumber: 1 + offset,
-              onTap: () => onTap(1 + offset),
-              onLongPress: () => onLongPress(1 + offset),
-            ),
-            UnitCellWidget(
-              units: units,
-              cellNumber: 2 + offset,
-              onTap: () => onTap(2 + offset),
-              onLongPress: () => onLongPress(2 + offset),
-            ),
-          ],
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            UnitCellWidget(
-              units: units,
-              cellNumber: 3 + offset,
-              onTap: () => onTap(3 + offset),
-              onLongPress: () => onLongPress(3 + offset),
-            ),
-            UnitCellWidget(
-              units: units,
-              cellNumber: 4 + offset,
-              onTap: () => onTap(4 + offset),
-              onLongPress: () => onLongPress(4 + offset),
-            ),
-            UnitCellWidget(
-              units: units,
-              cellNumber: 5 + offset,
-              onTap: () => onTap(5 + offset),
-              onLongPress: () => onLongPress(5 + offset),
-            ),
-            //_getCell(context, bloc.state, 3 + offset, bloc),
-            //_getCell(context, bloc.state, 4 + offset, bloc),
-            //_getCell(context, bloc.state, 5 + offset, bloc),
-          ],
-        ),
-      ],
-    );*/
   }
 
 
