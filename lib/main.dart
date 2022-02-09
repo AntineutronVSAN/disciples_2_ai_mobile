@@ -49,7 +49,7 @@ class D2AiApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: const D2AiAppBody());
+        home: D2AiAppBody());
   }
 }
 
@@ -136,7 +136,7 @@ class _D2AiAppBodyState extends State<D2AiAppBody> {
 
   void onTapHandler(int index)  {
     setState(() {
-      selectedIndex = index;
+      selectedIndex = 0;
     });
   }
 
