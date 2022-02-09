@@ -93,16 +93,20 @@ class _D2AiAppBodyState extends State<D2AiAppBody> {
         title: const Text("Disciples 2 clicker"),
       ),*/
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.black12,
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.black,
+
         type: BottomNavigationBarType.fixed,
         currentIndex: selectedIndex,
         items: const [
           BottomNavigationBarItem(
-            icon: SvgIcon(asset: 'ic_ai.svg', size: 30, color: null,),
+            icon: SvgIcon(asset: 'ic_ai.svg', size: 30, color: Colors.black,),
             //title: Text("Битва", style: GameStyles.getMainTextStyle(),),
             label: "Битва",
           ),
           BottomNavigationBarItem(
-            icon: SvgIcon(asset: 'ic_analytics.svg', size: 30, color: null,),
+            icon: SvgIcon(asset: 'ic_analytics.svg', size: 30, color: Colors.black,),
             //title: Text("Анализ", style: GameStyles.getMainTextStyle(),),
             label: "Анализ",
           ),
@@ -132,7 +136,7 @@ class _D2AiAppBodyState extends State<D2AiAppBody> {
 
   void onTapHandler(int index)  {
     setState(() {
-      selectedIndex = 0;
+      selectedIndex = index;
     });
   }
 

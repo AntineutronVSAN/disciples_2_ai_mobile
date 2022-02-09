@@ -32,7 +32,10 @@ abstract class GlobalState<T> {
 }
 
 class BaseState<T> {
-  const BaseState();
+
+  final bool? localLoading;
+
+  const BaseState({this.localLoading});
 
   ContentStateBase<T> toContent() => ContentStateBase(this as T);
 

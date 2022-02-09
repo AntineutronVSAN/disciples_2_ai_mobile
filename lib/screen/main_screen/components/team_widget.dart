@@ -11,7 +11,7 @@ const teamWidgetSkeletonOptions = SkeletonOptions(
     estimatedHeight: 200.0,
     skeletonColor: Colors.white10,
     padding: EdgeInsets.all(5.0),
-    info: 'Загружаем .dbf ...',
+    info: 'Загружаем файлы, пожалуйста, подождите ...',
     infoStyle: TextStyle(color: Colors.white, fontSize: 15.0),
 );
 

@@ -19,6 +19,8 @@ import 'events.dart';
 
 import 'dart:math';
 
+// TODO Ванильный блок в этом проекте не используется.
+// Необходимо использовать AdvancedBlocBase
 class GameBloc extends Bloc<GameEvent, GameState> {
   final rng = Random();
   final uuid = const Uuid();

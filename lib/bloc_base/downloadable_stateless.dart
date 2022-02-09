@@ -1,16 +1,15 @@
-
-
 import 'package:flutter/material.dart';
 
-abstract class DowloadableStateless extends StatelessWidget {
+const int switcherDurationMilliseconds = 500;
 
+abstract class DowloadableStateless extends StatelessWidget {
   final bool? loading;
   final SkeletonOptions? options;
 
-  const DowloadableStateless({Key? key,
+  const DowloadableStateless({
+    Key? key,
     this.loading,
     this.options,
-
   }) : super(key: key);
 
   Widget buildBody(BuildContext context);
@@ -18,16 +17,17 @@ abstract class DowloadableStateless extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: switcherDurationMilliseconds),
       child: (loading ?? false) && options != null
-        ? LoadingSkeleton(options: options!,)
-        : buildBody(context),
+          ? LoadingSkeleton(
+              options: options!,
+            )
+          : buildBody(context),
     );
   }
 }
 
 class LoadingSkeleton extends StatelessWidget {
-
   final SkeletonOptions options;
 
   const LoadingSkeleton({Key? key, required this.options}) : super(key: key);
@@ -37,28 +37,53 @@ class LoadingSkeleton extends StatelessWidget {
     return Padding(
       padding: options.padding,
       child: Container(
-        width: options.estimatedWidth,
-        height: options.estimatedHeight,
-        decoration: BoxDecoration(
-          color: options.skeletonColor,
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        child: options.info != null
-            ? Center(child: Text(options.info!, style: options.infoStyle,))
-            : const SizedBox.shrink(),
-      ),
+          width: options.estimatedWidth,
+          height: options.estimatedHeight,
+          decoration: BoxDecoration(
+            color: options.skeletonColor,
+            borderRadius: BorderRadius.circular(options.skeletonBorderRadius),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              options.info != null
+                  ? Text(
+                      options.info!,
+                      style: options.infoStyle,
+                      textAlign: TextAlign.center,
+                    )
+                  : const SizedBox.shrink(),
+              SizedBox(
+                height: options.infoProgressSpace,
+              ),
+              SizedBox(
+                width: options.progressIndicatorSize,
+                height: options.progressIndicatorSize,
+                child: CircularProgressIndicator(
+                  color: options.infoStyle?.color,
+                  strokeWidth: options.progressIndicatorSize /
+                      options.progressIndicatorStrokeWidthCoeff,
+                ),
+              )
+            ],
+          )),
     );
   }
 }
 
 class SkeletonOptions {
-
   final double estimatedWidth;
   final double estimatedHeight;
   final Color skeletonColor;
   final EdgeInsets padding;
   final TextStyle? infoStyle;
   final String? info;
+
+  final double progressIndicatorSize;
+  final double infoProgressSpace;
+  final int progressIndicatorStrokeWidthCoeff;
+  final double skeletonBorderRadius;
 
   const SkeletonOptions({
     required this.estimatedWidth,
@@ -67,6 +92,9 @@ class SkeletonOptions {
     required this.padding,
     this.info,
     this.infoStyle,
+    this.infoProgressSpace = 5.0,
+    this.progressIndicatorSize = 15.0,
+    this.progressIndicatorStrokeWidthCoeff = 6,
+    this.skeletonBorderRadius = 10.0,
   });
-
 }
