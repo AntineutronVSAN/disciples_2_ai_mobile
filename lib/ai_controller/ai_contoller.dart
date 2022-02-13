@@ -1,5 +1,6 @@
 /*
 
+DEPRECATED Для нового патча Сёмги
 
 Выходной вектор нейронной сети:
 
@@ -107,6 +108,9 @@ class AiController implements AiControllerBase {
   /// Игровые механики изменяют этих юнитов
   late List<Unit> unitsRefs;
 
+  AiController() {
+    throw Exception('Deprecated');
+  }
 
   @override
   void initFromIndivid(List<Unit> units, IndividualBase ind) {
@@ -298,6 +302,9 @@ List<double> _vectorFromAttack(UnitAttack? atck) {
       result.add(0.0);
       result.add(1.0);
       result.add(0.0);
+      break;
+    case TargetsCount.oneAndOneBehind:
+      // TODO: Handle this case.
       break;
   }
 

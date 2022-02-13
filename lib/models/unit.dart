@@ -446,7 +446,22 @@ class Unit {
   }
 }
 
-enum TargetsCount { one, all, any }
+enum TargetsCount {
+  one,
+  all,
+  any,
+
+  /// Ближайший юнит и две соседние цели. Урон юниту позади определяется
+  /// полем атаки [DAM_RATIO]
+  oneAndTwoNearest,
+
+  /// Ближайший юнит и одна цель за юнитом. Урон юниту позади определяется
+  /// полем атаки [DAM_RATIO]
+  oneAndOneBehind,
+
+  /// Ближайший юнит, цель рядом и цели позади за ними
+  twoFrontTwoBack
+}
 
 enum AttackType {
   weapon,
@@ -460,6 +475,20 @@ enum AttackType {
   intelligence,
 }
 
+/// 1 - Все
+/// 2 - Любая
+/// 3 - Ближайшая
+/// 8 - Один и позади (ангел)
+/// 5 - цель и ближайшие две по бокам (людоед)
+/// 14 - Одна цель и одна соседняя цель по фронту и цели за ними. (кракен)
+/// Следующая цель по фронту выбирается справа на лево (2->0, 5->3, 8->6, 11->9)
+/// 6 - Ближайшая цель и одна соседняя. Если центр, то слева на право (гигандский паук)
+/// Невозможно зацепить дальнюю цель
+/// 9 - Защитник горна. Любая цель и одна позади
+/// 7 - Мантикора
+/// 13 - Гоблин громыхун
+/// 11 - азуритовая гарга
+/// 15 - чароитовая гарга
 TargetsCount targetsCountFromReach(int reach) {
   switch (reach) {
     case 1:
@@ -467,7 +496,20 @@ TargetsCount targetsCountFromReach(int reach) {
     case 2:
       return TargetsCount.any;
     case 3:
+    case 6: // TODO
+    case 9: // TODO
+    case 7: // TODO
+    case 13: // TODO
+    case 11: // TODO
+    case 15: // TODO
       return TargetsCount.one;
+    case 8:
+      return TargetsCount.oneAndOneBehind;
+    case 5:
+      return TargetsCount.oneAndTwoNearest;
+    case 14:
+      return TargetsCount.twoFrontTwoBack;
+
   }
   throw Exception();
 }

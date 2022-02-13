@@ -314,12 +314,16 @@ class EvaluationController {
 
   double _targetsCountEvaluation(TargetsCount tc) {
     switch (tc) {
+      case TargetsCount.oneAndTwoNearest:
       case TargetsCount.one:
+      case TargetsCount.twoFrontTwoBack:
+      case TargetsCount.oneAndOneBehind:
         return targetsCountOneCoeff;
       case TargetsCount.all:
         return targetsCountAllCoeff;
       case TargetsCount.any:
         return targetsCountAnyCoeff;
+
     }
   }
 

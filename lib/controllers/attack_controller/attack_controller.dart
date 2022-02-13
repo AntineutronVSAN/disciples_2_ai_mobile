@@ -305,7 +305,52 @@ class AttackController {
         return await _handleAllTargetDamage(context);
       case TargetsCount.any:
         return await _handleAnyTargetDamage(context);
+      case TargetsCount.oneAndOneBehind:
+        return await _handleOneTargetDamage(context);
+      case TargetsCount.oneAndTwoNearest:
+        // TODO: Handle this case.
+        return await _handleOneTargetDamage(context);
+      case TargetsCount.twoFrontTwoBack:
+        // TODO: Handle this case.
+        return await _handleOneTargetDamage(context);
     }
+  }
+
+  Future<ResponseAction> _handleOneAndBehindTargetDamage(AttackContext context) async {
+    final currentUnit = context.units[context.current];
+    final targetUnit = context.units[context.target];
+    final currentUnitIsTopTeam = checkIsTopTeam(context.current);
+    final targetUnitIsTopTeam = checkIsTopTeam(context.target);
+
+    if (currentUnitIsTopTeam == targetUnitIsTopTeam) {
+      return ResponseAction.error(
+          'Юнит не может актаковать юнита из совей команды');
+    }
+
+    final canAttack = findNearestTarget(
+        unit: currentUnit,
+        index: context.current,
+        target: context.target,
+        cellHasUnit: context.cellHasUnit,
+        direction: currentUnitIsTopTeam,
+        topFrontEmpty: context.topFrontLineEmpty,
+        botFrontEmpty: context.botFrontLineEmpty,
+        currentRecursionLevel: 0);
+    if (!canAttack) {
+      return ResponseAction.error( // .unitConstParams
+          'Юнит ${currentUnit.unitConstParams.unitName} не может атаковать юнита ${targetUnit.unitConstParams.unitName}');
+    }
+
+    await _applyAttacksToUnit(currentUnit.unitAttack,
+        currentUnit.unitAttack2, context.target, context.units, current: context.current);
+    final behindIndex = getBehindIndex(context.target);
+
+    if (behindIndex != null) {
+      await _applyAttacksToUnit(currentUnit.unitAttack,
+          currentUnit.unitAttack2, behindIndex, context.units, current: context.current);
+    }
+
+    return ResponseAction.success();
   }
 
   Future<ResponseAction> _handleOneTargetDamage(AttackContext context) async {
@@ -426,6 +471,14 @@ class AttackController {
         return await _handleAllTargetHeal(context);
       case TargetsCount.any:
         return await _handleAnyTargetHeal(context);
+      case TargetsCount.oneAndOneBehind:
+        throw Exception('Лечение одного и позади?');
+      case TargetsCount.oneAndTwoNearest:
+        // TODO: Handle this case.
+        throw Exception('Лечение одного и позади?');
+      case TargetsCount.twoFrontTwoBack:
+        // TODO: Handle this case.
+        throw Exception('Лечение одного и позади?');
     }
   }
 
@@ -490,6 +543,15 @@ class AttackController {
 
       case TargetsCount.any:
         return await _handleAnyTargetDrain(context);
+      case TargetsCount.oneAndOneBehind:
+        // TODO Обработка новой атаки
+        return await _handleOneTargetDrain(context);
+      case TargetsCount.oneAndTwoNearest:
+        // TODO: Handle this case.
+        return await _handleOneTargetDrain(context);
+      case TargetsCount.twoFrontTwoBack:
+        // TODO: Handle this case.
+        return await _handleOneTargetDrain(context);
     }
   }
 
@@ -577,6 +639,15 @@ class AttackController {
 
       case TargetsCount.any:
         return await _handleAnyTargetParalyze(context);
+      case TargetsCount.oneAndOneBehind:
+        // TODO:
+        return await _handleOneTargetParalyze(context);
+      case TargetsCount.oneAndTwoNearest:
+        // TODO: Handle this case.
+        return await _handleOneTargetParalyze(context);
+      case TargetsCount.twoFrontTwoBack:
+        // TODO: Handle this case.
+        return await _handleOneTargetParalyze(context);
     }
   }
 
@@ -663,6 +734,15 @@ class AttackController {
 
       case TargetsCount.any:
         return await _handleAnyTargetFear(context);
+      case TargetsCount.oneAndOneBehind:
+        // TODO: Handle this case.
+        return await _handleOneTargetFear(context);
+      case TargetsCount.oneAndTwoNearest:
+        // TODO: Handle this case.
+        return await _handleOneTargetFear(context);
+      case TargetsCount.twoFrontTwoBack:
+        // TODO: Handle this case.
+        return await _handleOneTargetFear(context);
     }
   }
 
@@ -745,6 +825,15 @@ class AttackController {
 
       case TargetsCount.any:
         return await _handleAnyTargetPoison(context);
+      case TargetsCount.oneAndOneBehind:
+        // TODO: Handle this case.
+        return await _handleOneTargetPoison(context);
+      case TargetsCount.oneAndTwoNearest:
+        // TODO: Handle this case.
+        return await _handleOneTargetPoison(context);
+      case TargetsCount.twoFrontTwoBack:
+        // TODO: Handle this case.
+        return await _handleOneTargetPoison(context);
     }
   }
 
@@ -827,6 +916,15 @@ class AttackController {
 
       case TargetsCount.any:
         return await _handleAnyTargetBlister(context);
+      case TargetsCount.oneAndOneBehind:
+        // TODO: Handle this case.
+        return await _handleOneTargetBlister(context);
+      case TargetsCount.oneAndTwoNearest:
+        // TODO: Handle this case.
+        return await _handleOneTargetBlister(context);
+      case TargetsCount.twoFrontTwoBack:
+        // TODO: Handle this case.
+        return await _handleOneTargetBlister(context);
     }
   }
 
@@ -909,6 +1007,15 @@ class AttackController {
 
       case TargetsCount.any:
         return await _handleAnyTargetFrostbite(context);
+      case TargetsCount.oneAndOneBehind:
+        // TODO: Handle this case.
+        return await _handleOneTargetFrostbite(context);
+      case TargetsCount.oneAndTwoNearest:
+        // TODO: Handle this case.
+        return await _handleOneTargetFrostbite(context);
+      case TargetsCount.twoFrontTwoBack:
+        // TODO: Handle this case.
+        return await _handleOneTargetFrostbite(context);
     }
   }
 
@@ -994,6 +1101,15 @@ class AttackController {
 
       case TargetsCount.any:
         return await _handleAnyTargetCure(context);
+      case TargetsCount.oneAndOneBehind:
+        // TODO: Handle this case.
+        throw Exception();
+      case TargetsCount.oneAndTwoNearest:
+        // TODO: Handle this case.
+        throw Exception();
+      case TargetsCount.twoFrontTwoBack:
+        // TODO: Handle this case.
+        throw Exception();
     }
   }
 
@@ -1076,6 +1192,15 @@ class AttackController {
 
       case TargetsCount.any:
         return await _handleAnyTargetLowerDamage(context);
+      case TargetsCount.oneAndOneBehind:
+        // TODO: Handle this case.
+        return await _handleOneTargetLowerDamage(context);
+      case TargetsCount.oneAndTwoNearest:
+        // TODO: Handle this case.
+        return await _handleOneTargetLowerDamage(context);
+      case TargetsCount.twoFrontTwoBack:
+        // TODO: Handle this case.
+        return await _handleOneTargetLowerDamage(context);
     }
   }
 
@@ -1161,6 +1286,15 @@ class AttackController {
 
       case TargetsCount.any:
         return await _handleAnyTargetShatter(context);
+      case TargetsCount.oneAndOneBehind:
+        // TODO: Handle this case.
+        return await _handleOneTargetShatter(context);
+      case TargetsCount.oneAndTwoNearest:
+        // TODO: Handle this case.
+        return await _handleOneTargetShatter(context);
+      case TargetsCount.twoFrontTwoBack:
+        // TODO: Handle this case.
+        return await _handleOneTargetShatter(context);
     }
   }
 
@@ -1246,6 +1380,15 @@ class AttackController {
 
       case TargetsCount.any:
         return await _handleAnyTargetRevive(context);
+      case TargetsCount.oneAndOneBehind:
+        // TODO: Handle this case.
+        throw Exception();
+      case TargetsCount.oneAndTwoNearest:
+        // TODO: Handle this case.
+        throw Exception();
+      case TargetsCount.twoFrontTwoBack:
+        // TODO: Handle this case.
+        throw Exception();
     }
   }
 
@@ -1308,6 +1451,15 @@ class AttackController {
 
       case TargetsCount.any:
         return await _handleAnyTargetPetrify(context);
+      case TargetsCount.oneAndOneBehind:
+        // TODO: Handle this case.
+        return await _handleOneTargetPetrify(context);
+      case TargetsCount.oneAndTwoNearest:
+        // TODO: Handle this case.
+        return await _handleOneTargetPetrify(context);
+      case TargetsCount.twoFrontTwoBack:
+        // TODO: Handle this case.
+        return await _handleOneTargetPetrify(context);
     }
   }
 
@@ -1395,6 +1547,15 @@ class AttackController {
 
       case TargetsCount.any:
         return await _handleAnyTargetLowerIni(context);
+      case TargetsCount.oneAndOneBehind:
+        // TODO: Handle this case.
+        return await _handleOneTargetLowerIni(context);
+      case TargetsCount.oneAndTwoNearest:
+        // TODO: Handle this case.
+        return await _handleOneTargetLowerIni(context);
+      case TargetsCount.twoFrontTwoBack:
+        // TODO: Handle this case.
+        return await _handleOneTargetLowerIni(context);
     }
   }
 
@@ -1482,6 +1643,15 @@ class AttackController {
 
       case TargetsCount.any:
         return await _handleAnyTargetGiveAttack(context);
+      case TargetsCount.oneAndOneBehind:
+        // TODO: Handle this case.
+        throw Exception();
+      case TargetsCount.oneAndTwoNearest:
+        // TODO: Handle this case.
+        throw Exception();
+      case TargetsCount.twoFrontTwoBack:
+        // TODO: Handle this case.
+        throw Exception();
     }
   }
 
@@ -1582,6 +1752,15 @@ class AttackController {
 
       case TargetsCount.any:
         return await _handleAnyTargetBustDamage(context);
+      case TargetsCount.oneAndOneBehind:
+        // TODO: Handle this case.
+        throw Exception();
+      case TargetsCount.oneAndTwoNearest:
+        // TODO: Handle this case.
+        throw Exception();
+      case TargetsCount.twoFrontTwoBack:
+        // TODO: Handle this case.
+        throw Exception();
     }
   }
 
@@ -1668,6 +1847,15 @@ class AttackController {
 
       case TargetsCount.any:
         return await _handleAnyTargetDrainOverflow(context);
+      case TargetsCount.oneAndOneBehind:
+        // TODO: Handle this case.
+        return await _handleOneTargetDrainOverflow(context);
+      case TargetsCount.oneAndTwoNearest:
+        // TODO: Handle this case.
+        return await _handleOneTargetDrainOverflow(context);
+      case TargetsCount.twoFrontTwoBack:
+        // TODO: Handle this case.
+        return await _handleOneTargetDrainOverflow(context);
     }
   }
 
@@ -1757,6 +1945,15 @@ class AttackController {
 
       case TargetsCount.any:
         return await _handleAnyTargetTransformOther(context);
+      case TargetsCount.oneAndOneBehind:
+        // TODO: Handle this case.
+        return await _handleOneTargetTransformOther(context);
+      case TargetsCount.oneAndTwoNearest:
+        // TODO: Handle this case.
+        return await _handleOneTargetTransformOther(context);
+      case TargetsCount.twoFrontTwoBack:
+        // TODO: Handle this case.
+        return await _handleOneTargetTransformOther(context);
     }
   }
 

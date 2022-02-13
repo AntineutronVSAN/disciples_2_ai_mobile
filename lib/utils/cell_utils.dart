@@ -221,6 +221,19 @@ bool checkIsTopTeam(int index) {
   throw Exception();
 }
 
+const Map<int, int> behindIndexes = {
+  3: 0,
+  4: 1,
+  5: 2,
+  6: 9,
+  7: 10,
+  8: 11,
+};
+
+int? getBehindIndex(int current) {
+  return behindIndexes[current];
+}
+
 bool findNearestTarget({
   required Unit unit,
   required int index,

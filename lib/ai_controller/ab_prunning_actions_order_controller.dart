@@ -76,6 +76,9 @@ class ActionsOrderController {
     switch(currentUnitAttack.attackConstParams.targetsCount) {
 
       case TargetsCount.one:
+      case TargetsCount.twoFrontTwoBack:
+      case TargetsCount.oneAndTwoNearest:
+      case TargetsCount.oneAndOneBehind:
         if (currentIsTopTeam) {
           newIndexes = topMiliIndexes;
         } else {
