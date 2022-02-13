@@ -15,7 +15,7 @@ const teamWidgetSkeletonOptions = SkeletonOptions(
     infoStyle: TextStyle(color: Colors.white, fontSize: 15.0),
 );
 
-class MainScreenTeamWidget extends DowloadableStateless {
+class MainScreenTeamWidget extends DownloadableStateless {
 
   final bool top;
   final Function(int) onTap;

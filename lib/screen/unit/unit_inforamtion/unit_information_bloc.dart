@@ -9,7 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class UnitInformationBloc extends AdvancedBlocBase<
     UnitInformationEvent,
-    GlobalState<UnitState>> {
+    GlobalState<UnitState>, UnitState> {
 
   final Unit unit;
 

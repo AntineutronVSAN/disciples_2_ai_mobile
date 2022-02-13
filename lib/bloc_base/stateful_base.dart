@@ -1,36 +1,35 @@
+
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
-
 
 import 'bloc_base.dart';
 import 'bloc_state_base.dart';
 
-/// Статичный виждет с бизнес логикой.
-/// Является обёрткой [StatelessWidget] с блоком [AdvancedBlocBase]
-/// B - Конкретный компонент бизнес логики [AdvancedBlocBase]
-/// E - Событие, связанное с бизнес логикой виджета
-/// S - Конкретное состояние, связанное с виджетом
-/// GlobalState<S> - Глобальное состояние виждета, связано с такими состояниями
-/// как: загрузка виджета, ошибка, нормальное состояние, отсутсвие авторизации
-///
-/// Переопределите метод [onListen] для прослушки изменения состояния
-/// Переопределите метод [onTokenExpired] для обработки случая протухания
-/// токенов
-/// Переопределите метод [onStateLoaded] для построения виждета
-///
-/// [addEvent] добавить событие в бизнес логику, не рекомендуется обращаться
-/// к Bloc напрямую через поле
-///
-/// Особенность виджета в том, что компонент бизнес логики должен быть передан
-/// в констуктор
-abstract class StatelessWidgetWithBloc<
-    B extends AdvancedBlocBase<E, GlobalState<S>, S>,
-    E,
-    S> extends StatelessWidget {
+abstract class StateFullWidgetWithBloc<B> extends StatefulWidget {
   final B bloc;
+  B getBloc() {
+    return bloc;
+  }
+  const StateFullWidgetWithBloc({Key? key, required this.bloc}) : super(key: key);
+}
 
-   const StatelessWidgetWithBloc({Key? key, required this.bloc})
-      : super(key: key);
+abstract class StatefulWidgetStateWithBloc<
+T extends StateFullWidgetWithBloc<B>,
+B extends AdvancedBlocBase<E, GlobalState<S>, S>,
+E,
+  S> extends State<T> {
+  late final B bloc;
+
+  StatefulWidgetStateWithBloc({Key? key})
+      : super();
+
+  @mustCallSuper
+  @override
+  void initState() {
+    bloc = widget.getBloc();
+    super.initState();
+  }
 
   /// Метод будет вызываться каждый раз, когда меняется состояние на [newState]
   void onListen(S newState, BuildContext context);
@@ -110,16 +109,17 @@ abstract class StatelessWidgetWithBloc<
 }
 
 /// Конкретная реализация [StatelessWidgetWithBloc] для приложения SScore
-abstract class D2StatelessWidget<
+abstract class D2StatefulWidgetState<
+T extends StateFullWidgetWithBloc<B>,
 B extends AdvancedBlocBase<E, GlobalState<S>, S>,
 E,
-S> extends StatelessWidgetWithBloc<B, E, S> {
+S> extends StatefulWidgetStateWithBloc<T, B, E, S> {
 
-  const D2StatelessWidget({Key? key, required B bloc}) : super(key: key, bloc: bloc);
+  D2StatefulWidgetState({Key? key}) : super(key: key);
 
   @override
   void onTokenExpired(BuildContext context) async {
-    // TODO Put here handling when token expired
+    // TODO Add here token expited handling
   }
 
   @override
@@ -134,7 +134,6 @@ S> extends StatelessWidgetWithBloc<B, E, S> {
     return const Scaffold(
       body: Center(
         child: CircularProgressIndicator(
-
         ),
       ),
     );

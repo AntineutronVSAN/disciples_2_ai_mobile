@@ -1,3 +1,4 @@
+import 'package:d2_ai_v2/bloc_base/stateful_base.dart';
 import 'package:d2_ai_v2/bloc_base/stateless_base.dart';
 import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
@@ -13,20 +14,20 @@ import 'package:d2_ai_v2/theme/colors.dart';
 import 'package:d2_ai_v2/theme/text.dart';
 import 'package:flutter/material.dart';
 
-class UnitInformationScreen extends StatelessWidgetWithBloc<UnitInformationBloc,
+class UnitInformationScreen extends D2StatelessWidget<UnitInformationBloc,
     UnitInformationEvent, UnitState> {
   const UnitInformationScreen({Key? key, required UnitInformationBloc bloc})
       : super(bloc: bloc, key: key);
 
   @override
-  Widget onStateLoaded(UnitState? newState) {
+  Widget onStateLoaded(UnitState? newState, BuildContext context) {
     assert(newState != null);
 
     return UnitInformationScreenBody(unit: newState!.unit);
   }
 
   @override
-  void onListen(UnitState? newState) {
+  void onListen(UnitState? newState, BuildContext context, ) {
     // TODO: implement onListen
   }
 }
