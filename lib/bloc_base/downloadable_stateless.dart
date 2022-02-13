@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 
 const int switcherDurationMilliseconds = 500;
 
-abstract class DowloadableStateless extends StatelessWidget {
+/// Базовый класс для статичного виждета, который может загружаться
+/// При статусе загрузки, вместо контента отображается скелетон
+/// В поле [SkeletonOptions] можно задать внешний вид скелетона
+/// Переопределите метод [buildBody] для постоения виждета
+abstract class DownloadableStateless extends StatelessWidget {
   final bool? loading;
   final SkeletonOptions? options;
 
-  const DowloadableStateless({
+  const DownloadableStateless({
     Key? key,
     this.loading,
     this.options,
