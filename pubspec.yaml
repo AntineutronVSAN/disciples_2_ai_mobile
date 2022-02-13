@@ -81,6 +81,7 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/dbf/smns_path_0_999/Globals/
+    - assets/dbf/smns_path_1_006/Globals/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

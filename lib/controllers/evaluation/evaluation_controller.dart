@@ -1,11 +1,13 @@
 
 
+import 'package:d2_ai_v2/controllers/evaluation/team_context_eval.dart';
 import 'package:d2_ai_v2/models/attack.dart';
 import 'package:d2_ai_v2/models/unit.dart';
 import 'package:d2_ai_v2/optim_algorythm/base.dart';
 import 'package:d2_ai_v2/utils/cell_utils.dart';
 
 import 'evaluation_controleer_base.dart';
+import 'global_eval.dart';
 
 /*
 
@@ -39,6 +41,9 @@ class EvaluationController {
   /* END */
 
   double _evaluationOffset = 0.0;
+
+  final TeamContextEval teamContextEval = TeamContextEval();
+  final GlobalEvaluation globalEvaluation = GlobalEvaluation();
 
   void resetEvaluationOffset() {
     _evaluationOffset = 0.0;
@@ -79,9 +84,6 @@ class EvaluationController {
     required List<Unit> units,
     AiAlgorithm? algorithm,
   }) {
-
-
-
     var sfr = 0.0;
     double aiTeamEval = 0.0;
     double enemyTeamEval = 0.0;
@@ -91,15 +93,13 @@ class EvaluationController {
       final newEval = GameEvaluation();
       if (checkIsTopTeam(index)) {
         // Свои
-        //final currentUnitEval = evaluationController.getUnitEvaluation(u);
-        //aiTeamEval += currentUnitEval.getEval();
         getUnitEvaluation(u, newEval);
+        updateUnitEvalTeamContext(index, units, newEval, true);
         aiTeamEval += newEval.getEval();
       } else {
         // Враги
-        //final currentUnitEval = evaluationController.getUnitEvaluation(u);
-        //enemyTeamEval += currentUnitEval.getEval();
         getUnitEvaluation(u, newEval);
+        updateUnitEvalTeamContext(index, units, newEval, false);
         enemyTeamEval += newEval.getEval();
       }
       evaluations.add(newEval);
@@ -114,16 +114,14 @@ class EvaluationController {
     return sfr;
   }
 
-  /// Оцнека юнитов в контексте команд
-  void teamContextEval({required List<GameEvaluation> evals, required List<Unit> units}) {
-
-    /// ------------------ Оценка заднего ряда выше, если передний ряд
-    /// сможет прожить больше одного хода
-    //var
-
-
+  /// Глобальная оценка команды
+  double teamEval(List<Unit> units, bool topTeam, GameEvaluation eval) {
+    return globalEvaluation.teamEval(units, topTeam);
   }
 
+  void updateUnitEvalTeamContext(int index, List<Unit> units, GameEvaluation eval, bool isTopTeam) {
+    return teamContextEval.teamContextEval(index, units, eval, isTopTeam);
+  }
 
   /// Получить ценность юнита с учётом атак
   void getUnitEvaluation(Unit u, GameEvaluation eval) {
@@ -661,13 +659,13 @@ class GameEvaluation {
   /// Оценка атаки в лоб
   double attacksEval = 0.0;
 
-  /// Полная оценка юнита в контексте своей команды
-  double ourTeamContextEval = 0.0;
-  /// Полная оценка юнита в контексте чужой команды
-  double enemyTeamContextEval = 0.0;
+  /// Коэффициент для атаки в контексте своей команды
+  double ourTeamContextAttackEval = 1.0;
+  /// Коэффициент для атаки в контексте чужой команды
+  double enemyTeamContextAttackEval = 1.0;
 
   double getEval() {
-    return onlyUnitEval + attacksEval;
+    return onlyUnitEval + attacksEval*ourTeamContextAttackEval*enemyTeamContextAttackEval;
   }
 
 }

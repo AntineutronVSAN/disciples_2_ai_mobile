@@ -1973,6 +1973,17 @@ class AttackController {
 
     return result;
   }
+
+  static bool isMiliUnit(Unit u) {
+    return u.unitAttack.attackConstParams.targetsCount == TargetsCount.one;
+  }
+  static bool isAllTargetsUnit(Unit u) {
+    return u.unitAttack.attackConstParams.targetsCount == TargetsCount.all;
+  }
+  static bool isAnyTargetsUnit(Unit u) {
+    return u.unitAttack.attackConstParams.targetsCount == TargetsCount.any;
+  }
+
 }
 
 

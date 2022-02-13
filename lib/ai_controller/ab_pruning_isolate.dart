@@ -258,7 +258,12 @@ class ABPruningIsolate {
     }
 
     final duration = s.elapsedMilliseconds;
-    print('Проанализировано $nodesCount узлов за $duration млс. ${nodesCount ~/ (duration / 1000.0)} узлов в секунду');
+    try {
+      print('Проанализировано $nodesCount узлов за $duration млс. ${nodesCount ~/ (duration / 1000.0)} узлов в секунду');
+    } catch(e) {
+      print('ERROR: print nodes per seconds $e');
+    }
+
     s.stop();
 
     /*return [_results.actions[bestActionIndex].copyWith(

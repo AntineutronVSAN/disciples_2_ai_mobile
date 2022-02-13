@@ -225,22 +225,17 @@ class Unit {
     final Map<int, ImunneCategory> newClassImmune = {};
     final Map<int, ImunneCategory> newSourceImmune = {};
 
-    //final Map<int, bool> newHasClassImmune = {};
-    //final Map<int, bool> newHasSourceImmune = {};
+    final Map<int, bool> newHasClassImmune = {};
+    final Map<int, bool> newHasSourceImmune = {};
 
     for(var i in classImmune.keys) {
       newClassImmune[i] = classImmune[i]!;
-      //newHasClassImmune[i] = hasClassImunne[i]!;
+      newHasClassImmune[i] = hasClassImunne[i]!;
     }
     for(var i in sourceImmune.keys) {
       newSourceImmune[i] = sourceImmune[i]!;
-      //newHasSourceImmune[i] = hasSourceImunne[i]!;
+      newHasSourceImmune[i] = hasSourceImunne[i]!;
     }
-
-    //classImmune: classImmune.map((key, value) => MapEntry(key, value)),
-    //sourceImmune: sourceImmune.map((key, value) => MapEntry(key, value)),
-    //hasClassImunne: hasClassImunne.map((key, value) => MapEntry(key, value)),
-    //hasSourceImunne: hasSourceImunne.map((key, value) => MapEntry(key, value)),
 
     return Unit(
       unitConstParams: unitConstParams,
@@ -249,11 +244,6 @@ class Unit {
       isProtected: isProtected,
       isWaiting: isWaiting,
       currentHp: currentHp,
-      //maxHp: maxHp,
-      //unitName: unitName,
-      //unitGameID: unitGameID,
-      //unitWarId: unitWarId,
-      //isDoubleAttack: isDoubleAttack,
       unitAttack: unitAttack.deepCopy(),
       unitAttack2: unitAttack2?.deepCopy(),
       armor: armor,
@@ -273,25 +263,10 @@ class Unit {
       transformed: transformed,
 
       level: level,
-      //upgradeArmor: upgradeArmor,
-      //upgradeDamage: upgradeDamage,
-      //upgradeHeal: upgradeHeal,
-      //upgradeInitiative: upgradeInitiative,
-      //upgradePower: upgradePower,
-      //upgradeHp: upgradeHp,
-      //overLevel: overLevel,
-
-      //nextID: nextID,
-      //prevID: prevID,
-
-      //classImmune: classImmune.map((key, value) => MapEntry(key, value)),
-      //sourceImmune: sourceImmune.map((key, value) => MapEntry(key, value)),
-      //hasClassImunne: hasClassImunne.map((key, value) => MapEntry(key, value)),
-      //hasSourceImunne: hasSourceImunne.map((key, value) => MapEntry(key, value)),
       classImmune: newClassImmune,
       sourceImmune: newSourceImmune,
-      hasClassImunne: hasClassImunne,
-      hasSourceImunne: hasSourceImunne,
+      hasClassImunne: newHasClassImmune,
+      hasSourceImunne: newHasSourceImmune,
 
       isBig: isBig,
     );
